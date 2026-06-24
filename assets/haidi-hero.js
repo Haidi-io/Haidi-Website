@@ -72,11 +72,11 @@
     ctx.lineWidth = 1;
     sources.forEach(function (s) {
       var d = drivers[Math.floor((s.y / H) * drivers.length) % drivers.length] || drivers[0];
-      ctx.strokeStyle = 'rgba(' + TEAL + ',0.12)';
+      ctx.strokeStyle = 'rgba(' + TEAL + ',0.18)';
       curve(s.x, s.y, d.x, d.y); ctx.stroke();
     });
     drivers.forEach(function (d) {
-      ctx.strokeStyle = 'rgba(' + TEAL + ',0.16)';
+      ctx.strokeStyle = 'rgba(' + TEAL + ',0.24)';
       curve(d.x, d.y, hb.x, hb.y); ctx.stroke();
     });
 
@@ -120,7 +120,7 @@
       var y2 = forecastY(p2, time), w2 = x2 < sx ? 0 : (x2 - sx) / (W * 0.96 - sx) * H * 0.10;
       ctx.lineTo(x2, y2 + w2);
     }
-    ctx.closePath(); ctx.fillStyle = 'rgba(' + TEAL + ',0.07)'; ctx.fill();
+    ctx.closePath(); ctx.fillStyle = 'rgba(' + TEAL + ',0.10)'; ctx.fill();
 
     /* forecast line: solid (history) then dashed (forecast) */
     ctx.lineWidth = 2.4; ctx.lineCap = 'round';
@@ -179,11 +179,25 @@
   if (reduced) { frame(1200); }
   else { loop(0); }
 
-  var rt;
-  window.addEventListener('resize', function () {
-    clearTimeout(rt);
-    rt = setTimeout(function () { dpr = Math.min(window.devicePixelRatio || 1, 2); resize(); if (reduced) frame(1200); }, 160);
-  });
+  // Keep the backing buffer matched to the element on every resize so the
+  // bitmap is never stretched. rAF-throttled to avoid layout thrash, and a
+  // ResizeObserver catches element-size changes (e.g. 100vh shifts on mobile)
+  // that don't fire a window 'resize' event.
+  var pending = false;
+  function onResize() {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(function () {
+      pending = false;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      resize();
+      if (reduced) frame(1200);
+    });
+  }
+  window.addEventListener('resize', onResize);
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(onResize).observe(canvas);
+  }
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) { cancelAnimationFrame(raf); }
     else if (!reduced) { raf = requestAnimationFrame(loop); }
