@@ -5,7 +5,7 @@
    haidi-chrome.js / haidi-mocks.js / haidi-site.js.
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+/* Fonts (Inter + JetBrains Mono) are loaded via a single <link> in BaseLayout's <head>. */
 
 :root {
   /* brand (Haidi design system) */
@@ -15,9 +15,8 @@
   --coral:         #F08989;
   --navy:          #1D203E;
 
-  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
           Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  --serif: "Instrument Serif", Georgia, "Times New Roman", serif;
   --mono: "JetBrains Mono", source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 
   --maxw: 1280px;
@@ -137,18 +136,17 @@ h1, h2, h3, h4 { color: var(--text); margin: 0; line-height: 1.04; letter-spacin
 p { margin: 0; }
 ::selection { background: var(--teal); color: #06181a; }
 
-/* ── display typography modes (Tweaks: data-font on <html>) ── */
+/* ── display typography ── */
 .display { font-weight: 500; letter-spacing: -0.035em; }
 .accent, .line2 { color: var(--teal); }
-html[data-font="duo"] .accent, html[data-font="duo"] .line2 {
-  font-family: var(--serif); font-style: italic; font-weight: 400;
-  letter-spacing: 0; word-spacing: 0.06em;
-}
-html[data-font="serif"] h1, html[data-font="serif"] .section-head h2,
-html[data-font="serif"] .cta-card h2, html[data-font="serif"] .editorial h2 {
-  font-family: var(--serif); font-weight: 400; letter-spacing: 0; word-spacing: 0.05em;
-}
-html[data-font="serif"] .accent, html[data-font="serif"] .line2 { font-style: italic; }
+
+/* Body-font choices (Tweaks: data-font on <html>). "inter" is the :root default.
+   Alternates lazy-load their webfont when picked; "system" uses no webfont. */
+html[data-font="geist"]   { --font: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+html[data-font="plex"]    { --font: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+html[data-font="manrope"] { --font: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+html[data-font="system"]  { --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+          Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif; }
 
 /* ── page background: faint drafting grid + center rails ──── */
 body::before {
@@ -219,6 +217,76 @@ section { position: relative; z-index: 1; }
 .link-arrow { display: inline-flex; align-items: center; gap: 8px; color: var(--teal); font-weight: 600; font-size: 14px; transition: gap .25s var(--ease), color .2s; }
 .link-arrow svg { width: 15px; height: 15px; transition: transform .25s var(--ease); }
 .link-arrow:hover { color: var(--teal-bright); gap: 12px; }
+
+/* ── hero / main CTAs — polished premium treatment ───────────── */
+.hero-cta { gap: 14px; }
+
+.hero-cta .btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease),
+              background .25s, border-color .25s, color .25s;
+}
+.hero-cta .btn svg { transition: transform .3s var(--ease); }
+.hero-cta .btn:hover svg { transform: translateX(4px); }
+
+/* Primary — layered teal gradient, glossy top edge, sweeping sheen on hover */
+.hero-cta .btn-primary {
+  background: linear-gradient(135deg, var(--teal-bright) 0%, var(--teal) 52%, var(--teal-deep) 100%);
+  box-shadow: 0 12px 34px -14px rgba(71,185,187,0.6),
+              inset 0 1px 0 rgba(255,255,255,0.28);
+}
+.hero-cta .btn-primary::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  border-radius: inherit; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0) 55%);
+}
+.hero-cta .btn-primary::after {
+  content: ""; position: absolute; top: 0; left: -130%; z-index: -1;
+  width: 60%; height: 100%; pointer-events: none;
+  background: linear-gradient(75deg, transparent, rgba(255,255,255,0.55), transparent);
+  transform: skewX(-18deg);
+  transition: left .65s var(--ease);
+}
+.hero-cta .btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 46px -14px rgba(71,185,187,0.7),
+              inset 0 1px 0 rgba(255,255,255,0.4);
+}
+.hero-cta .btn-primary:hover::after { left: 130%; }
+.hero-cta .btn-primary:active { transform: translateY(-1px) scale(.99); }
+
+/* Secondary — glassy outline that fills with a faint teal wash on hover */
+.hero-cta .btn-secondary {
+  background: var(--surface-subtle);
+  border-color: var(--line-2);
+  backdrop-filter: blur(4px);
+}
+.hero-cta .btn-secondary::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  border-radius: inherit; pointer-events: none; opacity: 0;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--teal) 16%, transparent),
+    color-mix(in srgb, var(--teal) 4%, transparent));
+  transition: opacity .25s var(--ease);
+}
+.hero-cta .btn-secondary:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 34px -18px rgba(71,185,187,0.45);
+}
+.hero-cta .btn-secondary:hover::before { opacity: 1; }
+.hero-cta .btn-secondary:active { transform: translateY(-1px) scale(.99); }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-cta .btn,
+  .hero-cta .btn:hover,
+  .hero-cta .btn:active { transform: none; }
+  .hero-cta .btn-primary::after { display: none; }
+  .hero-cta .btn:hover svg { transform: none; }
+}
 
 /* ── header / nav ────────────────────────────────────────── */
 .site-header {
@@ -324,7 +392,7 @@ html[data-theme="light"] .theme-toggle .icon-sun { display: block; }
 .footer-col { display: flex; flex-direction: column; }
 .footer-grid a { font-size: 14px; color: var(--text-body); padding: 6px 0; transition: color .2s; }
 .footer-grid a:hover { color: var(--teal); }
-.footer-brand img { height: 26px; margin-bottom: 18px; filter: var(--logo-filter); }
+.footer-brand img { height: 26px; width: auto; margin-bottom: 18px; filter: var(--logo-filter); }
 .footer-brand p { font-size: 14px; color: var(--text-muted); max-width: 290px; }
 .footer-bottom {
   display: flex; justify-content: space-between; align-items: center;

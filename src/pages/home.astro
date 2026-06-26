@@ -7,8 +7,6 @@ import HomeProductJourney from '../components/home/HomeProductJourney.astro';
 import HomeProductPreviews from '../components/home/HomeProductPreviews.astro';
 import HomeHowItWorks from '../components/home/HomeHowItWorks.astro';
 import HomeAbout from '../components/home/HomeAbout.astro';
-import HomeIndustries from '../components/home/HomeIndustries.astro';
-import HomeStories from '../components/home/HomeStories.astro';
 import HomeLaunch from '../components/home/HomeLaunch.astro';
 
 const jsonLd = {
@@ -16,7 +14,7 @@ const jsonLd = {
   '@type': 'SoftwareApplication',
   name: 'Haidi',
   applicationCategory: 'BusinessApplication',
-  description: 'Supply chain demand planning platform',
+  description: 'Supply chain planning platform',
   provider: {
     '@type': 'Organization',
     name: 'IBP Ready',
@@ -26,16 +24,16 @@ const jsonLd = {
 ---
 
 <BaseLayout
-  title="Haidi — Supply chain demand planning"
+  title="Haidi — Supply chain planning"
   description="Haidi helps supply chain teams turn data, assumptions, and demand signals into clear forecasting and planning decisions — without needing an in-house data science team."
   canonical="https://haidi.io/home"
-  ogTitle="Haidi — Supply chain demand planning"
+  ogTitle="Haidi — Supply chain planning"
   ogDescription="Planning that gives your team a reason to trust the forecast. Built by supply chain practitioners."
   ogUrl="https://haidi.io/home"
   screenLabel="Home"
   jsonLd={jsonLd}
   heroVariants
-  scripts={['hero-variants.js', 'haidi-mocks.js', 'haidi-site.js', 'haidi-tweaks.js']}
+  scripts={['haidi-site.js', 'haidi-tweaks.js']}
 >
   <div data-home-scroll>
     <HomeHero />
@@ -44,8 +42,6 @@ const jsonLd = {
     <HomeProductPreviews />
     <HomeHowItWorks />
     <HomeAbout />
-    <HomeIndustries />
-    <HomeStories />
     <HomeLaunch />
   </div>
 </BaseLayout>

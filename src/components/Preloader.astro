@@ -1,0 +1,649 @@
+---
+/*
+  Site-wide preloader.
+
+  Rendered as the first node in <body> from BaseLayout, so it covers the page on
+  every route (this is a multi-page Astro app — each navigation is a full load).
+  An empty full-screen cover is server-rendered with inline critical CSS so it
+  paints immediately (before the haidi.css bundle), then the inline controller
+  fills in the selected design and ties progress to the real page load.
+
+  Four designs ship here (orbit / wordmark / counter / curtain). The active one
+  is read from localStorage('haidi-preloader') and can be switched live from the
+  /preloader-preview gallery via window.haidiPreloader.use(id). All designs are
+  theme-aware (var(--bg)/teal tokens), honour prefers-reduced-motion, and the
+  overlay self-removes with a hard cap so it can never stick.
+*/
+---
+
+<div id="haidi-preloader" class="hd-pl" role="status" aria-live="polite" aria-label="Loading Haidi"></div>
+
+<style is:inline>
+  html.hd-loading,
+  html.hd-loading body {
+    overflow: hidden;
+  }
+
+  /* ── shared overlay shell ────────────────────────────────── */
+  .hd-pl {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: grid;
+    place-items: center;
+    background: var(--bg, #14161d);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+    will-change: opacity;
+  }
+  .hd-pl.is-done {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .hd-pl-hint {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 26px;
+    text-align: center;
+    font-family: var(--mono, monospace);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-faint, #788393);
+  }
+
+  /* ── canvas (mathematical) designs ───────────────────────── */
+  .hd-pl canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .hd-pl-cap {
+    position: absolute; left: 0; right: 0; bottom: 54px; z-index: 1;
+    display: flex; gap: 14px; justify-content: center;
+    font-family: var(--mono, monospace); font-size: 11px;
+    letter-spacing: 0.24em; text-transform: uppercase;
+  }
+  .hd-pl-cap span:first-child { color: var(--text-muted, #97a1ae); }
+  .hd-pl-cap span:last-child { color: var(--teal, #47b9bb); font-variant-numeric: tabular-nums; }
+
+  /* ── orbit ───────────────────────────────────────────────── */
+  .plo { display: flex; flex-direction: column; align-items: center; gap: 30px; }
+  .plo-stage { position: relative; width: 132px; height: 132px; display: grid; place-items: center; }
+  .plo-glow {
+    position: absolute; inset: 16%; border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--teal, #47b9bb) 24%, transparent), transparent 70%);
+    filter: blur(4px); animation: plo-breathe 2.8s ease-in-out infinite;
+  }
+  .plo-ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 1.5px dashed color-mix(in srgb, var(--teal, #47b9bb) 40%, transparent);
+    animation: plo-spin 9s linear infinite;
+  }
+  .plo-ring2 { position: absolute; inset: 15px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--text, #fff) 8%, transparent); }
+  .plo-orbit { position: absolute; inset: 0; animation: plo-spin 1.7s linear infinite; }
+  .plo-orbit i {
+    position: absolute; top: -4.5px; left: 50%; margin-left: -4.5px;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--teal-bright, #5fd0d2);
+    box-shadow: 0 0 14px 2px color-mix(in srgb, var(--teal, #47b9bb) 70%, transparent);
+  }
+  .plo-mark { position: relative; width: 50px; height: 50px; }
+  .plo-meta { width: 200px; }
+  .plo-track { height: 3px; border-radius: 99px; overflow: hidden; background: color-mix(in srgb, var(--text, #fff) 12%, transparent); }
+  .plo-bar {
+    display: block; height: 100%; transform-origin: left; transform: scaleX(0); border-radius: 99px;
+    background: linear-gradient(90deg, var(--teal-deep, #2e8e90), var(--teal, #47b9bb) 55%, var(--teal-bright, #5fd0d2));
+    transition: transform 0.2s ease;
+  }
+  .plo-cap { display: flex; justify-content: space-between; margin-top: 11px; font-family: var(--mono, monospace); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; }
+  .plo-cap span:first-child { color: var(--text-muted); }
+  .plo-cap span:last-child { color: var(--teal); font-variant-numeric: tabular-nums; }
+
+  /* ── wordmark ────────────────────────────────────────────── */
+  .plwm { position: relative; text-align: center; padding: 0 22px; }
+  .plwm-stack { position: relative; display: inline-block; }
+  .plwm-word {
+    display: block; margin: 0;
+    font-family: 'Inter', system-ui, sans-serif; font-weight: 800;
+    font-size: clamp(56px, 13vw, 152px); letter-spacing: -0.05em; line-height: 1;
+  }
+  .plwm-base { color: color-mix(in srgb, var(--text, #fff) 12%, transparent); }
+  .plwm-fill {
+    position: absolute; inset: 0; color: var(--teal, #47b9bb);
+    text-shadow: 0 0 28px color-mix(in srgb, var(--teal, #47b9bb) 45%, transparent);
+    clip-path: inset(0 100% 0 0);
+  }
+  .plwm-meta { margin-top: 28px; font-family: var(--mono, monospace); font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-muted, #97a1ae); }
+  .plwm-meta b { color: var(--teal, #47b9bb); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+  /* ── counter ─────────────────────────────────────────────── */
+  .plct { text-align: center; }
+  .plct-num {
+    font-family: var(--mono, monospace); font-weight: 500; line-height: 0.9;
+    font-size: clamp(74px, 18vw, 200px); color: var(--text, #fff);
+    font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+  }
+  .plct-num small { color: var(--teal, #47b9bb); font-size: 0.32em; vertical-align: super; margin-left: 0.12em; }
+  .plct-label { margin-top: 12px; font-family: var(--mono, monospace); font-size: 11px; letter-spacing: 0.42em; text-transform: uppercase; color: var(--text-muted, #97a1ae); }
+  .plct-seam { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; overflow: hidden; background: color-mix(in srgb, var(--text, #fff) 10%, transparent); }
+  .plct-seam i {
+    position: absolute; inset: 0; transform-origin: left; transform: scaleX(0);
+    background: linear-gradient(90deg, var(--teal-deep, #2e8e90), var(--teal, #47b9bb) 60%, var(--teal-bright, #5fd0d2));
+    box-shadow: 0 0 18px color-mix(in srgb, var(--teal, #47b9bb) 55%, transparent);
+  }
+
+  /* ── curtain ─────────────────────────────────────────────── */
+  .hd-pl--curtain { background: transparent; }
+  .plcr-panels { position: absolute; inset: 0; z-index: 1; display: flex; }
+  .plcr-strip {
+    flex: 1; height: 100%; background: var(--bg, #14161d);
+    border-right: 1px solid color-mix(in srgb, var(--text, #fff) 3%, transparent);
+    transform: translateY(0);
+    transition: transform 0.75s cubic-bezier(0.76, 0, 0.24, 1);
+  }
+  .plcr-strip:last-child { border-right: 0; }
+  .hd-pl--curtain.is-done { opacity: 1; visibility: visible; }
+  .hd-pl--curtain.is-done .plcr-strip { transform: translateY(-101%); }
+  .hd-pl--curtain.is-done .plcr-strip:nth-child(1) { transition-delay: 0s; }
+  .hd-pl--curtain.is-done .plcr-strip:nth-child(2) { transition-delay: 0.05s; }
+  .hd-pl--curtain.is-done .plcr-strip:nth-child(3) { transition-delay: 0.1s; }
+  .hd-pl--curtain.is-done .plcr-strip:nth-child(4) { transition-delay: 0.15s; }
+  .hd-pl--curtain.is-done .plcr-strip:nth-child(5) { transition-delay: 0.2s; }
+  .hd-pl--curtain.is-done .plcr-strip:nth-child(6) { transition-delay: 0.25s; }
+  .plcr-center { position: relative; z-index: 2; text-align: center; transition: opacity 0.35s ease, transform 0.35s ease; }
+  .hd-pl--curtain.is-done .plcr-center { opacity: 0; transform: translateY(-10px); }
+  .plcr-mark { width: 58px; height: 58px; }
+  .plcr-bar { width: 150px; height: 2px; margin: 22px auto 0; border-radius: 2px; overflow: hidden; background: color-mix(in srgb, var(--text, #fff) 10%, transparent); }
+  .plcr-bar i { display: block; height: 100%; transform-origin: left; transform: scaleX(0); background: var(--teal, #47b9bb); }
+
+  @keyframes plo-spin { to { transform: rotate(360deg); } }
+  @keyframes plo-breathe { 0%, 100% { opacity: 0.5; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.06); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hd-pl { transition: opacity 0.2s ease, visibility 0.2s ease; }
+    .plcr-strip { transition: none; }
+    .plo-ring, .plo-orbit, .plo-glow { animation: none; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var root = document.documentElement;
+    var KEY = 'haidi-preloader';
+    var DEFAULT = 'harmonograph';
+
+    var GLYPH =
+      '<path d="M8 22V10h4.2c2.8 0 4.6 1.4 4.6 3.6 0 1.5-.8 2.6-2.1 3.1L18 22h-3.4l-2.8-4.6H12.2V22H8zm4.2-7.4c1.1 0 1.8-.6 1.8-1.5S13.1 11.6 12.2 11.6H12.2v3H12.2z" fill="var(--teal,#47B9BB)"/>' +
+      '<circle cx="22" cy="16" r="3.5" stroke="var(--teal,#47B9BB)" stroke-width="2"/>';
+    function mark(cls) {
+      return '<svg class="' + cls + '" viewBox="0 0 32 32" fill="none" aria-hidden="true">' + GLYPH + '</svg>';
+    }
+    function setBar(el, p) {
+      var b = el.querySelector('[data-bar]');
+      if (b) b.style.transform = 'scaleX(' + p / 100 + ')';
+    }
+    function setPct(el, p) {
+      var pc = el.querySelector('[data-pct]');
+      if (pc) pc.textContent = Math.round(p);
+    }
+
+    // ── canvas helpers (shared by the mathematical designs) ──────
+    // The caption markup reused by every canvas design.
+    var CAP = '<div class="hd-pl-cap"><span>Haidi</span><span><span data-pct>0</span>%</span></div>';
+
+    // Active brand colors, read live so canvas matches theme + Tweaks accent.
+    function brand() {
+      var s = getComputedStyle(root);
+      function pick(name, fb) {
+        var v = s.getPropertyValue(name);
+        return (v && v.trim()) || fb;
+      }
+      return {
+        teal: pick('--teal', '#47B9BB'),
+        bright: pick('--teal-bright', '#5FD0D2'),
+        deep: pick('--teal-deep', '#2E8E90'),
+        bg: pick('--bg', '#14161D'),
+      };
+    }
+
+    // Size the design's <canvas> to the viewport (DPR-capped) and keep it sized.
+    // Returns a 2D context + logical size and a dispose() that drops the listener.
+    function makeCanvas(el) {
+      var c = el.querySelector('canvas');
+      var ctx = c.getContext('2d');
+      var box = { ctx: ctx, w: 0, h: 0, dispose: null };
+      function size() {
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        box.w = window.innerWidth;
+        box.h = window.innerHeight;
+        c.width = Math.round(box.w * dpr);
+        c.height = Math.round(box.h * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      size();
+      window.addEventListener('resize', size);
+      box.dispose = function () { window.removeEventListener('resize', size); };
+      return box;
+    }
+
+    // Standard rAF loop wrapper: calls draw(t) each frame until stopped; on
+    // reduced-motion it draws a single frame and never schedules. Returns stop().
+    function loop(state, draw) {
+      var raf = 0;
+      var t = 0;
+      function tick() {
+        t += 1;
+        draw(t);
+        raf = window.requestAnimationFrame(tick);
+      }
+      if (state.reduce) {
+        draw(0);
+        return function () {};
+      }
+      raf = window.requestAnimationFrame(tick);
+      return function () { if (raf) window.cancelAnimationFrame(raf); };
+    }
+
+    var DESIGNS = {
+      orbit: {
+        exitMs: 700,
+        html:
+          '<div class="plo"><div class="plo-stage">' +
+          '<span class="plo-glow"></span><span class="plo-ring"></span><span class="plo-ring2"></span>' +
+          '<span class="plo-orbit"><i></i></span>' + mark('plo-mark') + '</div>' +
+          '<div class="plo-meta"><div class="plo-track"><span class="plo-bar" data-bar></span></div>' +
+          '<div class="plo-cap"><span>Haidi</span><span><span data-pct>0</span>%</span></div></div></div>',
+        render: function (el, p) { setBar(el, p); setPct(el, p); },
+      },
+      wordmark: {
+        exitMs: 700,
+        html:
+          '<div class="plwm"><span class="plwm-stack">' +
+          '<span class="plwm-word plwm-base">haidi</span>' +
+          '<span class="plwm-word plwm-fill" data-fill>haidi</span></span>' +
+          '<div class="plwm-meta">Loading&nbsp;&nbsp;<b><span data-pct>0</span>%</b></div></div>',
+        render: function (el, p) {
+          var f = el.querySelector('[data-fill]');
+          if (f) f.style.clipPath = 'inset(0 ' + (100 - p) + '% 0 0)';
+          setPct(el, p);
+        },
+      },
+      counter: {
+        exitMs: 700,
+        html:
+          '<div class="plct"><div class="plct-num"><span data-num>0</span><small>%</small></div>' +
+          '<div class="plct-label">Loading</div></div>' +
+          '<div class="plct-seam"><i data-bar></i></div>',
+        render: function (el, p) {
+          var n = el.querySelector('[data-num]');
+          if (n) n.textContent = Math.round(p);
+          setBar(el, p);
+        },
+      },
+      curtain: {
+        exitMs: 1200,
+        html:
+          '<div class="plcr-panels">' +
+          '<span class="plcr-strip"></span><span class="plcr-strip"></span><span class="plcr-strip"></span>' +
+          '<span class="plcr-strip"></span><span class="plcr-strip"></span><span class="plcr-strip"></span></div>' +
+          '<div class="plcr-center">' + mark('plcr-mark') +
+          '<div class="plcr-bar"><i data-bar></i></div></div>',
+        render: function (el, p) { setBar(el, p); },
+      },
+
+      // ── mathematical (canvas) designs ──────────────────────────
+      phyllotaxis: {
+        exitMs: 700,
+        html: '<canvas></canvas>' + CAP,
+        render: function (el, p) { setPct(el, p); },
+        mount: function (el, state) {
+          var cv = makeCanvas(el);
+          var col = brand();
+          var N = 900;
+          var GA = Math.PI * (3 - Math.sqrt(5)); // golden angle ≈ 137.5°
+          var stop = loop(state, function (t) {
+            var ctx = cv.ctx, w = cv.w, h = cv.h;
+            ctx.clearRect(0, 0, w, h);
+            var cx = w / 2, cy = h / 2;
+            var scale = Math.min(w, h) * 0.018; // spacing constant c
+            var rot = t * 0.0016;               // slow global rotation
+            var frac = state.reduce ? 1 : state.p / 100;
+            var count = Math.max(1, Math.floor(frac * N));
+            for (var i = 0; i < count; i++) {
+              var a = i * GA + rot;
+              var r = scale * Math.sqrt(i);
+              var x = cx + r * Math.cos(a);
+              var y = cy + r * Math.sin(a);
+              var k = i / N;                     // 0 (center) → 1 (rim)
+              var edge = count - i;              // newest ring fades in
+              var alpha = (edge < 44 ? 0.2 + 0.8 * (edge / 44) : 1) * (0.4 + 0.6 * k);
+              ctx.globalAlpha = alpha;
+              ctx.fillStyle = i % 7 === 0 ? col.bright : col.teal;
+              ctx.beginPath();
+              ctx.arc(x, y, 1.6 + k * 2.7, 0, 6.2832);
+              ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+          });
+          return function () { stop(); cv.dispose(); };
+        },
+      },
+
+      fourier: {
+        exitMs: 700,
+        html: '<canvas></canvas>' + CAP,
+        render: function (el, p) { setPct(el, p); },
+        mount: function (el, state) {
+          var cv = makeCanvas(el);
+          var col = brand();
+          var H = []; // odd harmonics: radius ∝ 1/n, angular speed n
+          for (var n = 1; n <= 15; n += 2) H.push(n);
+          var TWO = 6.2832;
+          function plot(theta, rot, R0, cx, cy) {
+            var x = cx, y = cy;
+            for (var i = 0; i < H.length; i++) {
+              var a = H[i] * theta + rot;
+              x += (R0 / H[i]) * Math.cos(a);
+              y += (R0 / H[i]) * Math.sin(a);
+            }
+            return [x, y];
+          }
+          var stop = loop(state, function (t) {
+            var ctx = cv.ctx, w = cv.w, h = cv.h;
+            ctx.clearRect(0, 0, w, h);
+            var cx = w / 2, cy = h / 2;
+            var R0 = Math.min(w, h) * 0.2;
+            var rot = t * 0.004; // slow whole-figure rotation
+            var frac = state.reduce ? 1 : state.p / 100;
+            var head = frac * TWO;
+            // faint full closed curve
+            ctx.strokeStyle = col.teal;
+            ctx.globalAlpha = 0.16;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (var s = 0; s <= 200; s++) {
+              var pt = plot((s / 200) * TWO, rot, R0, cx, cy);
+              if (s === 0) ctx.moveTo(pt[0], pt[1]); else ctx.lineTo(pt[0], pt[1]);
+            }
+            ctx.closePath();
+            ctx.stroke();
+            // epicycle circles + arms at the head
+            var x = cx, y = cy;
+            for (var i = 0; i < H.length; i++) {
+              var px = x, py = y;
+              var rad = R0 / H[i];
+              ctx.globalAlpha = 0.1;
+              ctx.beginPath(); ctx.arc(px, py, rad, 0, TWO); ctx.stroke();
+              var a = H[i] * head + rot;
+              x += rad * Math.cos(a);
+              y += rad * Math.sin(a);
+              ctx.globalAlpha = 0.28;
+              ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(x, y); ctx.stroke();
+            }
+            // bright drawn arc 0 → head
+            ctx.globalAlpha = 1;
+            ctx.strokeStyle = col.bright;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            var steps = Math.max(2, Math.floor(200 * frac));
+            for (var s2 = 0; s2 <= steps; s2++) {
+              var pt2 = plot((s2 / 200) * TWO, rot, R0, cx, cy);
+              if (s2 === 0) ctx.moveTo(pt2[0], pt2[1]); else ctx.lineTo(pt2[0], pt2[1]);
+            }
+            ctx.stroke();
+            // glowing pen
+            ctx.fillStyle = col.bright;
+            ctx.shadowBlur = 12; ctx.shadowColor = col.teal;
+            ctx.beginPath(); ctx.arc(x, y, 3.5, 0, TWO); ctx.fill();
+            ctx.shadowBlur = 0;
+          });
+          return function () { stop(); cv.dispose(); };
+        },
+      },
+
+      harmonograph: {
+        exitMs: 700,
+        html: '<canvas></canvas>' + CAP,
+        render: function (el, p) { setPct(el, p); },
+        mount: function (el, state) {
+          var cv = makeCanvas(el);
+          var col = brand();
+          // two slightly detuned sine terms per axis + exponential damping
+          var f1 = 2.0, f2 = 3.0, f3 = 3.0, f4 = 2.005;
+          var p1 = 0, p2 = Math.PI / 2, p3 = Math.PI / 4, p4 = 0;
+          var d = 0.05;
+          var stop = loop(state, function (t) {
+            var ctx = cv.ctx, w = cv.w, h = cv.h;
+            ctx.clearRect(0, 0, w, h);
+            var cx = w / 2, cy = h / 2;
+            var A = Math.min(w, h) * 0.34;
+            var frac = state.reduce ? 1 : state.p / 100;
+            var drift = t * 0.004; // slow morphing for life
+            var TT = 36;
+            var end = TT * frac;
+            var steps = 1500;
+            ctx.beginPath();
+            for (var s = 0; s <= steps; s++) {
+              var tt = end * (s / steps);
+              var dampA = Math.exp(-d * tt);
+              var x = cx + A * (Math.sin(f1 * tt + p1 + drift) + Math.sin(f2 * tt + p2)) * 0.5 * dampA;
+              var y = cy + A * (Math.sin(f3 * tt + p3 + drift) + Math.sin(f4 * tt + p4)) * 0.5 * dampA;
+              if (s === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = col.teal;
+            ctx.lineWidth = 1.5;
+            ctx.globalAlpha = 0.92;
+            ctx.shadowBlur = 10; ctx.shadowColor = col.teal;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            ctx.globalAlpha = 1;
+          });
+          return function () { stop(); cv.dispose(); };
+        },
+      },
+
+      waves: {
+        exitMs: 700,
+        html: '<canvas></canvas>' + CAP,
+        render: function (el, p) { setPct(el, p); },
+        mount: function (el, state) {
+          var cv = makeCanvas(el);
+          var col = brand();
+          var LINES = 5;
+          var stop = loop(state, function (t) {
+            var ctx = cv.ctx, w = cv.w, h = cv.h;
+            ctx.clearRect(0, 0, w, h);
+            var frac = state.reduce ? 1 : state.p / 100;
+            var amp = Math.min(h, 560) * 0.07 * (0.35 + 0.65 * frac);
+            var mid = (LINES - 1) / 2;
+            for (var li = 0; li < LINES; li++) {
+              var baseY = h * 0.5 + (li - mid) * (h * 0.46 / LINES);
+              var phase = t * 0.01 + li * 0.7;
+              ctx.beginPath();
+              for (var x = 0; x <= w; x += 6) {
+                var y = baseY +
+                  amp * Math.sin(x * 0.006 + phase) +
+                  amp * 0.5 * Math.sin(x * 0.013 - phase * 1.3 + li);
+                if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+              }
+              var g = ctx.createLinearGradient(0, 0, w, 0);
+              g.addColorStop(0, col.deep);
+              g.addColorStop(0.5, col.teal);
+              g.addColorStop(1, col.bright);
+              ctx.strokeStyle = g;
+              ctx.lineWidth = 1.5;
+              ctx.globalAlpha = 0.22 + 0.6 * frac * (1 - Math.abs(li - mid) / LINES);
+              ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+          });
+          return function () { stop(); cv.dispose(); };
+        },
+      },
+    };
+
+    function currentId() {
+      try {
+        var v = localStorage.getItem(KEY);
+        if (v && DESIGNS[v]) return v;
+      } catch (e) {}
+      return DEFAULT;
+    }
+
+    var reduce = false;
+    try {
+      reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch (e) {}
+
+    // Drive one overlay element through progress + fade-out.
+    //   opts.hold     — pin partway, wait for el.__finish() (preview only)
+    //   opts.simulate — climb all the way to 100 on a timer (preview only);
+    //                   otherwise the final jump is tied to the real 'load'.
+    function run(el, design, opts) {
+      opts = opts || {};
+      var hold = !!opts.hold;
+      var simulate = !!opts.simulate;
+      root.classList.add('hd-loading');
+
+      // Shared, live-updated progress state for self-animating (canvas) designs.
+      // The frame loop writes state.p; a design's mount() loop reads it.
+      var state = { p: 0, reduce: reduce };
+      // Reduced-motion designs draw a single static frame at mount time, so the
+      // completion level must already be set before mount() reads state.p.
+      if (reduce) state.p = hold ? 70 : simulate ? 100 : 90;
+      var stop = typeof design.mount === 'function' ? design.mount(el, state) : null;
+
+      var ceiling = hold ? 70 : simulate ? 100 : 90;
+      var progress = 0;
+      var done = false;
+      var raf = 0;
+
+      function frame() {
+        if (done) return;
+        progress += (ceiling - progress) * 0.03 + (simulate ? 0.35 : 0.25);
+        if (progress > ceiling) progress = ceiling;
+        state.p = Math.min(progress, 100);
+        if (design.render) design.render(el, state.p);
+        if (simulate && !hold && progress >= 99.3) {
+          progress = 100;
+          state.p = 100;
+          if (design.render) design.render(el, 100);
+          finish();
+          return;
+        }
+        raf = requestAnimationFrame(frame);
+      }
+
+      function finish() {
+        if (done) return;
+        done = true;
+        if (raf) cancelAnimationFrame(raf);
+        state.p = 100;
+        if (design.render) design.render(el, 100);
+
+        setTimeout(function () {
+          el.classList.add('is-done');
+          var removed = false;
+          function remove() {
+            if (removed) return;
+            removed = true;
+            if (stop) stop();
+            if (el.parentNode) el.parentNode.removeChild(el);
+            if (!document.querySelector('.hd-pl')) root.classList.remove('hd-loading');
+          }
+          el.addEventListener('transitionend', function (e) {
+            if (e.target === el && e.propertyName === 'opacity') remove();
+          });
+          // Fallback / curtain (opacity doesn't transition) — remove on a timer.
+          setTimeout(remove, (design.exitMs || 700) + 200);
+        }, reduce ? 80 : 280);
+      }
+
+      el.__finish = finish;
+
+      if (reduce && !hold) {
+        state.p = ceiling;
+        if (design.render) design.render(el, ceiling);
+      } else {
+        raf = requestAnimationFrame(frame);
+      }
+
+      if (hold || simulate) {
+        // Reduced motion skips the frame loop, so give simulate (gallery) mode a
+        // short timer to auto-complete instead of waiting on a click.
+        if (simulate && reduce && !hold) setTimeout(finish, 700);
+        return; // preview modes don't wait on 'load'
+      }
+
+      if (document.readyState === 'complete') {
+        setTimeout(finish, reduce ? 120 : 360);
+      } else {
+        window.addEventListener('load', function () {
+          setTimeout(finish, reduce ? 80 : 220);
+        });
+      }
+      setTimeout(finish, 6000); // hard cap — never trap on a hung asset
+    }
+
+    function build(id, opts) {
+      var design = DESIGNS[id] || DESIGNS[DEFAULT];
+      var el = document.createElement('div');
+      el.className = 'hd-pl hd-pl--' + (DESIGNS[id] ? id : DEFAULT);
+      el.setAttribute('role', 'status');
+      el.setAttribute('aria-label', 'Loading Haidi');
+      el.innerHTML = design.html;
+      if (opts && opts.hold) {
+        var hint = document.createElement('div');
+        hint.className = 'hd-pl-hint';
+        hint.textContent = 'Click anywhere to dismiss';
+        el.appendChild(hint);
+      }
+      return { el: el, design: design };
+    }
+
+    // Public API — the /preloader-preview gallery drives this.
+    window.haidiPreloader = {
+      designs: DESIGNS,
+      currentId: currentId,
+      use: function (id) {
+        if (!DESIGNS[id]) return false;
+        try { localStorage.setItem(KEY, id); } catch (e) {}
+        return true;
+      },
+      // Play a design fullscreen on a self-contained timer (no real load wait).
+      play: function (id, opts) {
+        opts = opts || {};
+        var prev = document.querySelector('.hd-pl');
+        if (prev && prev.parentNode) prev.parentNode.removeChild(prev);
+        var made = build(id, opts);
+        document.body.appendChild(made.el);
+        made.el.addEventListener('click', function () {
+          if (made.el.__finish) made.el.__finish();
+        });
+        run(made.el, made.design, { hold: !!opts.hold, simulate: true });
+        return made.el;
+      },
+      dismiss: function () {
+        var el = document.querySelector('.hd-pl');
+        if (el && el.__finish) el.__finish();
+      },
+    };
+
+    // ── auto-run on every route except the preview gallery ───────
+    var cover = document.getElementById('haidi-preloader');
+    if (!cover) return;
+
+    var path = location.pathname.replace(/\/+$/, '') || '/';
+    if (path === '/preloader-preview') {
+      // The gallery controls its own overlays — drop the auto cover.
+      if (cover.parentNode) cover.parentNode.removeChild(cover);
+      return;
+    }
+
+    var id = currentId();
+    var design = DESIGNS[id];
+    cover.classList.add('hd-pl--' + id);
+    cover.innerHTML = design.html;
+    run(cover, design, { simulate: false });
+  })();
+</script>

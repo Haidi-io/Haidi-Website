@@ -52,16 +52,22 @@
     document.body.appendChild(s);
   }
 
-  var heroContentDefault = (window.haidiResolveHeroContent && window.haidiResolveHeroContent()) || 'workspace';
+  var heroContentDefault = (window.haidiResolveHeroContent && window.haidiResolveHeroContent()) || 'tagline';
   var heroAnimDefault = (window.haidiResolveHeroAnimation && window.haidiResolveHeroAnimation()) || 'canvas';
-  var cursorDefault = (window.haidiResolveCursor && window.haidiResolveCursor()) || 'trace';
+  // The cursor module loads as a deferred module, so haidiResolveCursor may not be
+  // exposed yet when this runs — fall back to the persisted value so the panel's
+  // dropdown reflects the cursor actually in effect rather than always showing 'trace'.
+  var cursorDefault = (window.haidiResolveCursor && window.haidiResolveCursor()) ||
+    (function () { try { return sessionStorage.getItem('haidi-cursor'); } catch (e) { return null; } })() ||
+    'dot-ring';
   var defaults = {
-    displayType: 'sans',
+    displayType: 'inter',
     canvas: 'graphite',
     accent: '#47B9BB',
     cursor: cursorDefault,
     heroContent: heroContentDefault,
-    heroAnimation: heroAnimDefault
+    heroAnimation: heroAnimDefault,
+    taglineWidth: 22
   };
   var hasHero = !!document.querySelector('[data-hero-root]');
 
@@ -87,12 +93,25 @@
     })
     .then(function () {
       var app =
+        'var TWEAK_FONTS = {' +
+        '  geist: "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap",' +
+        '  plex: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",' +
+        '  manrope: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"' +
+        '};' +
+        'function ensureFont(key) {' +
+        '  var url = TWEAK_FONTS[key]; if (!url) return;' +
+        '  if (document.querySelector("link[data-tweak-font=" + key + "]")) return;' +
+        '  var l = document.createElement("link"); l.rel = "stylesheet"; l.href = url;' +
+        '  l.setAttribute("data-tweak-font", key); document.head.appendChild(l);' +
+        '}' +
         'function applyTweaks(t) {' +
         '  var d = document.documentElement;' +
+        '  ensureFont(t.displayType);' +
         "  d.setAttribute('data-font', t.displayType);" +
         "  d.setAttribute('data-canvas', t.canvas);" +
         "  d.style.setProperty('--teal', t.accent);" +
         "  d.style.setProperty('--teal-bright', t.accent === '#47B9BB' ? '#5FD0D2' : t.accent);" +
+        "  d.style.setProperty('--tagline-width', t.taglineWidth + 'ch');" +
         '  if (window.haidiApplyHero) window.haidiApplyHero({ content: t.heroContent, animation: t.heroAnimation });' +
         '  if (window.haidiApplyCursor) window.haidiApplyCursor(t.cursor);' +
         '}' +
@@ -106,24 +125,29 @@
         '  return React.createElement(TweaksPanel, { title: "Dev tweaks", defaultOpen: false },' +
         (hasHero
           ? '    React.createElement(TweakSection, { label: "Hero" }),' +
-            '    React.createElement(TweakRadio, { label: "Content", value: t.heroContent, options: ["workspace","split","minimal","editorial"], onChange: function (v) { setTweak("heroContent", v); } }),' +
-            '    React.createElement(TweakSelect, { label: "Animation", value: t.heroAnimation, options: ["canvas","orbit","streams","waves","grid","none"], onChange: function (v) { setTweak("heroAnimation", v); } }),' +
+            '    React.createElement(TweakRadio, { label: "Content", value: t.heroContent, options: ["workspace","minimal","tagline"], onChange: function (v) { setTweak("heroContent", v); } }),' +
+            '    React.createElement(TweakSlider, { label: "Tagline width", value: t.taglineWidth, min: 14, max: 48, unit: "ch", onChange: function (v) { setTweak("taglineWidth", v); } }),' +
+            '    React.createElement(TweakSelect, { label: "Animation", value: t.heroAnimation, options: ["canvas","streams","waves","network","flow","supply","globe","terrain","field3d","network3d","none"], onChange: function (v) { setTweak("heroAnimation", v); } }),' +
             '    React.createElement(TweakButton, { label: "Copy share link", secondary: true, onClick: copyHeroLink }),'
           : '') +
         '    React.createElement(TweakSection, { label: "Cursor" }),' +
         '    React.createElement(TweakSelect, { label: "Style", value: t.cursor, options: [' +
         '      { value: "none", label: "System default" },' +
+        '      { value: "dot", label: "Minimal dot" },' +
         '      { value: "dot-ring", label: "Dot & ring" },' +
         '      { value: "crosshair", label: "Reticle" },' +
+        '      { value: "snap", label: "Magnetic" },' +
         '      { value: "trace", label: "Comet trail" },' +
-        '      { value: "bracket", label: "Action pill" },' +
-        '      { value: "glow", label: "Spotlight" },' +
-        '      { value: "particles", label: "Particle drift" },' +
-        '      { value: "orbit", label: "Orbit satellites" },' +
-        '      { value: "ripple", label: "Pulse rings" }' +
+        '      { value: "bracket", label: "Action pill" }' +
         '    ], onChange: function (v) { setTweak("cursor", v); } }),' +
         '    React.createElement(TweakSection, { label: "Typography" }),' +
-        '    React.createElement(TweakRadio, { label: "Display type", value: t.displayType, options: ["duo","serif","sans"], onChange: function (v) { setTweak("displayType", v); } }),' +
+        '    React.createElement(TweakSelect, { label: "Body font", value: t.displayType, options: [' +
+        '      { value: "inter", label: "Inter" },' +
+        '      { value: "geist", label: "Geist" },' +
+        '      { value: "plex", label: "IBM Plex Sans" },' +
+        '      { value: "manrope", label: "Manrope" },' +
+        '      { value: "system", label: "System" }' +
+        '    ], onChange: function (v) { setTweak("displayType", v); } }),' +
         '    React.createElement(TweakSection, { label: "Canvas" }),' +
         '    React.createElement(TweakRadio, { label: "Darkness", value: t.canvas, options: ["black","graphite","navy"], onChange: function (v) { setTweak("canvas", v); } }),' +
         '    React.createElement(TweakColor, { label: "Accent", value: t.accent, options: ["#47B9BB","#5BC8B8","#5FD0D2","#3FA7A9"], onChange: function (v) { setTweak("accent", v); } })' +

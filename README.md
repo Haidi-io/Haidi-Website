@@ -28,7 +28,7 @@ python -m http.server 8000
 - `/` redirects to `/home`.
 
 ## External dependencies (loaded at runtime via CDN)
-- Google Fonts — Instrument Serif, JetBrains Mono (via `haidi.css`)
+- Google Fonts — Inter, JetBrains Mono (via `haidi.css`)
 - React + ReactDOM + Babel (unpkg) — only when `?tweaks=1` is in the URL (design panel)
 
 ## Contact form delivery (Vercel)

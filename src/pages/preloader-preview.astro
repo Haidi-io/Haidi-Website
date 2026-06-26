@@ -1,0 +1,192 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const variants = [
+  {
+    id: 'orbit',
+    name: 'Orbit mark',
+    blurb:
+      'The Haidi mark centered, with a dot orbiting a precise dashed ring over a soft glow, and a polished progress bar. Logo-centric and refined.',
+  },
+  {
+    id: 'wordmark',
+    name: 'Wordmark wipe',
+    blurb:
+      'A large “haidi” wordmark. Teal fills the letters left-to-right as progress advances. Editorial, minimal, type-driven.',
+  },
+  {
+    id: 'counter',
+    name: 'Counter + seam',
+    blurb:
+      'A big mono counter races to 100 in the center while a hairline seam spans the full viewport and fills underneath. Swiss and confident.',
+  },
+  {
+    id: 'curtain',
+    name: 'Curtain reveal',
+    blurb:
+      'Vertical panels carry the logo mark, then slide away in a stagger to reveal the page beneath. Cinematic, agency-grade.',
+  },
+  {
+    id: 'phyllotaxis',
+    name: 'Phyllotaxis bloom',
+    blurb:
+      'A golden-angle (137.5°) seed spiral. Dots bloom outward in a sunflower pattern as the page loads, shaded teal by radius. Organic and generative.',
+  },
+  {
+    id: 'fourier',
+    name: 'Fourier epicycles',
+    blurb:
+      'A chain of rotating circles whose pen traces a closed curve — faint epicycles plus a glowing teal trace that completes with progress. Unmistakably mathematical.',
+  },
+  {
+    id: 'harmonograph',
+    name: 'Harmonograph',
+    blurb:
+      'A damped Lissajous pendulum curve drawn live — a delicate looping ribbon in teal with a soft glow that tightens inward as it resolves.',
+  },
+  {
+    id: 'waves',
+    name: 'Wave interference',
+    blurb:
+      'A field of drifting sine lines that overlap and interfere, brightening and gaining amplitude as progress climbs. Calm and technical.',
+  },
+];
+---
+
+<BaseLayout
+  title="Preloader gallery — Haidi"
+  description="Internal gallery of preloader designs."
+  noindex
+  scripts={['haidi-site.js']}
+>
+  <style is:global>
+    .plg { max-width: 960px; padding: 96px 0 90px; }
+    .plg-head { text-align: center; margin-bottom: 44px; }
+    .plg-head .eyebrow { display: inline-block; margin-bottom: 14px; }
+    .plg-head h1 { font-size: clamp(30px, 4vw, 46px); margin: 0 0 14px; }
+    .plg-head p { font-size: 16px; color: var(--text-body); line-height: 1.6; max-width: 58ch; margin: 0 auto; }
+    .plg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    @media (max-width: 680px) { .plg-grid { grid-template-columns: 1fr; } }
+    .plg-card {
+      position: relative;
+      border: 1px solid var(--line);
+      background: var(--surface-subtle);
+      border-radius: 16px;
+      padding: 22px 22px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.2s ease;
+    }
+    .plg-card.is-current { border-color: var(--teal); }
+    .plg-card__top { display: flex; align-items: center; justify-content: space-between; }
+    .plg-card__num { font-family: var(--mono, monospace); font-size: 11px; letter-spacing: 0.18em; color: var(--teal); }
+    .plg-badge {
+      display: none;
+      font-family: var(--mono, monospace); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+      color: #06181a; background: var(--teal); padding: 3px 8px; border-radius: 99px; font-weight: 600;
+    }
+    .plg-card.is-current .plg-badge { display: inline-block; }
+    .plg-card h3 { margin: 0; font-size: 18px; }
+    .plg-card p { margin: 0; font-size: 14px; color: var(--text-muted); line-height: 1.55; flex: 1; }
+    .plg-card__actions { display: flex; gap: 10px; margin-top: 4px; flex-wrap: wrap; }
+
+    .plg-hintbar { margin-top: 30px; text-align: center; font-family: var(--mono, monospace); font-size: 12px; letter-spacing: 0.08em; color: var(--text-muted); }
+
+    .plg-toast {
+      position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 16px);
+      z-index: 100000; max-width: 90vw;
+      background: var(--bg-elevated, #1f232e); border: 1px solid var(--teal);
+      color: var(--text, #fff); padding: 12px 18px; border-radius: 12px;
+      font-size: 14px; box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.6);
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .plg-toast.is-show { opacity: 1; transform: translate(-50%, 0); }
+  </style>
+
+  <article class="plg wrap" id="main">
+    <div class="plg-head">
+      <span class="eyebrow">Internal · Gallery</span>
+      <h1 class="display">Preloader designs</h1>
+      <p>
+        Four directions, each playable fullscreen exactly as a visitor would see it.
+        <b>Play</b> watches the full load-and-exit, <b>Hold</b> freezes it partway to
+        inspect the details, and <b>Use</b> sets it as the site-wide preloader on every
+        route. Click anywhere on an overlay to dismiss it.
+      </p>
+    </div>
+
+    <div class="plg-grid">
+      {
+        variants.map((v, i) => (
+          <div class="plg-card" data-card={v.id}>
+            <div class="plg-card__top">
+              <span class="plg-card__num">{String(i + 1).padStart(2, '0')}</span>
+              <span class="plg-badge">In use</span>
+            </div>
+            <h3>{v.name}</h3>
+            <p>{v.blurb}</p>
+            <div class="plg-card__actions">
+              <button class="btn btn-primary btn-sm" type="button" data-play={v.id}>Play</button>
+              <button class="btn btn-secondary btn-sm" type="button" data-hold={v.id}>Hold</button>
+              <button class="btn btn-secondary btn-sm" type="button" data-use={v.id}>Use</button>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="plg-hintbar">Selecting “Use” saves your choice — reload any real route to see it live.</p>
+  </article>
+
+  <div class="plg-toast" id="plg-toast" role="status" aria-live="polite"></div>
+
+  <script is:inline>
+    (function () {
+      var api = window.haidiPreloader;
+
+      var toastEl = document.getElementById('plg-toast');
+      var toastTimer = 0;
+      function toast(msg) {
+        if (!toastEl) return;
+        toastEl.textContent = msg;
+        toastEl.classList.add('is-show');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { toastEl.classList.remove('is-show'); }, 3200);
+      }
+
+      function nameOf(id) {
+        var card = document.querySelector('[data-card="' + id + '"] h3');
+        return card ? card.textContent : id;
+      }
+
+      function markCurrent() {
+        if (!api || !api.currentId) return;
+        var id = api.currentId();
+        var cards = document.querySelectorAll('[data-card]');
+        for (var i = 0; i < cards.length; i++) {
+          cards[i].classList.toggle('is-current', cards[i].getAttribute('data-card') === id);
+        }
+      }
+
+      document.addEventListener('click', function (e) {
+        var t = e.target.closest && e.target.closest('[data-play],[data-hold],[data-use]');
+        if (!t || !api) return;
+
+        if (t.hasAttribute('data-play')) {
+          api.play(t.getAttribute('data-play'), {});
+        } else if (t.hasAttribute('data-hold')) {
+          api.play(t.getAttribute('data-hold'), { hold: true });
+        } else if (t.hasAttribute('data-use')) {
+          var id = t.getAttribute('data-use');
+          if (api.use(id)) {
+            markCurrent();
+            toast('“' + nameOf(id) + '” is now the site preloader — reload any page to see it live.');
+          }
+        }
+      });
+
+      markCurrent();
+    })();
+  </script>
+</BaseLayout>

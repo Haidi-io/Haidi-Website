@@ -1,13 +1,13 @@
 import gsap from 'gsap';
 
-export const CURSOR_MODES = ['none', 'crosshair', 'dot-ring', 'trace', 'bracket', 'glow', 'particles', 'orbit', 'ripple'] as const;
+export const CURSOR_MODES = ['none', 'dot', 'dot-ring', 'crosshair', 'snap', 'trace', 'bracket'] as const;
 export type CursorMode = (typeof CURSOR_MODES)[number];
 
 const STORAGE_KEY = 'haidi-cursor';
-const DEFAULT_MODE: CursorMode = 'trace';
+const DEFAULT_MODE: CursorMode = 'dot-ring';
 const INTERACTIVE =
   'a, button, .btn, [role="button"], input, select, textarea, .product-journey__step, .link-arrow, .ss-card';
-const CHROME = '#haidi-tweaks-launch, .twk-panel, .twk-panel *, #haidi-cursor-root, #haidi-cursor-root *';
+const CHROME = '#haidi-cursor-root, #haidi-cursor-root *';
 const HIT_INTERVAL_MS = 48;
 const HIT_SLOP = 16;
 
@@ -92,15 +92,14 @@ function ensureStyles() {
   html[data-cursor]:not([data-cursor="none"]) *{cursor:none!important}
   html[data-cursor]:not([data-cursor="none"]) ${CHROME}{cursor:default!important}
 }
-#haidi-cursor-root{position:fixed;inset:0;pointer-events:none;z-index:2147483644;overflow:hidden;contain:strict}
+#haidi-cursor-root{position:fixed;inset:0;pointer-events:none;z-index:2147483647;overflow:hidden;contain:strict}
 .hc{position:fixed;top:0;left:0;pointer-events:none;will-change:transform;transform:translate3d(0,0,0)}
 .hc-core{
-  width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;
+  width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;
   background:var(--hc-teal-bright);
   box-shadow:
-    0 0 0 1.5px rgba(255,255,255,.55),
-    0 0 20px var(--hc-glow-strong),
-    0 0 36px color-mix(in srgb,var(--hc-teal-bright) 55%,transparent)
+    0 0 0 1px rgba(255,255,255,.5),
+    0 0 12px color-mix(in srgb,var(--hc-teal-bright) 45%,transparent)
 }
 .hc-ring{
   width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;
@@ -147,25 +146,10 @@ function ensureStyles() {
   backdrop-filter:blur(12px);white-space:nowrap;
   box-shadow:0 0 20px var(--hc-glow-strong),0 8px 24px rgba(0,0,0,.35)
 }
-.hc-aura{
-  width:160px;height:160px;margin:-80px 0 0 -80px;border-radius:50%;
-  background:radial-gradient(circle,color-mix(in srgb,var(--hc-teal-bright) 55%,transparent) 0%,color-mix(in srgb,var(--hc-teal) 25%,transparent) 40%,transparent 72%);
-  filter:blur(10px);opacity:.92
-}
-.hc-aura-core{
-  width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;
-  background:var(--hc-teal-bright);
-  box-shadow:
-    0 0 0 2px rgba(255,255,255,.5),
-    0 0 28px var(--hc-glow-strong),
-    0 0 48px color-mix(in srgb,var(--hc-teal-bright) 60%,transparent)
-}
 .hc-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;contain:strict}
-.hc-orbit-dot{
-  position:fixed;top:0;left:0;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;
-  background:var(--hc-teal-bright);
-  box-shadow:0 0 10px var(--hc-glow-strong);
-  pointer-events:none;will-change:transform
+.hc-ring--snap{
+  margin:0;left:0;top:0;width:38px;height:38px;
+  transition:border-color .3s,background .3s,box-shadow .35s
 }
 `;
   if (!styleEl) {
@@ -253,38 +237,6 @@ function createRoot() {
   invalidateThemeCache();
   applyThemeVars(root, theme());
   return root;
-}
-
-function mountCanvas(root: HTMLElement) {
-  const canvas = document.createElement('canvas');
-  canvas.className = 'hc-canvas';
-  const ctx = canvas.getContext('2d', { alpha: true })!;
-  root.append(canvas);
-  let vw = innerWidth;
-  let vh = innerHeight;
-
-  const resize = () => {
-    vw = innerWidth;
-    vh = innerHeight;
-    const dpr = Math.min(devicePixelRatio || 1, 1.25);
-    canvas.width = Math.ceil(vw * dpr);
-    canvas.height = Math.ceil(vh * dpr);
-    canvas.style.width = `${vw}px`;
-    canvas.style.height = `${vh}px`;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  };
-  resize();
-  window.addEventListener('resize', resize, { passive: true });
-
-  return {
-    ctx,
-    clear: () => ctx.clearRect(0, 0, vw, vh),
-    destroy: () => window.removeEventListener('resize', resize),
-  };
-}
-
-function placeCore(core: HTMLElement, x: number, y: number, scale = 1) {
-  core.style.transform = `translate3d(${x}px,${y}px,0) scale(${scale})`;
 }
 
 /** Coalesce pointer work to one rAF tick; throttle elementFromPoint. */
@@ -493,9 +445,9 @@ function createTrace() {
   const ctx = canvas.getContext('2d', { alpha: true })!;
   const trail: { x: number; y: number; t: number }[] = [];
   const stroke = theme().tealBright;
-  const TRAIL_MS = 340;
-  const MAX_PTS = 24;
-  const MIN_DIST = 5;
+  const TRAIL_MS = 680;
+  const MAX_PTS = 48;
+  const MIN_DIST = 4;
   const IDLE_MS = 450;
 
   let mx = innerWidth / 2;
@@ -521,15 +473,7 @@ function createTrace() {
   resize();
   window.addEventListener('resize', resize, { passive: true });
 
-  const drawPath = (from: number, alpha: number, width: number) => {
-    if (trail.length - from < 1) return;
-    ctx.beginPath();
-    ctx.moveTo(trail[from].x, trail[from].y);
-    for (let i = from + 1; i < trail.length; i++) ctx.lineTo(trail[i].x, trail[i].y);
-    ctx.globalAlpha = alpha;
-    ctx.lineWidth = width;
-    ctx.stroke();
-  };
+  const HEAD_W = 6.5; // head thickness; tail tapers to a thin point
 
   const loop = (now: number) => {
     raf = 0;
@@ -539,15 +483,39 @@ function createTrace() {
     if (idle) return;
 
     ctx.clearRect(0, 0, vw, vh);
-    if (trail.length > 1) {
+    const n = trail.length;
+    if (n > 0) {
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       ctx.strokeStyle = stroke;
-      const n = trail.length;
-      const third = Math.max(1, Math.floor(n / 3));
-      drawPath(0, 0.28, 7);
-      drawPath(third, 0.55, 5);
-      drawPath(third * 2, 0.88, 3.5);
+      // Tapered tail: each segment grows from a thin, faint tail tip to a
+      // thick, bright head, so it reads as a comet streak rather than a ribbon.
+      for (let i = 0; i < n - 1; i++) {
+        const p = (i + 1) / n; // 0 → tail tip, 1 → head
+        const e = p * Math.sqrt(p); // gentle ease so the long tail stays visible
+        ctx.globalAlpha = 0.04 + e * 0.78;
+        ctx.lineWidth = 0.5 + e * HEAD_W;
+        ctx.beginPath();
+        ctx.moveTo(trail[i].x, trail[i].y);
+        ctx.lineTo(trail[i + 1].x, trail[i + 1].y);
+        ctx.stroke();
+      }
+      // Bright head segment connecting the last sample to the live cursor.
+      ctx.globalAlpha = 0.9;
+      ctx.lineWidth = HEAD_W;
+      ctx.beginPath();
+      ctx.moveTo(trail[n - 1].x, trail[n - 1].y);
+      ctx.lineTo(mx, my);
+      ctx.stroke();
+      // Glowing coma at the head.
+      ctx.globalAlpha = 0.75;
+      ctx.fillStyle = stroke;
+      ctx.shadowColor = stroke;
+      ctx.shadowBlur = 13;
+      ctx.beginPath();
+      ctx.arc(mx, my, 2.6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
       ctx.globalAlpha = 1;
     }
 
@@ -586,304 +554,6 @@ function createTrace() {
     destroy: () => {
       if (raf) cancelAnimationFrame(raf);
       window.removeEventListener('resize', resize);
-      ptr.destroy();
-      root.remove();
-    },
-  };
-}
-
-type Particle = {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  life: number;
-  max: number;
-  size: number;
-  hue: 'teal' | 'coral';
-  on: boolean;
-};
-
-/** Teal/coral particle drift — canvas pool */
-function createParticles() {
-  const root = createRoot();
-  const stage = mountCanvas(root);
-  const { ctx } = stage;
-  const core = document.createElement('i');
-  core.className = 'hc hc-core';
-  root.append(core);
-
-  const pool: Particle[] = [];
-  const MAX = 52;
-  const IDLE_MS = 500;
-  const colors = () => theme();
-
-  let mx = innerWidth / 2;
-  let my = innerHeight / 2;
-  let raf = 0;
-  let lastMove = performance.now();
-  let lastSpawn = 0;
-  let coreScale = 1;
-  let lastDown = false;
-  let lastKind: HoverKind = 'default';
-
-  const alloc = (): Particle => {
-    const dead = pool.find((p) => !p.on);
-    if (dead) return dead;
-    if (pool.length >= MAX) return pool[0];
-    const p = { x: 0, y: 0, vx: 0, vy: 0, life: 0, max: 1, size: 2, hue: 'teal' as const, on: false };
-    pool.push(p);
-    return p;
-  };
-
-  const spawn = (x: number, y: number, n: number, kind: HoverKind, burst = false) => {
-    for (let i = 0; i < n; i++) {
-      const p = alloc();
-      const a = Math.random() * Math.PI * 2;
-      const speed = burst ? 1.2 + Math.random() * 2.4 : 0.4 + Math.random() * 1.4;
-      p.x = x + (Math.random() - 0.5) * 6;
-      p.y = y + (Math.random() - 0.5) * 6;
-      p.vx = Math.cos(a) * speed;
-      p.vy = Math.sin(a) * speed - (burst ? 0.6 : 0.2);
-      p.life = 0;
-      p.max = burst ? 520 + Math.random() * 280 : 360 + Math.random() * 320;
-      p.size = burst ? 2.2 + Math.random() * 2.8 : 1.4 + Math.random() * 2.4;
-      p.hue = kind === 'primary' || kind === 'journey' ? 'coral' : 'teal';
-      p.on = true;
-    }
-  };
-
-  const loop = (now: number) => {
-    raf = 0;
-    const t = colors();
-    let alive = 0;
-
-    stage.clear();
-    for (const p of pool) {
-      if (!p.on) continue;
-      p.life += 16;
-      if (p.life >= p.max) {
-        p.on = false;
-        continue;
-      }
-      alive++;
-      p.vx *= 0.98;
-      p.vy = p.vy * 0.98 + 0.03;
-      p.x += p.vx;
-      p.y += p.vy;
-      const a = 1 - p.life / p.max;
-      ctx.globalAlpha = a * 0.9;
-      ctx.fillStyle = p.hue === 'coral' ? t.coral : t.tealBright;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size * (0.5 + a * 0.5), 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-
-    placeCore(core, mx, my, coreScale);
-
-    const idle = now - lastMove > IDLE_MS && alive === 0;
-    if (!idle) raf = requestAnimationFrame(loop);
-  };
-
-  const wake = () => {
-    if (!raf) raf = requestAnimationFrame(loop);
-  };
-
-  const ptr = createPointerLoop((api) => {
-    mx = api.x;
-    my = api.y;
-    const now = performance.now();
-    lastMove = now;
-
-    if (now - lastSpawn > 28) {
-      lastSpawn = now;
-      spawn(mx, my, api.down ? 6 : 2, api.kind, api.down);
-    }
-
-    if (api.down && !lastDown) spawn(mx, my, 14, api.kind, true);
-
-    if (api.down !== lastDown || api.kind !== lastKind) {
-      lastDown = api.down;
-      lastKind = api.kind;
-      coreScale = api.down ? 0.75 : api.kind !== 'default' ? 1.2 : 1;
-    }
-
-    wake();
-  });
-
-  wake();
-
-  return {
-    destroy: () => {
-      if (raf) cancelAnimationFrame(raf);
-      stage.destroy();
-      ptr.destroy();
-      root.remove();
-    },
-  };
-}
-
-/** Satellites orbiting the core */
-function createOrbit() {
-  const root = createRoot();
-  const core = document.createElement('i');
-  core.className = 'hc hc-core';
-  const dots = Array.from({ length: 4 }, () => {
-    const d = document.createElement('i');
-    d.className = 'hc-orbit-dot';
-    return d;
-  });
-  root.append(...dots, core);
-
-  let mx = innerWidth / 2;
-  let my = innerHeight / 2;
-  let angle = 0;
-  let raf = 0;
-  let radius = 18;
-  let coreScale = 1;
-  let lastKind: HoverKind = 'default';
-  let lastDown = false;
-
-  const loop = () => {
-    raf = 0;
-    angle += 0.055;
-    const hover = lastKind !== 'default';
-    radius += ((hover ? 24 : 18) - radius) * 0.12;
-
-    dots.forEach((dot, i) => {
-      const a = angle + (i / dots.length) * Math.PI * 2;
-      const wobble = Math.sin(angle * 2 + i) * 2;
-      const x = mx + Math.cos(a) * (radius + wobble);
-      const y = my + Math.sin(a) * (radius + wobble);
-      const s = hover ? 1.15 : 1;
-      dot.style.transform = `translate3d(${x}px,${y}px,0) scale(${s})`;
-      dot.style.opacity = hover ? '1' : '0.82';
-    });
-
-    placeCore(core, mx, my, coreScale);
-    raf = requestAnimationFrame(loop);
-  };
-
-  const wake = () => {
-    if (!raf) raf = requestAnimationFrame(loop);
-  };
-
-  const ptr = createPointerLoop((api) => {
-    mx = api.x;
-    my = api.y;
-    if (api.kind !== lastKind) lastKind = api.kind;
-    if (api.down !== lastDown) {
-      lastDown = api.down;
-      coreScale = api.down ? 0.75 : api.kind !== 'default' ? 1.2 : 1;
-    }
-    wake();
-  });
-
-  wake();
-
-  return {
-    destroy: () => {
-      if (raf) cancelAnimationFrame(raf);
-      ptr.destroy();
-      root.remove();
-    },
-  };
-}
-
-type Ripple = { x: number; y: number; r: number; life: number; max: number; on: boolean };
-
-/** Expanding rings on movement */
-function createRipple() {
-  const root = createRoot();
-  const stage = mountCanvas(root);
-  const { ctx } = stage;
-  const core = document.createElement('i');
-  core.className = 'hc hc-core';
-  root.append(core);
-
-  const pool: Ripple[] = [];
-  const MAX = 8;
-  let mx = innerWidth / 2;
-  let my = innerHeight / 2;
-  let raf = 0;
-  let lastMove = 0;
-  let lastSpawn = 0;
-  let coreScale = 1;
-  let lastKind: HoverKind = 'default';
-  let lastDown = false;
-  const stroke = () => theme().tealBright;
-
-  const spawn = (x: number, y: number, big = false) => {
-    const r = pool.find((p) => !p.on) ?? (pool.length < MAX ? { x: 0, y: 0, r: 0, life: 0, max: 1, on: false } : pool[0]);
-    if (!pool.includes(r)) pool.push(r);
-    r.x = x;
-    r.y = y;
-    r.r = big ? 6 : 4;
-    r.life = 0;
-    r.max = big ? 680 : 520;
-    r.on = true;
-  };
-
-  const loop = (now: number) => {
-    raf = 0;
-    let alive = 0;
-    stage.clear();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = stroke();
-
-    for (const rip of pool) {
-      if (!rip.on) continue;
-      rip.life += 16;
-      if (rip.life >= rip.max) {
-        rip.on = false;
-        continue;
-      }
-      alive++;
-      const t = rip.life / rip.max;
-      rip.r += 1.1 + t * 0.6;
-      ctx.globalAlpha = (1 - t) * 0.85;
-      ctx.beginPath();
-      ctx.arc(rip.x, rip.y, rip.r, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-    placeCore(core, mx, my, coreScale);
-
-    if (alive > 0 || now - lastMove < 400) raf = requestAnimationFrame(loop);
-  };
-
-  const wake = () => {
-    if (!raf) raf = requestAnimationFrame(loop);
-  };
-
-  const ptr = createPointerLoop((api) => {
-    mx = api.x;
-    my = api.y;
-    const now = performance.now();
-    lastMove = now;
-
-    if (now - lastSpawn > (api.down ? 60 : 110)) {
-      lastSpawn = now;
-      spawn(mx, my, api.down);
-    }
-    if (api.down && !lastDown) spawn(mx, my, true);
-
-    if (api.down !== lastDown || api.kind !== lastKind) {
-      lastDown = api.down;
-      lastKind = api.kind;
-      coreScale = api.down ? 0.7 : api.kind !== 'default' ? 1.2 : 1;
-    }
-
-    wake();
-  });
-
-  wake();
-
-  return {
-    destroy: () => {
-      if (raf) cancelAnimationFrame(raf);
-      stage.destroy();
       ptr.destroy();
       root.remove();
     },
@@ -936,75 +606,112 @@ function createBracket() {
   return { destroy: () => { ptr.destroy(); root.remove(); } };
 }
 
-function createGlow() {
+/** Minimal precise dot — the most restrained option */
+function createDot() {
   const root = createRoot();
-  const aura = document.createElement('i');
-  aura.className = 'hc hc-aura';
   const core = document.createElement('i');
-  core.className = 'hc hc-aura-core';
-  root.append(aura, core);
+  core.className = 'hc hc-core';
+  root.append(core);
 
-  const auraMove = moveLayer(aura);
-  const coreMove = moveLayer(core, true);
+  const move = moveLayer(core, true);
   let lastKind: HoverKind = 'default';
   let lastDown = false;
-  let hero = inHero();
-
-  function inHero() {
-    return !!document.querySelector('[data-hero-root]') && scrollY < innerHeight * 0.9;
-  }
-
-  const applyHeroSize = (h: boolean) => {
-    gsap.to(aura, {
-      width: h ? 200 : 150,
-      height: h ? 200 : 150,
-      margin: h ? '-100px 0 0 -100px' : '-75px 0 0 -75px',
-      duration: 0.6,
-      ease: 'power3.out',
-    });
-  };
-
-  let scrollRaf = 0;
-  const onScroll = () => {
-    if (scrollRaf) return;
-    scrollRaf = requestAnimationFrame(() => {
-      scrollRaf = 0;
-      const next = inHero();
-      if (next !== hero) {
-        hero = next;
-        applyHeroSize(hero);
-      }
-    });
-  };
-  window.addEventListener('scroll', onScroll, { passive: true });
 
   const ptr = createPointerLoop(({ x, y, kind, down }) => {
-    coreMove.x(x);
-    coreMove.y(y);
-    auraMove.x(x);
-    auraMove.y(y);
-
-    if (kind !== lastKind) {
+    move.x(x);
+    move.y(y);
+    if (kind !== lastKind || down !== lastDown) {
       lastKind = kind;
-      gsap.to(aura, {
-        opacity: kind !== 'default' ? 1 : hero ? 0.95 : 0.82,
-        scale: kind === 'primary' ? 1.25 : kind === 'frame' ? 1.15 : 1,
-        duration: 0.5,
-        ease: 'power3.out',
-      });
-    }
-
-    if (down !== lastDown) {
       lastDown = down;
-      gsap.to(core, { scale: down ? 0.7 : kind !== 'default' ? 1.35 : 1.15, duration: 0.2 });
-      if (down) gsap.fromTo(aura, { opacity: 1 }, { opacity: hero ? 0.95 : 0.82, duration: 0.6, ease: 'power2.out' });
+      const scale = down ? 0.7 : kind === 'primary' ? 1.9 : kind !== 'default' ? 1.55 : 1;
+      gsap.to(core, { scale, duration: 0.3, ease: 'power3.out' });
     }
   });
 
+  return { destroy: () => { ptr.destroy(); root.remove(); } };
+}
+
+/** Magnetic ring — wraps the hovered interactive element, rests as a small ring */
+function createSnap() {
+  const root = createRoot();
+  const ring = document.createElement('i');
+  ring.className = 'hc hc-ring hc-ring--snap';
+  const core = document.createElement('i');
+  core.className = 'hc hc-core';
+  root.append(ring, core);
+
+  const coreMove = moveLayer(core, true);
+  const DOT = 38; // resting ring diameter
+  const PAD = 8; // padding around a wrapped element
+  const cur = { x: innerWidth / 2, y: innerHeight / 2, w: DOT, h: DOT, r: DOT / 2 };
+  const tgt = { ...cur };
+  let hoverEl: Element | null = null;
+  let lastKind: HoverKind = 'default';
+  let raf = 0;
+  let lastMove = performance.now();
+
+  const computeTarget = () => {
+    if (!hoverEl) return;
+    const b = hoverEl.getBoundingClientRect();
+    const radius = parseFloat(getComputedStyle(hoverEl).borderTopLeftRadius) || 8;
+    tgt.x = b.left + b.width / 2;
+    tgt.y = b.top + b.height / 2;
+    tgt.w = b.width + PAD * 2;
+    tgt.h = b.height + PAD * 2;
+    tgt.r = Math.min(radius + PAD, Math.min(tgt.w, tgt.h) / 2);
+  };
+
+  const loop = (now: number) => {
+    raf = 0;
+    computeTarget();
+    const k = 0.2;
+    cur.x += (tgt.x - cur.x) * k;
+    cur.y += (tgt.y - cur.y) * k;
+    cur.w += (tgt.w - cur.w) * k;
+    cur.h += (tgt.h - cur.h) * k;
+    cur.r += (tgt.r - cur.r) * k;
+    ring.style.width = `${cur.w}px`;
+    ring.style.height = `${cur.h}px`;
+    ring.style.borderRadius = `${cur.r}px`;
+    ring.style.transform = `translate(-50%,-50%) translate3d(${cur.x}px,${cur.y}px,0)`;
+
+    const settled =
+      Math.abs(tgt.x - cur.x) < 0.5 &&
+      Math.abs(tgt.y - cur.y) < 0.5 &&
+      Math.abs(tgt.w - cur.w) < 0.5 &&
+      Math.abs(tgt.h - cur.h) < 0.5;
+    if (!settled || hoverEl || now - lastMove < 200) raf = requestAnimationFrame(loop);
+  };
+  const wake = () => {
+    if (!raf) raf = requestAnimationFrame(loop);
+  };
+
+  const ptr = createPointerLoop(({ x, y, kind, el, down }) => {
+    coreMove.x(x);
+    coreMove.y(y);
+    lastMove = performance.now();
+    const interactive = kind !== 'default';
+    hoverEl = interactive ? el : null;
+    if (!interactive) {
+      tgt.x = x;
+      tgt.y = y;
+      tgt.w = DOT;
+      tgt.h = DOT;
+      tgt.r = DOT / 2;
+    }
+    if (kind !== lastKind) {
+      lastKind = kind;
+      setHoverRing(ring, kind);
+    }
+    if (down) clickPulse(ring, 0.94);
+    wake();
+  });
+
+  wake();
+
   return {
     destroy: () => {
-      if (scrollRaf) cancelAnimationFrame(scrollRaf);
-      window.removeEventListener('scroll', onScroll);
+      if (raf) cancelAnimationFrame(raf);
       ptr.destroy();
       root.remove();
     },
@@ -1013,22 +720,18 @@ function createGlow() {
 
 function factory(mode: CursorMode) {
   switch (mode) {
+    case 'dot':
+      return createDot();
     case 'dot-ring':
       return createDotRing();
     case 'crosshair':
       return createCrosshair();
+    case 'snap':
+      return createSnap();
     case 'trace':
       return createTrace();
     case 'bracket':
       return createBracket();
-    case 'glow':
-      return createGlow();
-    case 'particles':
-      return createParticles();
-    case 'orbit':
-      return createOrbit();
-    case 'ripple':
-      return createRipple();
     default:
       return null;
   }
@@ -1090,10 +793,12 @@ declare global {
   interface Window {
     haidiApplyCursor?: (mode: string) => void;
     haidiResolveCursor?: () => CursorMode;
+    HAIDI_CURSOR_MODES?: readonly CursorMode[];
   }
 }
 
 if (typeof window !== 'undefined') {
   window.haidiApplyCursor = (mode) => applyCursor(mode);
   window.haidiResolveCursor = resolveCursorMode;
+  window.HAIDI_CURSOR_MODES = CURSOR_MODES;
 }

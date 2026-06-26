@@ -10,6 +10,8 @@ let journeyStepScroll: Record<string, number> = {};
 let observer: Observer | null = null;
 let ready = false;
 let panelIndex = 0;
+let animating = false;
+let scrollTween: gsap.core.Tween | null = null;
 
 function readScrollY() {
   return window.scrollY || document.documentElement.scrollTop || 0;
@@ -42,10 +44,25 @@ export function rebuildHomeSnapPoints() {
   journeyStepScroll = {};
   snapPoints = panelEls.map((el) => anchorY(el));
 
+  // The hero panel is shortened by the sticky header's height and sits directly
+  // below it, so its natural resting position is the very top of the page (0) —
+  // not its offset top. Without this, scrolling back up stops ~70px short and
+  // tucks the hero's top under the header.
+  if (snapPoints.length) snapPoints[0] = 0;
+
   panelEls.forEach((el, i) => {
     const step = el.dataset.journeyStep;
     if (step) journeyStepScroll[step] = snapPoints[i];
   });
+
+  // The footer sits outside the snap container, so the panel-to-panel Observer
+  // would otherwise dead-end on the last panel and never reveal it. Add a final
+  // snap target at the document bottom (currentPanel() returns null here, which
+  // all consumers already tolerate).
+  if (document.querySelector('.site-footer')) {
+    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    if (maxScroll > snapPoints[snapPoints.length - 1] + 1) snapPoints.push(maxScroll);
+  }
 
   panelIndex = currentPanelIndex();
 }
@@ -73,7 +90,21 @@ function goToPanel(index: number, onLand?: () => void) {
   if (clamped === panelIndex) return;
 
   panelIndex = clamped;
-  setScrollY(snapPoints[clamped]);
+  scrollTween?.kill(); // allow journey-step clicks to retarget mid-animation
+  animating = true;
+
+  const proxy = { y: readScrollY() };
+  scrollTween = gsap.to(proxy, {
+    y: snapPoints[clamped],
+    duration: 0.7,
+    ease: 'power2.inOut',
+    onUpdate: () => setScrollY(proxy.y),
+    onComplete: () => {
+      animating = false;
+      scrollTween = null;
+    },
+  });
+
   revealVisibleSections();
   window.dispatchEvent(new CustomEvent('haidi:panel-snap', { detail: { index: clamped } }));
   onLand?.();
@@ -96,11 +127,15 @@ function bindObserver(onLand?: () => void) {
   observer = Observer.create({
     target: window,
     type: 'wheel,touch',
-    tolerance: 1,
+    tolerance: 10,
     wheelSpeed: 1,
     preventDefault: true,
-    onUp: () => goToPanel(panelIndex - 1, onLand),
-    onDown: () => goToPanel(panelIndex + 1, onLand),
+    onUp: () => {
+      if (!animating) goToPanel(panelIndex - 1, onLand);
+    },
+    onDown: () => {
+      if (!animating) goToPanel(panelIndex + 1, onLand);
+    },
   });
 }
 

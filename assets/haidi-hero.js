@@ -6,15 +6,21 @@
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   var TEAL = '71,185,187', CORAL = '240,137,137', INK = '244,246,250';
+  var TAU = Math.PI * 2;
   var W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
   var small = false;
   var state = {};
+  var ptr = { tx: 0, ty: 0, x: 0, y: 0 }, PARALLAX = 14;
 
   function mode() {
     var a = document.documentElement.getAttribute('data-hero-animation');
     if (!a || a === 'none') return null;
     return a;
   }
+
+  // Active 2D mode: a mode this engine actually draws. 3D modes (handled by the
+  // bundled three.js module) have no FRAME entry, so the 2D engine clears + stops.
+  function active() { var m = mode(); return m && FRAME[m] ? m : null; }
 
   function mono() {
     return getComputedStyle(document.body).getPropertyValue('--mono') || 'monospace';
@@ -31,10 +37,11 @@
   function build() {
     var m = mode();
     if (m === 'canvas') buildCanvas();
-    else if (m === 'orbit') buildOrbit();
     else if (m === 'streams') buildStreams();
     else if (m === 'waves') buildWaves();
-    else if (m === 'grid') buildGrid();
+    else if (m === 'network') buildNetwork();
+    else if (m === 'flow') buildFlow();
+    else if (m === 'supply') buildSupply();
   }
 
   /* ── canvas (forecast workspace) ─────────────────────────── */
@@ -170,35 +177,6 @@
     }
   }
 
-  /* ── orbit ───────────────────────────────────────────────── */
-  function buildOrbit() {
-    state.rings = [
-      { r: Math.min(W, H) * 0.18, n: small ? 4 : 5, speed: 0.00035, ph: 0 },
-      { r: Math.min(W, H) * 0.30, n: small ? 5 : 7, speed: -0.00028, ph: 1.2 },
-      { r: Math.min(W, H) * 0.42, n: small ? 3 : 4, speed: 0.00022, ph: 2.4 }
-    ];
-    state.cx = W * 0.5; state.cy = H * 0.52;
-  }
-
-  function frameOrbit(time) {
-    ctx.clearRect(0, 0, W, H);
-    state.rings.forEach(function (ring, ri) {
-      ctx.beginPath(); ctx.arc(state.cx, state.cy, ring.r, 0, 6.2832);
-      ctx.strokeStyle = 'rgba(' + TEAL + ',' + (0.08 + ri * 0.03) + ')'; ctx.lineWidth = 1; ctx.stroke();
-      for (var i = 0; i < ring.n; i++) {
-        var ang = ring.ph + (i / ring.n) * 6.2832 + time * ring.speed;
-        var x = state.cx + Math.cos(ang) * ring.r;
-        var y = state.cy + Math.sin(ang) * ring.r * 0.55;
-        var pulse = reduced ? 1 : 1 + 0.2 * Math.sin(time * 0.003 + i);
-        ctx.beginPath(); ctx.arc(x, y, (ri === 0 ? 2.8 : 2.2) * pulse, 0, 6.2832);
-        ctx.fillStyle = 'rgba(' + (i % 4 === 0 ? CORAL : TEAL) + ',' + (0.55 + ri * 0.12) + ')'; ctx.fill();
-      }
-    });
-    var hubPulse = reduced ? 1 : 1 + 0.15 * Math.sin(time * 0.002);
-    ctx.beginPath(); ctx.arc(state.cx, state.cy, 6 * hubPulse, 0, 6.2832);
-    ctx.fillStyle = 'rgba(' + TEAL + ',0.9)'; ctx.shadowColor = 'rgba(' + TEAL + ',0.5)'; ctx.shadowBlur = 18; ctx.fill(); ctx.shadowBlur = 0;
-  }
-
   /* ── streams (signal flow) ───────────────────────────────── */
   function buildStreams() {
     var n = small ? 5 : 8;
@@ -283,64 +261,216 @@
     }
   }
 
-  /* ── grid (planning lattice pulse) ───────────────────────── */
-  function buildGrid() {
-    state.grid = [];
-    var cols = small ? 14 : 22, rows = small ? 10 : 14;
-    var gx = W / (cols - 1), gy = H / (rows - 1);
-    for (var r = 0; r < rows; r++) {
-      for (var c = 0; c < cols; c++) {
-        state.grid.push({
-          x: c * gx, y: r * gy,
-          ph: Math.hypot(c - cols / 2, r - rows / 2) * 0.55 + Math.random() * 0.4
-        });
-      }
+  /* ── network (connected data nodes) ──────────────────────── */
+  function buildNetwork() {
+    var n = small ? 16 : 30;
+    state.nodes = [];
+    for (var i = 0; i < n; i++) {
+      state.nodes.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.28, vy: (Math.random() - 0.5) * 0.28,
+        r: 1.4 + Math.random() * 1.5, ph: Math.random() * TAU, hub: i % 9 === 0
+      });
     }
   }
 
-  function frameGrid(time) {
-    ctx.clearRect(0, 0, W, H);
-    var cx = W * 0.5, cy = H * 0.52;
-    state.grid.forEach(function (pt) {
-      var pulse = reduced ? 0.25 : 0.25 + 0.35 * Math.sin(time * 0.0025 + pt.ph);
-      var dist = Math.hypot(pt.x - cx, pt.y - cy);
-      var fade = Math.max(0, 1 - dist / (Math.min(W, H) * 0.55));
-      ctx.beginPath(); ctx.arc(pt.x, pt.y, 1.2 + pulse * 1.4, 0, 6.2832);
-      ctx.fillStyle = 'rgba(' + TEAL + ',' + (pulse * fade * 0.55) + ')'; ctx.fill();
+  function tickNetwork() {
+    state.nodes.forEach(function (p) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x += W; if (p.x > W) p.x -= W;
+      if (p.y < 0) p.y += H; if (p.y > H) p.y -= H;
     });
-    ctx.beginPath(); ctx.arc(cx, cy, 4, 0, 6.2832);
-    ctx.fillStyle = 'rgba(' + TEAL + ',0.8)'; ctx.shadowColor = 'rgba(' + TEAL + ',0.45)'; ctx.shadowBlur = 12; ctx.fill(); ctx.shadowBlur = 0;
+  }
+
+  function frameNetwork(time) {
+    var nodes = state.nodes, D = small ? 120 : 165;
+    ctx.clearRect(0, 0, W, H);
+    ctx.lineWidth = 1;
+    for (var i = 0; i < nodes.length; i++) {
+      for (var j = i + 1; j < nodes.length; j++) {
+        var dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > D) continue;
+        var a = (1 - dist / D), coral = nodes[i].hub || nodes[j].hub;
+        ctx.strokeStyle = 'rgba(' + (coral ? CORAL : TEAL) + ',' + (a * 0.2) + ')';
+        ctx.beginPath(); ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y); ctx.stroke();
+      }
+    }
+    nodes.forEach(function (p) {
+      var pulse = reduced ? 1 : 1 + 0.35 * Math.sin(time * 0.002 + p.ph);
+      if (p.hub) {
+        ctx.beginPath(); ctx.arc(p.x, p.y, (p.r + 1.4) * pulse, 0, TAU);
+        ctx.fillStyle = 'rgba(' + CORAL + ',0.85)';
+        ctx.shadowColor = 'rgba(' + CORAL + ',0.5)'; ctx.shadowBlur = 12; ctx.fill(); ctx.shadowBlur = 0;
+      } else {
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * pulse, 0, TAU);
+        ctx.fillStyle = 'rgba(' + INK + ',0.5)'; ctx.fill();
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * pulse + 3.5, 0, TAU);
+        ctx.strokeStyle = 'rgba(' + TEAL + ',0.18)'; ctx.stroke();
+      }
+    });
+  }
+
+  /* ── flow (signal flow field) ────────────────────────────── */
+  function flowField(x, y, time) {
+    return (Math.sin(x * 0.004 + time * 0.0003) +
+            Math.cos(y * 0.005 - time * 0.0004) +
+            Math.sin((x + y) * 0.0028 + time * 0.0002)) * 1.5;
+  }
+  function buildFlow() {
+    var n = small ? 70 : 130, sp = small ? 0.7 : 0.9;
+    state.parts = [];
+    for (var i = 0; i < n; i++) {
+      var p = { x: Math.random() * W, y: Math.random() * H, trail: [], life: 40 + Math.random() * 140, col: i % 7 === 0 ? CORAL : TEAL };
+      // Seed a static streak so the reduced-motion still frame (no tick) isn't blank.
+      if (reduced) {
+        var x = p.x, y = p.y;
+        for (var k = 0; k < 11; k++) {
+          var a = flowField(x, y, 1200);
+          x += Math.cos(a) * sp * 2; y += Math.sin(a) * sp * 2;
+          p.trail.push({ x: x, y: y });
+        }
+      }
+      state.parts.push(p);
+    }
+  }
+  function tickFlow(time) {
+    var sp = small ? 0.7 : 0.9;
+    state.parts.forEach(function (p) {
+      var a = flowField(p.x, p.y, time);
+      p.x += Math.cos(a) * sp; p.y += Math.sin(a) * sp; p.life--;
+      p.trail.push({ x: p.x, y: p.y });
+      if (p.trail.length > 12) p.trail.shift();
+      if (p.life <= 0 || p.x < -10 || p.x > W + 10 || p.y < -10 || p.y > H + 10) {
+        p.x = Math.random() * W; p.y = Math.random() * H; p.trail = []; p.life = 40 + Math.random() * 140;
+      }
+    });
+  }
+  function frameFlow() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.lineCap = 'round';
+    state.parts.forEach(function (p) {
+      var tr = p.trail;
+      if (tr.length < 2) {
+        if (tr.length === 1) { ctx.beginPath(); ctx.arc(tr[0].x, tr[0].y, 1.3, 0, TAU); ctx.fillStyle = 'rgba(' + p.col + ',0.6)'; ctx.fill(); }
+        return;
+      }
+      for (var i = 1; i < tr.length; i++) {
+        var a = (i / tr.length) * 0.5;
+        ctx.strokeStyle = 'rgba(' + p.col + ',' + a + ')'; ctx.lineWidth = 1.2 * (i / tr.length) + 0.3;
+        ctx.beginPath(); ctx.moveTo(tr[i - 1].x, tr[i - 1].y); ctx.lineTo(tr[i].x, tr[i].y); ctx.stroke();
+      }
+      var h = tr[tr.length - 1];
+      ctx.beginPath(); ctx.arc(h.x, h.y, 1.5, 0, TAU); ctx.fillStyle = 'rgba(' + p.col + ',0.8)'; ctx.fill();
+    });
+  }
+
+  /* ── supply (end-to-end chain: sources → hubs → demand) ──── */
+  function buildSupply() {
+    var colX = [W * 0.16, W * 0.5, W * 0.84];
+    function col(cx, count, type) {
+      var arr = [];
+      for (var i = 0; i < count; i++) {
+        arr.push({ x: cx, y: H * (0.22 + 0.56 * (count === 1 ? 0.5 : i / (count - 1))), type: type, ph: Math.random() * TAU });
+      }
+      return arr;
+    }
+    state.sources = col(colX[0], small ? 3 : 5, 'src');
+    state.hubs = col(colX[1], small ? 2 : 3, 'hub');
+    state.demand = col(colX[2], small ? 3 : 5, 'dem');
+    state.routes = [];
+    var ri = 0;
+    function mkRoute(a, b, coral) {
+      var ships = [], k = 1 + (Math.random() < 0.4 ? 1 : 0);
+      for (var j = 0; j < k; j++) ships.push({ t: Math.random(), spd: 0.0016 + Math.random() * 0.0018 });
+      return { a: a, b: b, coral: coral, ships: ships };
+    }
+    state.sources.forEach(function (a, i) { state.routes.push(mkRoute(a, state.hubs[i % state.hubs.length], ri++ % 7 === 3)); });
+    state.demand.forEach(function (b, i) { state.routes.push(mkRoute(state.hubs[i % state.hubs.length], b, ri++ % 7 === 3)); });
+  }
+  function tickSupply() {
+    state.routes.forEach(function (r) {
+      r.ships.forEach(function (s) { s.t += s.spd; if (s.t > 1) s.t = 0; });
+    });
+  }
+  function frameSupply(time) {
+    ctx.clearRect(0, 0, W, H);
+    ctx.lineWidth = 1;
+    state.routes.forEach(function (r) {
+      curve(r.a.x, r.a.y, r.b.x, r.b.y);
+      ctx.strokeStyle = 'rgba(' + (r.coral ? CORAL : TEAL) + ',' + (r.coral ? 0.28 : 0.18) + ')'; ctx.stroke();
+    });
+    state.routes.forEach(function (r) {
+      r.ships.forEach(function (sh) {
+        var p = bezPt(r.a.x, r.a.y, r.b.x, r.b.y, sh.t), col = r.coral ? CORAL : TEAL;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 1.9, 0, TAU);
+        ctx.fillStyle = 'rgba(' + col + ',' + (0.5 + 0.4 * Math.sin(sh.t * Math.PI)) + ')'; ctx.fill();
+      });
+    });
+    function drawNode(p) {
+      var pulse = reduced ? 1 : 1 + 0.3 * Math.sin(time * 0.0022 + p.ph);
+      if (p.type === 'hub') {
+        var r = 5.5 * pulse;
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(p.x - r, p.y - r, r * 2, r * 2, 2); else ctx.rect(p.x - r, p.y - r, r * 2, r * 2);
+        ctx.fillStyle = 'rgba(' + TEAL + ',0.9)'; ctx.shadowColor = 'rgba(' + TEAL + ',0.6)'; ctx.shadowBlur = 12; ctx.fill(); ctx.shadowBlur = 0;
+      } else {
+        ctx.beginPath(); ctx.arc(p.x, p.y, 3.2 * pulse, 0, TAU);
+        ctx.fillStyle = 'rgba(' + (p.type === 'dem' ? INK : TEAL) + ',0.8)'; ctx.fill();
+        ctx.beginPath(); ctx.arc(p.x, p.y, 3.2 * pulse + 3.5, 0, TAU);
+        ctx.strokeStyle = 'rgba(' + TEAL + ',0.2)'; ctx.stroke();
+      }
+    }
+    state.sources.forEach(drawNode); state.hubs.forEach(drawNode); state.demand.forEach(drawNode);
+    if (!small) {
+      ctx.font = '600 9px ' + mono();
+      ctx.fillStyle = 'rgba(' + INK + ',0.35)'; ctx.textAlign = 'center';
+      ctx.fillText('SOURCES', state.sources[0].x, H * 0.12);
+      ctx.fillText('HUBS', state.hubs[0].x, H * 0.12);
+      ctx.fillText('DEMAND', state.demand[0].x, H * 0.12);
+    }
   }
 
   var TICK = {
     canvas: tickCanvas,
-    streams: tickStreams
+    streams: tickStreams,
+    network: tickNetwork,
+    flow: tickFlow,
+    supply: tickSupply
   };
   var FRAME = {
     canvas: frameCanvas,
-    orbit: frameOrbit,
     streams: frameStreams,
     waves: frameWaves,
-    grid: frameGrid
+    network: frameNetwork,
+    flow: frameFlow,
+    supply: frameSupply
   };
 
   function draw(time) {
     var m = mode();
     if (!m || !FRAME[m]) return;
     if (!reduced && TICK[m]) TICK[m](time);
+    ctx.save();
+    ctx.translate(ptr.x * PARALLAX, ptr.y * PARALLAX);
     FRAME[m](time || 0);
+    ctx.restore();
   }
 
   var raf, running = false, visible = true;
 
   function loop(time) {
     if (!running) return;
+    // Pointer parallax (lerp toward target); only runs while the loop runs, so
+    // reduced-motion (single static draw) gets no parallax.
+    ptr.x += (ptr.tx - ptr.x) * 0.06;
+    ptr.y += (ptr.ty - ptr.y) * 0.06;
     draw(time);
     raf = requestAnimationFrame(loop);
   }
 
   function startLoop() {
-    if (reduced || running || !visible || !mode()) return;
+    if (reduced || running || !visible || !active()) return;
     running = true;
     raf = requestAnimationFrame(loop);
   }
@@ -352,7 +482,7 @@
 
   function refresh() {
     resize();
-    if (!mode()) {
+    if (!active()) {
       stopLoop();
       ctx.clearRect(0, 0, W, H);
       return;
@@ -362,9 +492,16 @@
   }
 
   resize();
-  if (mode()) {
+  if (active()) {
     if (reduced) draw(1200);
     else startLoop();
+  }
+
+  if (!reduced) {
+    window.addEventListener('mousemove', function (e) {
+      ptr.tx = (e.clientX / window.innerWidth) * 2 - 1;
+      ptr.ty = (e.clientY / window.innerHeight) * 2 - 1;
+    }, { passive: true });
   }
 
   window.haidiHeroSetActive = function (anim) {

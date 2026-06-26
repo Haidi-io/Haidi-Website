@@ -1,6 +1,7 @@
 ---
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Preloader from '../components/Preloader.astro';
 import { site } from '../config/site';
 import type { NavKey } from '../config/site';
 
@@ -36,7 +37,7 @@ const {
 ---
 
 <!doctype html>
-<html lang="en" data-font="sans" data-canvas="graphite">
+<html lang="en" data-font="inter" data-canvas="graphite">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -55,10 +56,48 @@ const {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
     />
     <script is:inline>window.__HAIDI_GSAP__ = true;</script>
-    <script is:inline src="/assets/haidi-theme.js"></script>
+    {/* Theme is applied inline (before paint) to avoid a flash of the wrong theme. */}
+    <script is:inline>
+      (function () {
+        var KEY = 'haidi-theme';
+        function resolve() {
+          try {
+            var saved = localStorage.getItem(KEY);
+            if (saved === 'light' || saved === 'dark') return saved;
+          } catch (e) {}
+          return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        function label(theme) {
+          return 'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' theme';
+        }
+        function apply(theme) {
+          document.documentElement.setAttribute('data-theme', theme);
+          try { localStorage.setItem(KEY, theme); } catch (e) {}
+          document.querySelectorAll('.theme-toggle').forEach(function (btn) {
+            btn.setAttribute('aria-label', label(theme));
+            btn.setAttribute('title', label(theme));
+          });
+        }
+        apply(resolve());
+        function initToggle() {
+          document.querySelectorAll('.theme-toggle').forEach(function (btn) {
+            if (btn.__themeBound) return;
+            btn.__themeBound = true;
+            btn.addEventListener('click', function () {
+              var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+              apply(cur === 'dark' ? 'light' : 'dark');
+            });
+          });
+        }
+        window.haidiSetTheme = apply;
+        window.haidiInitThemeToggle = initToggle;
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initToggle);
+        else initToggle();
+      })();
+    </script>
     {heroVariants && <script is:inline src="/assets/hero-variants.js"></script>}
     <link rel="stylesheet" href="/assets/haidi.css" />
     <script is:inline define:vars={{ siteConfig: site }}>
@@ -66,17 +105,74 @@ const {
     </script>
   </head>
   <body data-nav={nav} data-screen-label={screenLabel}>
+    <Preloader />
     <Header active={nav} />
     <slot />
     <Footer />
     <script>
-      import { initHaidiGsap } from '../lib/haidi-gsap';
+      // The custom cursor (gsap core only) runs on every page.
       import { initHaidiCursor } from '../lib/haidi-cursor';
-      initHaidiGsap();
       initHaidiCursor();
+
+      // The scroll-animation engine (gsap + ScrollTrigger) is loaded only when a
+      // page actually has animated elements — legal pages skip it entirely.
+      if (document.querySelector('.reveal, [data-hero-root], [data-scroll-panel]')) {
+        import('../lib/haidi-gsap').then(({ initHaidiGsap }) => initHaidiGsap());
+      }
+
+      // Hero 3D (three.js) — loaded only when a WebGL hero mode is active, so
+      // default visitors on the 2D 'canvas' mode never download three.js.
+      const HERO_3D = ['globe', 'terrain', 'field3d', 'network3d'];
+      function maybeLoadHero3D() {
+        const a = document.documentElement.getAttribute('data-hero-animation');
+        if (a && HERO_3D.includes(a)) {
+          import('../lib/haidi-hero-3d').then(({ initHaidiHero3D }) => initHaidiHero3D());
+          return true;
+        }
+        return false;
+      }
+      if (document.querySelector('.hero-canvas-host')) {
+        if (!maybeLoadHero3D()) {
+          window.addEventListener('haidi:hero-variant', function onVariant() {
+            if (maybeLoadHero3D()) window.removeEventListener('haidi:hero-variant', onVariant);
+          });
+        }
+      }
     </script>
     {scripts.map((src) => (
       <script is:inline src={`/assets/${src}`}></script>
     ))}
+    {/* Mock UI (~18KB) is below the fold — keep it out of the initial render path and
+        hydrate it when a mock container nears the viewport, with an idle fallback so it
+        always loads even inside the home page's custom scroll-snap section. */}
+    <script is:inline>
+      (function () {
+        var mocks = document.querySelectorAll('[data-mock], [data-frag]');
+        if (!mocks.length) return;
+        var loaded = false;
+        var io;
+        function load() {
+          if (loaded) return;
+          loaded = true;
+          if (io) io.disconnect();
+          var s = document.createElement('script');
+          s.src = '/assets/haidi-mocks.js';
+          s.dataset.haidiMocks = '';
+          document.body.appendChild(s);
+        }
+        if ('IntersectionObserver' in window) {
+          io = new IntersectionObserver(function (entries) {
+            for (var i = 0; i < entries.length; i++) {
+              if (entries[i].isIntersecting) { load(); break; }
+            }
+          }, { rootMargin: '300px' });
+          mocks.forEach(function (el) { io.observe(el); });
+        } else {
+          load();
+        }
+        var idle = window.requestIdleCallback || function (cb) { return setTimeout(cb, 1500); };
+        idle(load);
+      })();
+    </script>
   </body>
 </html>

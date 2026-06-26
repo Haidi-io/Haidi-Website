@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/home.css';
+import HomeIndustries from '../components/home/HomeIndustries.astro';
+import HomeStories from '../components/home/HomeStories.astro';
+---
+
+<BaseLayout
+  title="Haidi — Use Cases"
+  description="Where supply chain planning gets hard — and how Haidi helps. Industries we support and selected client work across pharma, manufacturing, energy, and FMCG."
+  canonical="https://haidi.io/use-cases"
+  ogTitle="Haidi — Use Cases"
+  ogDescription="Industries we support and selected client work across supply chain planning."
+  ogUrl="https://haidi.io/use-cases"
+  nav="usecases"
+  screenLabel="Use Cases"
+  scripts={['haidi-site.js', 'haidi-tweaks.js']}
+>
+  <div data-home-scroll>
+    <HomeIndustries />
+    <HomeStories />
+  </div>
+</BaseLayout>

@@ -1,11 +1,11 @@
 /* Hero variants — content layout + background animation. ?heroContent= · ?heroAnim= */
 (function () {
-  var CONTENT = ['workspace', 'split', 'minimal', 'editorial'];
-  var ANIMATION = ['canvas', 'orbit', 'streams', 'waves', 'grid', 'none'];
+  var CONTENT = ['workspace', 'minimal', 'tagline'];
+  var ANIMATION = ['canvas', 'streams', 'waves', 'network', 'flow', 'supply', 'globe', 'terrain', 'field3d', 'network3d', 'none'];
   var KEY_CONTENT = 'haidi-hero-content';
   var KEY_ANIM = 'haidi-hero-animation';
   var LEGACY_KEY = 'haidi-hero';
-  var DEFAULT_CONTENT = 'workspace';
+  var DEFAULT_CONTENT = 'tagline';
   var DEFAULT_ANIM = 'canvas';
 
   function resolveContent() {
@@ -66,10 +66,6 @@
     if (!opts.skipUrl) syncUrl(content, animation);
 
     if (window.haidiHeroSetActive) window.haidiHeroSetActive(animation);
-    if (window.haidiHydrateMocks) {
-      var split = document.querySelector('.hero-v--split');
-      if (split) window.haidiHydrateMocks(split);
-    }
     window.dispatchEvent(new CustomEvent('haidi:hero-variant', {
       detail: { content: content, animation: animation }
     }));

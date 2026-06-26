@@ -2,11 +2,12 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="Haidi — About" description="Haidi is built by IBP Ready — a Switzerland-based supply chain consulting team with deep planning expertise." canonical="https://haidi.io/about" ogTitle="Haidi — About" ogDescription="Built by a consulting team that lives in supply chain planning." ogUrl="https://haidi.io/about" nav="about" screenLabel="About" scripts={['haidi-mocks.js', 'haidi-site.js', 'haidi-tweaks.js']}>
+<BaseLayout title="Haidi — About" description="Haidi is built by IBP Ready — a Switzerland-based supply chain consulting team with deep planning expertise." canonical="https://haidi.io/about" ogTitle="Haidi — About" ogDescription="Built by a consulting team that lives in supply chain planning." ogUrl="https://haidi.io/about" nav="about" screenLabel="About" scripts={['haidi-site.js', 'haidi-tweaks.js']}>
   <style is:global>
 /* ── HERO ─────────────────────────────────────────────── */
   .ab-hero { padding: 70px 0 84px; }
-  .ab-hero .wrap-wide { display: grid; grid-template-columns: 1fr 1.08fr; gap: 60px; align-items: center; }
+  .ab-hero .wrap-wide { display: block; }
+  .ab-hero-text { max-width: 760px; }
   .ab-hero h1 { font-size: clamp(36px, 4.8vw, 66px); line-height: 1.02; margin: 24px 0 24px; }
   .ab-hero p { font-size: 17px; color: var(--text-body); margin-bottom: 16px; max-width: 540px; text-wrap: pretty; }
   .ab-hero .hero-cta { display: flex; gap: 14px; margin-top: 32px; flex-wrap: wrap; }
@@ -117,15 +118,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <h1 class="display">Built for planners who need more than <span class="accent">another forecast.</span></h1>
         <p>Haidi is a supply chain planning platform built to help teams create more understandable forecasts, review planning signals, test assumptions, and make decisions with greater confidence.</p>
         <p>It combines practical planning workflows with advanced forecasting capabilities — without requiring every customer to build an internal data science function.</p>
-        <div class="hero-cta">
-          <a class="btn btn-primary btn-lg" href="/contact">Prepare to launch</a>
-          <a class="btn btn-secondary btn-lg" href="/product-overview">Explore the product
-            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </div>
-      </div>
-      <div class="glow-wrap reveal" data-delay="1">
-        <div class="frame"><div class="frame-bar"><div class="frame-dots"><i></i><i></i><i></i></div><div class="frame-url">app.haidi.io / demand-review</div></div><div class="frame-body" data-mock="review" data-loop></div></div>
       </div>
     </div>
   </section>
@@ -328,20 +320,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <div class="tc-vis"><svg viewBox="0 0 60 60" fill="none" width="56" height="56"><path d="M30 10l4 8 9 1-6.5 6 1.5 9-8-4.5-8 4.5 1.5-9-6.5-6 9-1z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div>
           <div class="tc-body"><h4>Product thinkers</h4><p>Turning planning realities into workflows that hold up in practice.</p></div>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ FINAL CTA ============ -->
-  <section class="final" data-screen-label="Final CTA">
-    <div class="final-glow"></div>
-    <div class="wrap reveal">
-      <span class="eyebrow eyebrow--wrap" style="justify-content:center">Prepare to launch</span>
-      <h2 class="display" style="margin-top:24px">Planning is too important to leave unclear.</h2>
-      <p>Tell us about your planning process, current tools, data readiness, and biggest challenge. We will recommend the right next step — whether that is a tailored demo or a relevant case discussion.</p>
-      <div class="hero-cta">
-        <a class="btn btn-primary btn-lg" href="/contact">Prepare to launch</a>
-        <a class="btn btn-secondary btn-lg" href="/contact">Talk to a planning expert</a>
       </div>
     </div>
   </section>`} />

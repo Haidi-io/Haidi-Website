@@ -7,6 +7,7 @@ export const site = {
   paths: {
     home: '/home',
     product: '/product-overview',
+    usecases: '/use-cases',
     about: '/about',
     contact: '/contact',
     privacy: '/privacy',
@@ -15,4 +16,4 @@ export const site = {
   },
 } as const;
 
-export type NavKey = 'product' | 'about' | '';
+export type NavKey = 'product' | 'usecases' | 'about' | '';

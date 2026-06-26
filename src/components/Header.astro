@@ -7,10 +7,11 @@ interface Props {
 }
 
 const { active = '' } = Astro.props;
-const { paths, appUrl } = site;
+const { paths } = site;
 
 const nav = [
   { href: paths.product, label: 'Product', key: 'product' as const },
+  { href: paths.usecases, label: 'Use Cases', key: 'usecases' as const },
   { href: paths.about, label: 'About', key: 'about' as const },
 ];
 ---
@@ -20,7 +21,7 @@ const nav = [
   <div class="wrap-wide">
     <nav class="nav">
       <a class="logo" href={paths.home} aria-label="Haidi home">
-        <img src="/assets/haidi.png" alt="Haidi" width="120" height="27" loading="lazy" />
+        <img src="/assets/haidi.png" alt="Haidi" width="120" height="27" loading="eager" fetchpriority="high" />
       </a>
       <div class="nav-links">
         {
@@ -54,7 +55,6 @@ const nav = [
               stroke-linecap="round"></path>
           </svg>
         </button>
-        <a class="btn btn-ghost btn-sm" href={appUrl} rel="noopener">Sign in</a>
         <a class="btn btn-primary btn-sm" href={paths.contact}>Prepare to launch</a>
         <button
           class="nav-burger"
@@ -98,6 +98,5 @@ const nav = [
         stroke-linecap="round"></path>
     </svg>
   </button>
-  <a href={appUrl} rel="noopener">Sign in</a>
   <a class="btn btn-primary" href={paths.contact} style="margin-top:12px">Prepare to launch</a>
 </div>
