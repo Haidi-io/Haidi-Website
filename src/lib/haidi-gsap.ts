@@ -3,7 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { initHomeProductBridge } from './home-product-bridge';
 
 const STAGGER_PARENTS =
-  '.value, .stories, .flow, .ind-grid, .previews, .next-steps, .team-grid, .tools-grid, .principles, .cw-flow';
+  '.value, .stories, .flow, .ind-grid, .previews, .next-steps, .team-grid, .tools-grid, .principles';
 
 export function initHaidiGsap() {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -18,6 +18,7 @@ export function initHaidiGsap() {
   initHero();
   initScrollReveals();
   initStaggerGroups();
+  resetConnectedWorkflow();
   initParallax();
   initAccentLines();
   initLaunchGlow();
@@ -69,7 +70,9 @@ function initHero() {
 
 function initScrollReveals() {
   gsap.utils.toArray<HTMLElement>('.reveal').forEach((el) => {
-    if (el.closest(STAGGER_PARENTS)) return;
+    if (el.closest('[data-home-scroll]')) return;
+    const staggerParent = el.closest(STAGGER_PARENTS);
+    if (staggerParent && staggerParent !== el) return;
 
     el.classList.remove('in');
     const delay = parseFloat(el.dataset.delay || '0') * 0.09;
@@ -104,13 +107,16 @@ function initStaggerGroups() {
     { parent: '.team-grid', child: '.tcard' },
     { parent: '.tools-grid', child: '[data-frag]' },
     { parent: '.principles', child: '.principle' },
-    { parent: '.cw-flow', child: '.cw-node' },
   ];
 
   groups.forEach(({ parent, child }) => {
     document.querySelectorAll(parent).forEach((container) => {
+      if (container.closest('[data-home-scroll]')) return;
       const items = gsap.utils.toArray<HTMLElement>(container.querySelectorAll(child));
       if (!items.length) return;
+
+      container.classList.remove('reveal', 'in');
+      gsap.set(container, { opacity: 1, y: 0 });
 
       items.forEach((item) => item.classList.remove('reveal', 'in'));
       gsap.set(items, { opacity: 0, y: 32 });
@@ -133,8 +139,19 @@ function initStaggerGroups() {
   });
 }
 
+function resetConnectedWorkflow() {
+  document.querySelectorAll('.cw-flow').forEach((flow) => {
+    flow.classList.remove('reveal', 'in');
+    gsap.set(flow, { opacity: 1, y: 0, clearProps: 'opacity,transform' });
+    flow.querySelectorAll('.cw-node').forEach((node) => {
+      gsap.set(node, { opacity: 1, y: 0, clearProps: 'opacity,transform' });
+    });
+  });
+}
+
 function initParallax() {
   gsap.utils.toArray<HTMLElement>('.section-head').forEach((head) => {
+    if (head.closest('[data-home-scroll]')) return;
     gsap.fromTo(
       head,
       { y: 30 },
@@ -152,7 +169,7 @@ function initParallax() {
   });
 
   gsap.utils.toArray<HTMLElement>('.frame, .glow-wrap').forEach((frame) => {
-    if (frame.closest('.product-journey__mock')) return;
+    if (frame.closest('.product-journey__mock') || frame.closest('[data-home-scroll]')) return;
     gsap.fromTo(
       frame,
       { y: 40 },
@@ -172,6 +189,7 @@ function initParallax() {
 
 function initAccentLines() {
   gsap.utils.toArray<HTMLElement>('.sec-rule').forEach((rule) => {
+    if (rule.closest('[data-home-scroll]')) return;
     gsap.set(rule, { transformOrigin: 'left center' });
     gsap.fromTo(
       rule,

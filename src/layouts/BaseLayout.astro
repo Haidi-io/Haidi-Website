@@ -71,7 +71,9 @@ const {
     <Footer />
     <script>
       import { initHaidiGsap } from '../lib/haidi-gsap';
+      import { initHaidiCursor } from '../lib/haidi-cursor';
       initHaidiGsap();
+      initHaidiCursor();
     </script>
     {scripts.map((src) => (
       <script is:inline src={`/assets/${src}`}></script>

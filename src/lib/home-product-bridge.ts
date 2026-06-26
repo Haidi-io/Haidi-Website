@@ -1,8 +1,7 @@
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
-  JOURNEY_STEPS,
   currentPanel,
+  getPanelIndex,
   initHomeSectionSnap,
   scrollToJourneyStep,
 } from './home-section-snap';
@@ -13,15 +12,12 @@ export function initHomeProductBridge() {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduced) return;
 
-  gsap.registerPlugin(ScrollTrigger);
-
   const canvasHost = document.querySelector('.hero-canvas-host') as HTMLElement | null;
-  const hero = document.querySelector('.hero');
   const stepEls = gsap.utils.toArray<HTMLElement>('.product-journey__step');
   const panels = gsap.utils.toArray<HTMLElement>('.product-journey__mock-panel');
   const previews = gsap.utils.toArray<HTMLElement>('.preview[data-journey-id]');
 
-  let activeStep = JOURNEY_STEPS[0];
+  let activeStep: string | null = null;
 
   function setStep(id: string | null, force = false) {
     if (!force && id === activeStep) return;
@@ -42,8 +38,11 @@ export function initHomeProductBridge() {
   function syncFromPanel() {
     const panel = currentPanel();
     const step = panel?.dataset.journeyStep ?? null;
-    if (step) setStep(step, true);
-    else setStep(null, true);
+    setStep(step, true);
+
+    if (canvasHost) {
+      gsap.set(canvasHost, { opacity: getPanelIndex() === 0 ? 1 : Math.max(0.12, 1 - getPanelIndex() * 0.22) });
+    }
   }
 
   stepEls.forEach((el) => {
@@ -53,18 +52,6 @@ export function initHomeProductBridge() {
       scrollToJourneyStep(id, syncFromPanel);
     });
   });
-
-  if (hero && canvasHost) {
-    ScrollTrigger.create({
-      trigger: hero,
-      start: 'top top',
-      end: 'bottom top',
-      scrub: 0.5,
-      onUpdate: (self) => {
-        gsap.set(canvasHost, { opacity: 1 - self.progress * 0.88 });
-      },
-    });
-  }
 
   initHomeSectionSnap(syncFromPanel);
   syncFromPanel();

@@ -54,10 +54,12 @@
 
   var heroContentDefault = (window.haidiResolveHeroContent && window.haidiResolveHeroContent()) || 'workspace';
   var heroAnimDefault = (window.haidiResolveHeroAnimation && window.haidiResolveHeroAnimation()) || 'canvas';
+  var cursorDefault = (window.haidiResolveCursor && window.haidiResolveCursor()) || 'trace';
   var defaults = {
     displayType: 'sans',
     canvas: 'graphite',
     accent: '#47B9BB',
+    cursor: cursorDefault,
     heroContent: heroContentDefault,
     heroAnimation: heroAnimDefault
   };
@@ -92,6 +94,7 @@
         "  d.style.setProperty('--teal', t.accent);" +
         "  d.style.setProperty('--teal-bright', t.accent === '#47B9BB' ? '#5FD0D2' : t.accent);" +
         '  if (window.haidiApplyHero) window.haidiApplyHero({ content: t.heroContent, animation: t.heroAnimation });' +
+        '  if (window.haidiApplyCursor) window.haidiApplyCursor(t.cursor);' +
         '}' +
         'function TweaksApp() {' +
         '  var _use = useTweaks(' + JSON.stringify(defaults) + ');' +
@@ -100,13 +103,25 @@
         '  function copyHeroLink() {' +
         '    try { navigator.clipboard.writeText(location.href); } catch (e) {}' +
         '  }' +
-        '  return React.createElement(TweaksPanel, { title: "Dev tweaks", defaultOpen: true },' +
+        '  return React.createElement(TweaksPanel, { title: "Dev tweaks", defaultOpen: false },' +
         (hasHero
           ? '    React.createElement(TweakSection, { label: "Hero" }),' +
             '    React.createElement(TweakRadio, { label: "Content", value: t.heroContent, options: ["workspace","split","minimal","editorial"], onChange: function (v) { setTweak("heroContent", v); } }),' +
             '    React.createElement(TweakSelect, { label: "Animation", value: t.heroAnimation, options: ["canvas","orbit","streams","waves","grid","none"], onChange: function (v) { setTweak("heroAnimation", v); } }),' +
             '    React.createElement(TweakButton, { label: "Copy share link", secondary: true, onClick: copyHeroLink }),'
           : '') +
+        '    React.createElement(TweakSection, { label: "Cursor" }),' +
+        '    React.createElement(TweakSelect, { label: "Style", value: t.cursor, options: [' +
+        '      { value: "none", label: "System default" },' +
+        '      { value: "dot-ring", label: "Dot & ring" },' +
+        '      { value: "crosshair", label: "Reticle" },' +
+        '      { value: "trace", label: "Comet trail" },' +
+        '      { value: "bracket", label: "Action pill" },' +
+        '      { value: "glow", label: "Spotlight" },' +
+        '      { value: "particles", label: "Particle drift" },' +
+        '      { value: "orbit", label: "Orbit satellites" },' +
+        '      { value: "ripple", label: "Pulse rings" }' +
+        '    ], onChange: function (v) { setTweak("cursor", v); } }),' +
         '    React.createElement(TweakSection, { label: "Typography" }),' +
         '    React.createElement(TweakRadio, { label: "Display type", value: t.displayType, options: ["duo","serif","sans"], onChange: function (v) { setTweak("displayType", v); } }),' +
         '    React.createElement(TweakSection, { label: "Canvas" }),' +
@@ -117,7 +132,7 @@
         "ReactDOM.createRoot(document.getElementById('tweaks-root')).render(React.createElement(TweaksApp));";
       run(Babel.transform(app, { presets: ['react'] }).code);
       launch.textContent = 'Tweaks';
-      hideLaunch();
+      showLaunch();
     })
     .catch(function (err) {
       launch.textContent = 'Tweaks failed';

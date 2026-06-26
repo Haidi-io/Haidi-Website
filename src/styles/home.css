@@ -2,6 +2,7 @@
 
 [data-home-scroll] {
   --home-panel-h: 100dvh;
+  scroll-behavior: auto;
 }
 
 .home-panel {

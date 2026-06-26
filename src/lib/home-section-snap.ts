@@ -4,16 +4,12 @@ import { Observer } from 'gsap/Observer';
 
 export const JOURNEY_STEPS = ['drivers', 'experiments', 'review', 'scenario'] as const;
 
-const SCROLL_DURATION = 0.42;
-const SCROLL_EASE = 'power3.out';
-
 let snapPoints: number[] = [];
 let panelEls: HTMLElement[] = [];
 let journeyStepScroll: Record<string, number> = {};
-let locked = false;
 let observer: Observer | null = null;
-let snapTween: gsap.core.Tween | null = null;
 let ready = false;
+let panelIndex = 0;
 
 function readScrollY() {
   return window.scrollY || document.documentElement.scrollTop || 0;
@@ -23,29 +19,21 @@ function setScrollY(y: number) {
   window.scrollTo(0, y);
 }
 
-function headerOffset() {
-  const header = document.querySelector('.site-header');
-  return header?.getBoundingClientRect().height ?? 70;
-}
-
 function anchorY(el: Element) {
   return readScrollY() + el.getBoundingClientRect().top;
 }
 
 export function revealVisibleSections() {
-  const top = headerOffset();
-  document.querySelectorAll('[data-home-scroll] .reveal').forEach((el) => {
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.94 && rect.bottom > top) {
-      el.classList.add('in');
-      gsap.set(el, { opacity: 1, y: 0, clearProps: 'transform,opacity,filter' });
-    }
+  const panel = panelEls[panelIndex];
+  if (!panel) return;
+
+  panel.querySelectorAll('.reveal').forEach((el) => {
+    el.classList.add('in');
+    gsap.set(el, { opacity: 1, y: 0, clearProps: 'transform,opacity,filter' });
   });
-  document.querySelectorAll('[data-home-scroll] .sec-rule').forEach((el) => {
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.94 && rect.bottom > top) {
-      gsap.set(el, { opacity: 1, scaleX: 1, clearProps: 'transform,opacity' });
-    }
+
+  panel.querySelectorAll('.sec-rule').forEach((el) => {
+    gsap.set(el, { opacity: 1, scaleX: 1, clearProps: 'transform,opacity' });
   });
 }
 
@@ -58,6 +46,8 @@ export function rebuildHomeSnapPoints() {
     const step = el.dataset.journeyStep;
     if (step) journeyStepScroll[step] = snapPoints[i];
   });
+
+  panelIndex = currentPanelIndex();
 }
 
 export function currentPanelIndex() {
@@ -75,48 +65,28 @@ export function currentPanelIndex() {
 }
 
 export function currentPanel() {
-  return panelEls[currentPanelIndex()] ?? null;
+  return panelEls[panelIndex] ?? null;
 }
 
-export function scrollToY(y: number, duration = SCROLL_DURATION, onLand?: () => void) {
-  snapTween?.kill();
-  locked = true;
+function goToPanel(index: number, onLand?: () => void) {
+  const clamped = Math.max(0, Math.min(snapPoints.length - 1, index));
+  if (clamped === panelIndex) return;
 
-  const proxy = { y: readScrollY() };
-  snapTween = gsap.to(proxy, {
-    y,
-    duration,
-    ease: SCROLL_EASE,
-    overwrite: true,
-    onUpdate: () => {
-      setScrollY(proxy.y);
-      ScrollTrigger.update();
-    },
-    onComplete: () => {
-      setScrollY(y);
-      locked = false;
-      snapTween = null;
-      ScrollTrigger.update();
-      revealVisibleSections();
-      onLand?.();
-    },
-    onInterrupt: () => {
-      locked = false;
-      snapTween = null;
-      revealVisibleSections();
-    },
-  });
+  panelIndex = clamped;
+  setScrollY(snapPoints[clamped]);
+  revealVisibleSections();
+  window.dispatchEvent(new CustomEvent('haidi:panel-snap', { detail: { index: clamped } }));
+  onLand?.();
 }
 
 export function scrollToJourneyStep(stepId: string, onLand?: () => void) {
   const y = journeyStepScroll[stepId];
-  if (y != null) scrollToY(y, SCROLL_DURATION, onLand);
+  const idx = snapPoints.indexOf(y);
+  if (idx >= 0) goToPanel(idx, onLand);
 }
 
 export function scrollToPanelIndex(index: number, onLand?: () => void) {
-  const clamped = Math.max(0, Math.min(snapPoints.length - 1, index));
-  const y = snapPoints[clamped];
-  if (y != null) scrollToY(y, SCROLL_DURATION, onLand);
+  goToPanel(index, onLand);
 }
 
 function bindObserver(onLand?: () => void) {
@@ -126,16 +96,11 @@ function bindObserver(onLand?: () => void) {
   observer = Observer.create({
     target: window,
     type: 'wheel,touch',
-    tolerance: 28,
+    tolerance: 1,
+    wheelSpeed: 1,
     preventDefault: true,
-    onUp: () => {
-      if (locked) snapTween?.kill();
-      scrollToPanelIndex(currentPanelIndex() - 1, onLand);
-    },
-    onDown: () => {
-      if (locked) snapTween?.kill();
-      scrollToPanelIndex(currentPanelIndex() + 1, onLand);
-    },
+    onUp: () => goToPanel(panelIndex - 1, onLand),
+    onDown: () => goToPanel(panelIndex + 1, onLand),
   });
 }
 
@@ -147,6 +112,7 @@ export function initHomeSectionSnap(onLand?: () => void) {
 
   gsap.registerPlugin(ScrollTrigger, Observer);
   document.documentElement.style.scrollBehavior = 'auto';
+  document.body.style.scrollBehavior = 'auto';
 
   function setup() {
     rebuildHomeSnapPoints();
@@ -162,7 +128,11 @@ export function initHomeSectionSnap(onLand?: () => void) {
   }
 
   ScrollTrigger.addEventListener('refresh', () => {
-    if (!ready || locked) return;
+    if (!ready) return;
     rebuildHomeSnapPoints();
   });
+}
+
+export function getPanelIndex() {
+  return panelIndex;
 }
