@@ -1,15 +1,10 @@
-<!doctype html>
-<html lang="en" data-font="sans" data-canvas="graphite">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Haidi — About</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" />
-<link rel="stylesheet" href="assets/haidi.css" />
-<style>
-  /* ── HERO ─────────────────────────────────────────────── */
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Haidi — About" description="Haidi is built by IBP Ready — a Switzerland-based supply chain consulting team with deep planning expertise." canonical="https://haidi.io/about" ogTitle="Haidi — About" ogDescription="Built by a consulting team that lives in supply chain planning." ogUrl="https://haidi.io/about" nav="about" screenLabel="About" scripts={['haidi-mocks.js', 'haidi-site.js', 'haidi-tweaks.js']}>
+  <style is:global>
+/* ── HERO ─────────────────────────────────────────────── */
   .ab-hero { padding: 70px 0 84px; }
   .ab-hero .wrap-wide { display: grid; grid-template-columns: 1fr 1.08fr; gap: 60px; align-items: center; }
   .ab-hero h1 { font-size: clamp(36px, 4.8vw, 66px); line-height: 1.02; margin: 24px 0 24px; }
@@ -112,14 +107,10 @@
   .final p { font-size: 18px; color: var(--text-body); max-width: 540px; margin: 24px auto 0; text-wrap: pretty; }
   .final .hero-cta { display: flex; gap: 14px; justify-content: center; margin-top: 38px; flex-wrap: wrap; }
   .final-glow { position: absolute; inset: auto 0 -40% 0; height: 80%; background: radial-gradient(50% 60% at 50% 100%, var(--glow), transparent 70%); filter: blur(50px); z-index: 0; pointer-events: none; }
-</style>
-</head>
-<body data-nav="about" data-screen-label="About">
+  </style>
 
-  <div data-chrome="header"></div>
-
-  <!-- ============ HERO ============ -->
-  <section class="ab-hero" data-screen-label="About hero">
+  <div set:html={`<!-- ============ HERO ============ -->
+  <section class="ab-hero" id="main" data-screen-label="About hero">
     <div class="wrap-wide">
       <div class="ab-hero-text">
         <span class="eyebrow">About Haidi</span>
@@ -127,8 +118,8 @@
         <p>Haidi is a supply chain planning platform built to help teams create more understandable forecasts, review planning signals, test assumptions, and make decisions with greater confidence.</p>
         <p>It combines practical planning workflows with advanced forecasting capabilities — without requiring every customer to build an internal data science function.</p>
         <div class="hero-cta">
-          <a class="btn btn-primary btn-lg" href="contact.html">Prepare to launch</a>
-          <a class="btn btn-secondary btn-lg" href="product-overview.html">Explore the product
+          <a class="btn btn-primary btn-lg" href="/contact">Prepare to launch</a>
+          <a class="btn btn-secondary btn-lg" href="/product-overview">Explore the product
             <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
         </div>
@@ -349,54 +340,9 @@
       <h2 class="display" style="margin-top:24px">Planning is too important to leave unclear.</h2>
       <p>Tell us about your planning process, current tools, data readiness, and biggest challenge. We will recommend the right next step — whether that is a tailored demo or a relevant case discussion.</p>
       <div class="hero-cta">
-        <a class="btn btn-primary btn-lg" href="contact.html">Prepare to launch</a>
-        <a class="btn btn-secondary btn-lg" href="contact.html">Talk to a planning expert</a>
+        <a class="btn btn-primary btn-lg" href="/contact">Prepare to launch</a>
+        <a class="btn btn-secondary btn-lg" href="/contact">Talk to a planning expert</a>
       </div>
     </div>
-  </section>
-
-  <div data-chrome="footer"></div>
-
-  <!-- ============ TWEAKS ============ -->
-  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-  <script type="text/babel" src="assets/tweaks-panel.jsx"></script>
-  <div id="tweaks-root"></div>
-  <script type="text/babel">
-    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-      "displayType": "sans",
-      "canvas": "graphite",
-      "accent": "#47B9BB"
-    }/*EDITMODE-END*/;
-    function applyTweaks(t) {
-      const d = document.documentElement;
-      d.setAttribute('data-font', t.displayType);
-      d.setAttribute('data-canvas', t.canvas);
-      d.style.setProperty('--teal', t.accent);
-      d.style.setProperty('--teal-bright', t.accent === '#47B9BB' ? '#5FD0D2' : t.accent);
-    }
-    function TweaksApp() {
-      const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
-      React.useEffect(() => { applyTweaks(t); }, [t]);
-      return (
-        <TweaksPanel>
-          <TweakSection label="Typography" />
-          <TweakRadio label="Display type" value={t.displayType}
-            options={['duo', 'serif', 'sans']} onChange={(v) => setTweak('displayType', v)} />
-          <TweakSection label="Canvas" />
-          <TweakRadio label="Darkness" value={t.canvas}
-            options={['black', 'graphite', 'navy']} onChange={(v) => setTweak('canvas', v)} />
-          <TweakColor label="Accent" value={t.accent}
-            options={['#47B9BB', '#5BC8B8', '#5FD0D2', '#3FA7A9']} onChange={(v) => setTweak('accent', v)} />
-        </TweaksPanel>
-      );
-    }
-    ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<TweaksApp />);
-  </script>
-
-  <script src="assets/haidi-chrome.js"></script>
-  <script src="assets/haidi-mocks.js"></script>
-  <script src="assets/haidi-site.js"></script>
-</body>
-</html>
+  </section>`} />
+</BaseLayout>

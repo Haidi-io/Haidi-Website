@@ -1,0 +1,35 @@
+---
+import HomePanel from './HomePanel.astro';
+import SectionRule from './SectionRule.astro';
+---
+
+<HomePanel id="value" screenLabel="Value">
+  <SectionRule num="01" left="Why teams choose Haidi" right="Planning, made workable" />
+  <div class="section-head reveal">
+    <h2 class="display">A planning platform shaped by<br /><span class="accent">how planners actually work.</span></h2>
+    <p>Haidi pairs advanced forecasting with practical planning workflows, so teams can move quickly and stay in control of the decisions.</p>
+  </div>
+</HomePanel>
+
+<HomePanel screenLabel="Value">
+  <div class="value value--panel">
+    <div class="value-col reveal" data-delay="1">
+      <span class="vnum">01</span>
+      <div class="vcue"><svg viewBox="0 0 80 40" fill="none" width="80" height="40"><path d="M2 30 L18 22 L34 24 L50 12 L66 8 L78 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="78" cy="4" r="3" fill="currentColor"/></svg></div>
+      <h3>Fast implementation</h3>
+      <p>Haidi is designed to move quickly from initial setup to useful planning flows — not a long transformation project.</p>
+    </div>
+    <div class="value-col reveal" data-delay="2">
+      <span class="vnum">02</span>
+      <div class="vcue"><svg viewBox="0 0 80 40" fill="none" width="80" height="40"><circle cx="14" cy="20" r="6" stroke="currentColor" stroke-width="2"/><circle cx="40" cy="12" r="6" stroke="currentColor" stroke-width="2"/><circle cx="40" cy="28" r="6" stroke="currentColor" stroke-width="2"/><circle cx="66" cy="20" r="6" stroke="currentColor" stroke-width="2"/><path d="M20 20h14M46 13l14 5M46 27l14-5" stroke="currentColor" stroke-width="1.5"/></svg></div>
+      <h3>Built with supply chain expertise</h3>
+      <p>Workflows reflect the realities of demand planning, review cycles, and how decisions actually get made.</p>
+    </div>
+    <div class="value-col reveal" data-delay="3">
+      <span class="vnum">03</span>
+      <div class="vcue"><svg viewBox="0 0 80 40" fill="none" width="80" height="40"><rect x="10" y="8" width="60" height="24" rx="4" stroke="currentColor" stroke-width="2"/><path d="M22 24l6-8 6 5 5-7 5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <h3>No data science team required</h3>
+      <p>Advanced forecasting stays visible and explainable — without specialists running every model.</p>
+    </div>
+  </div>
+</HomePanel>

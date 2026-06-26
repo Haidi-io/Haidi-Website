@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Privacy — Haidi" description="Privacy policy for Haidi and IBP Ready." canonical="https://haidi.io/privacy" scripts={['haidi-site.js']}>
+  <style is:global>
+.legal { max-width: 720px; padding: 100px 0 80px; }
+  .legal h1 { font-size: clamp(32px, 4vw, 48px); margin: 20px 0 28px; }
+  .legal h2 { font-size: 20px; margin: 32px 0 12px; color: var(--text); }
+  .legal p, .legal li { font-size: 16px; color: var(--text-body); margin-bottom: 14px; line-height: 1.65; }
+  .legal ul { padding-left: 1.2em; }
+  </style>
+
+  <div set:html={`<article class="legal wrap" id="main">
+    <span class="eyebrow">Legal</span>
+    <h1 class="display">Privacy policy</h1>
+    <p>Haidi is operated by IBP Ready AG, Switzerland. This policy describes how we handle information when you use our website and contact forms.</p>
+    <h2>Information we collect</h2>
+    <p>When you submit the “Prepare to launch” form, we collect the details you provide (such as name, work email, company, and planning context). We use this solely to respond to your enquiry and recommend an appropriate next step.</p>
+    <h2>How we use it</h2>
+    <ul>
+      <li>To review your planning situation and follow up with a demo, discussion, or case example</li>
+      <li>To improve our understanding of common planning challenges (in aggregate, without identifying individuals)</li>
+    </ul>
+    <h2>Storage and retention</h2>
+    <p>Form submissions are transmitted securely to our team. We retain enquiry data only as long as needed for the conversation and any resulting business relationship.</p>
+    <h2>Your rights</h2>
+    <p>You may request access, correction, or deletion of your personal data by contacting <a href="mailto:hello@haidi.io" style="color:var(--teal)">hello@haidi.io</a>.</p>
+    <h2>Contact</h2>
+    <p>IBP Ready AG · Switzerland · <a href="mailto:hello@haidi.io" style="color:var(--teal)">hello@haidi.io</a></p>
+  </article>`} />
+</BaseLayout>

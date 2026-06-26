@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Terms — Haidi" description="Terms of use for the Haidi marketing website." canonical="https://haidi.io/terms" scripts={['haidi-site.js']}>
+  <style is:global>
+.legal { max-width: 720px; padding: 100px 0 80px; }
+  .legal h1 { font-size: clamp(32px, 4vw, 48px); margin: 20px 0 28px; }
+  .legal h2 { font-size: 20px; margin: 32px 0 12px; color: var(--text); }
+  .legal p, .legal li { font-size: 16px; color: var(--text-body); margin-bottom: 14px; line-height: 1.65; }
+  .legal ul { padding-left: 1.2em; }
+  </style>
+
+  <div set:html={`<article class="legal wrap" id="main">
+    <span class="eyebrow">Legal</span>
+    <h1 class="display">Terms of use</h1>
+    <p>By using this website you agree to these terms. If you do not agree, please do not use the site.</p>
+    <h2>Website content</h2>
+    <p>Product descriptions, mock interfaces, and case summaries on this site are for informational purposes. They do not constitute a binding offer or guarantee of specific product capabilities.</p>
+    <h2>Intellectual property</h2>
+    <p>Haidi, IBP Ready, and related branding are owned by IBP Ready AG. You may not copy, scrape, or redistribute site content without written permission.</p>
+    <h2>Enquiries</h2>
+    <p>Submitting the launch form does not create a customer relationship. Any commercial terms are agreed separately in writing.</p>
+    <h2>Contact</h2>
+    <p>Questions about these terms: <a href="mailto:hello@haidi.io" style="color:var(--teal)">hello@haidi.io</a></p>
+  </article>`} />
+</BaseLayout>

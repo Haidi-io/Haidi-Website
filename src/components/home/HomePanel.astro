@@ -1,0 +1,22 @@
+---
+interface Props {
+  id?: string;
+  journeyStep?: string;
+  screenLabel?: string;
+  class?: string;
+}
+
+const { id, journeyStep, screenLabel, class: className } = Astro.props;
+---
+
+<section
+  class:list={['home-panel', className]}
+  data-scroll-panel
+  data-journey-step={journeyStep}
+  id={id}
+  data-screen-label={screenLabel}
+>
+  <div class="home-panel__inner">
+    <slot />
+  </div>
+</section>

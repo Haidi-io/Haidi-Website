@@ -1,0 +1,49 @@
+---
+import { site } from '../config/site';
+
+const { paths, linkedin } = site;
+---
+
+<footer class="site-footer">
+  <div class="wrap-wide">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="/assets/haidi.png" alt="Haidi" width="120" height="26" loading="lazy" />
+        <p>
+          A supply chain planning platform for teams that need clearer forecasts, structured demand
+          review, and planning decisions they can explain.
+        </p>
+      </div>
+      <div class="footer-col">
+        <h5>Product</h5>
+        <a href={paths.product}>Overview</a>
+        <a href={`${paths.product}#scenario`}>Scenario Planning</a>
+        <a href={`${paths.product}#demand-review`}>Demand Review</a>
+        <a href={`${paths.product}#forecast-lab`}>Forecast Lab</a>
+        <a href={`${paths.product}#haidi-gen`}>Haidi Gen</a>
+      </div>
+      <div class="footer-col">
+        <h5>Industries</h5>
+        <a href={`${paths.home}#industries`}>Pharma</a>
+        <a href={`${paths.home}#industries`}>Manufacturing</a>
+        <a href={`${paths.home}#industries`}>Energy</a>
+        <a href={`${paths.home}#industries`}>FMCG</a>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <a href={paths.about}>About Haidi</a>
+        <a href={`${paths.about}#ibp`}>IBP Ready</a>
+        <a href={paths.contact}>Contact</a>
+        <a href={linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Haidi · Built by IBP Ready, Switzerland</span>
+      <span style="display:flex;gap:22px">
+        <a href={paths.privacy}>Privacy</a>
+        <a href={paths.terms}>Terms</a>
+        <a href={paths.security}>Security</a>
+      </span>
+    </div>
+  </div>
+</footer>

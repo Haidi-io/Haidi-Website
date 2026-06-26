@@ -1,15 +1,10 @@
-<!doctype html>
-<html lang="en" data-font="sans" data-canvas="graphite">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Haidi — Prepare to launch</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" />
-<link rel="stylesheet" href="assets/haidi.css" />
-<style>
-  /* ── HERO ─────────────────────────────────────────────── */
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Haidi — Prepare to launch" description="Tell us about your planning process and we'll recommend the best next step — a tailored demo, case study, or focused discussion." canonical="https://haidi.io/contact" ogTitle="Haidi — Prepare to launch" ogDescription="Answer a few questions about your planning situation and the Haidi team will recommend the best next step." ogUrl="https://haidi.io/contact" screenLabel="Contact" scripts={['haidi-site.js', 'contact-form.js', 'haidi-tweaks.js']}>
+  <style is:global>
+/* ── HERO ─────────────────────────────────────────────── */
   .ct-hero { padding: 64px 0 50px; position: relative; }
   .ct-hero .wrap-wide { max-width: 1180px; }
   .ct-hero h1 { font-size: clamp(36px, 4.6vw, 60px); line-height: 1.02; margin: 22px 0 22px; max-width: 16ch; }
@@ -111,14 +106,10 @@
   .ct-note { text-align: center; max-width: 640px; margin: 0 auto; padding: 100px 0 40px; }
   .ct-note p { font-size: clamp(22px, 3vw, 32px); color: var(--text); font-weight: 500; letter-spacing: -0.02em; line-height: 1.25; text-wrap: pretty; }
   .ct-note .accent { color: var(--teal); }
-</style>
-</head>
-<body data-nav="" data-screen-label="Contact">
+  </style>
 
-  <div data-chrome="header"></div>
-
-  <!-- ============ HERO ============ -->
-  <section class="ct-hero" data-screen-label="Contact hero">
+  <div set:html={`<!-- ============ HERO ============ -->
+  <section class="ct-hero" id="main" data-screen-label="Contact hero">
     <div class="wrap-wide">
       <span class="eyebrow">Prepare to launch</span>
       <h1 class="display">Prepare to launch <span class="accent">Haidi.</span></h1>
@@ -322,8 +313,8 @@
         <div class="side-card side-contact">
           <h3>Prefer to reach us directly?</h3>
           <a href="mailto:hello@haidi.io"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="1.7"/></svg> hello@haidi.io</a>
-          <a href="https://www.linkedin.com" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M8 10v6M8 7v.5M12 16v-3a2 2 0 014 0v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg> Haidi on LinkedIn</a>
-          <a href="about.html#ibp"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 8v.5M11 12h1v4h1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg> About IBP Ready</a>
+          <a href="https://www.linkedin.com/company/ibp-ready" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M8 10v6M8 7v.5M12 16v-3a2 2 0 014 0v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg> Haidi on LinkedIn</a>
+          <a href="/about#ibp"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 8v.5M11 12h1v4h1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg> About IBP Ready</a>
           <a href="#callback"><svg viewBox="0 0 24 24" fill="none"><path d="M5 4h4l2 5-3 2a12 12 0 005 5l2-3 5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg> Request a callback</a>
         </div>
       </aside>
@@ -351,50 +342,5 @@
     <div class="ct-note">
       <p>Better planning starts with a <span class="accent">clearer view</span> of where you are today.</p>
     </div>
-  </section>
-
-  <div data-chrome="footer"></div>
-
-  <!-- ============ TWEAKS ============ -->
-  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-  <script type="text/babel" src="assets/tweaks-panel.jsx"></script>
-  <div id="tweaks-root"></div>
-  <script type="text/babel">
-    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-      "displayType": "sans",
-      "canvas": "graphite",
-      "accent": "#47B9BB"
-    }/*EDITMODE-END*/;
-    function applyTweaks(t) {
-      const d = document.documentElement;
-      d.setAttribute('data-font', t.displayType);
-      d.setAttribute('data-canvas', t.canvas);
-      d.style.setProperty('--teal', t.accent);
-      d.style.setProperty('--teal-bright', t.accent === '#47B9BB' ? '#5FD0D2' : t.accent);
-    }
-    function TweaksApp() {
-      const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
-      React.useEffect(() => { applyTweaks(t); }, [t]);
-      return (
-        <TweaksPanel>
-          <TweakSection label="Typography" />
-          <TweakRadio label="Display type" value={t.displayType}
-            options={['duo', 'serif', 'sans']} onChange={(v) => setTweak('displayType', v)} />
-          <TweakSection label="Canvas" />
-          <TweakRadio label="Darkness" value={t.canvas}
-            options={['black', 'graphite', 'navy']} onChange={(v) => setTweak('canvas', v)} />
-          <TweakColor label="Accent" value={t.accent}
-            options={['#47B9BB', '#5BC8B8', '#5FD0D2', '#3FA7A9']} onChange={(v) => setTweak('accent', v)} />
-        </TweaksPanel>
-      );
-    }
-    ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<TweaksApp />);
-  </script>
-
-  <script src="assets/haidi-chrome.js"></script>
-  <script src="assets/haidi-site.js"></script>
-  <script src="assets/contact-form.js"></script>
-</body>
-</html>
+  </section>`} />
+</BaseLayout>

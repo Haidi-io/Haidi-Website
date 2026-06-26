@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found — Haidi" description="The page you requested could not be found." noindex scripts={['haidi-site.js']}>
+  <style is:global>
+.err { min-height: 70vh; display: flex; align-items: center; padding: 120px 0; }
+  .err h1 { font-size: clamp(36px, 5vw, 56px); margin: 20px 0; }
+  .err p { font-size: 18px; color: var(--text-body); max-width: 480px; margin-bottom: 32px; }
+  .err-cta { display: flex; gap: 14px; flex-wrap: wrap; }
+  </style>
+
+  <div set:html={`<section class="err" id="main">
+    <div class="wrap">
+      <span class="eyebrow">404</span>
+      <h1 class="display">This page isn’t in the plan.</h1>
+      <p>The URL may have changed or the page may no longer exist. Head back to the homepage or contact us if you need help.</p>
+      <div class="err-cta">
+        <a class="btn btn-primary btn-lg" href="/home">Back to home</a>
+        <a class="btn btn-secondary btn-lg" href="/contact">Contact us</a>
+      </div>
+    </div>
+  </section>`} />
+</BaseLayout>

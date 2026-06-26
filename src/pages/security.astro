@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Security — Haidi" description="Security practices for Haidi and IBP Ready." canonical="https://haidi.io/security" scripts={['haidi-site.js']}>
+  <style is:global>
+.legal { max-width: 720px; padding: 100px 0 80px; }
+  .legal h1 { font-size: clamp(32px, 4vw, 48px); margin: 20px 0 28px; }
+  .legal h2 { font-size: 20px; margin: 32px 0 12px; color: var(--text); }
+  .legal p, .legal li { font-size: 16px; color: var(--text-body); margin-bottom: 14px; line-height: 1.65; }
+  .legal ul { padding-left: 1.2em; }
+  </style>
+
+  <div set:html={`<article class="legal wrap" id="main">
+    <span class="eyebrow">Trust</span>
+    <h1 class="display">Security</h1>
+    <p>Haidi is built for enterprise planning environments. Security and data handling are part of how we design both the product and our operations.</p>
+    <h2>Website</h2>
+    <p>This marketing site is served over HTTPS. Form submissions are transmitted to our team via encrypted channels when delivery is configured in production.</p>
+    <h2>Product</h2>
+    <p>The Haidi application is hosted separately at <a href="https://app.haidi.io" style="color:var(--teal)">app.haidi.io</a>. Access controls, authentication, and data isolation are enforced within the product environment.</p>
+    <h2>Reporting issues</h2>
+    <p>If you discover a security concern, contact <a href="mailto:hello@haidi.io" style="color:var(--teal)">hello@haidi.io</a> with details. We review reports promptly.</p>
+  </article>`} />
+</BaseLayout>

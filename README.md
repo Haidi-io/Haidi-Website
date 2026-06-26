@@ -28,7 +28,17 @@ python -m http.server 8000
 - `/` redirects to `/home`.
 
 ## External dependencies (loaded at runtime via CDN)
-- Google Fonts — Instrument Serif
-- React + ReactDOM + Babel (unpkg) — only powers the floating "Tweaks" design panel
+- Google Fonts — Instrument Serif, JetBrains Mono (via `haidi.css`)
+- React + ReactDOM + Babel (unpkg) — only when `?tweaks=1` is in the URL (design panel)
 
-These require an internet connection to render fully. The Tweaks panel is a design-time control; it can be removed for production by deleting the `<!-- TWEAKS -->` script block in each HTML file if not needed.
+## Contact form delivery (Vercel)
+Set one of these in your Vercel project environment:
+
+- `CONTACT_WEBHOOK_URL` — Slack/Zapier webhook; receives JSON `{ text, payload }`
+- `RESEND_API_KEY` + `CONTACT_TO_EMAIL` — sends email via [Resend](https://resend.com)
+- Optional: `CONTACT_FROM_EMAIL` (defaults to `Haidi <onboarding@resend.dev>`)
+
+Without either configured, the form still completes for the user but submissions are not delivered (`503` from `/api/contact`).
+
+## Design tweaks panel
+Append `?tweaks=1` to any page URL to load the floating design panel (typography, canvas, accent).

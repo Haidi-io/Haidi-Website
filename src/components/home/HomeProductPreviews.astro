@@ -1,0 +1,49 @@
+---
+import HomePanel from './HomePanel.astro';
+import SectionRule from './SectionRule.astro';
+import ProductFrame from './ProductFrame.astro';
+
+const previews = [
+  { id: 'drivers', tag: '01', title: 'Demand Drivers', mock: 'drivers', url: 'app.haidi.io / drivers', href: '/product-overview#demand-drivers', desc: 'See the signals and drivers influencing demand.', delay: 1 },
+  { id: 'experiments', tag: '02', title: 'Forecast Lab', mock: 'experiments', url: 'app.haidi.io / forecast-lab', href: '/product-overview#forecast-lab', desc: 'Run forecast experiments and compare results.', delay: 2 },
+  { id: 'review', tag: '03', title: 'Demand Review', mock: 'review', url: 'app.haidi.io / demand-review', href: '/product-overview#demand-review', desc: 'Review forecasts, assumptions, and exceptions.', delay: 1 },
+  { id: 'scenario', tag: '04', title: 'Scenario Testing', mock: 'scenario', url: 'app.haidi.io / scenarios', href: '/product-overview#scenario', desc: 'Compare baseline with alternative scenarios.', delay: 2 },
+];
+---
+
+<HomePanel id="product" screenLabel="Product previews">
+  <SectionRule num="02" left="Inside the product" right="A connected planning workspace" />
+  <div class="section-head reveal">
+    <h2 class="display">Windows into the<br /><span class="accent">planning environment.</span></h2>
+    <p>Each area connects to the next — from demand signals to the scenarios your team reviews.</p>
+  </div>
+</HomePanel>
+
+<HomePanel screenLabel="Product previews">
+  <div class="previews previews--panel">
+    {previews.slice(0, 2).map((p) => (
+      <a class="preview-link preview reveal" data-delay={p.delay} data-journey-id={p.id} href={p.href}>
+        <div class="pv-head"><h3>{p.title}</h3><span class="mono-tag">{p.tag}</span></div>
+        <ProductFrame mock={p.mock} url={p.url} loop />
+        <p>{p.desc}</p>
+      </a>
+    ))}
+  </div>
+</HomePanel>
+
+<HomePanel screenLabel="Product previews">
+  <div class="previews previews--panel">
+    {previews.slice(2).map((p) => (
+      <a class="preview-link preview reveal" data-delay={p.delay} data-journey-id={p.id} href={p.href}>
+        <div class="pv-head"><h3>{p.title}</h3><span class="mono-tag">{p.tag}</span></div>
+        <ProductFrame mock={p.mock} url={p.url} loop />
+        <p>{p.desc}</p>
+      </a>
+    ))}
+  </div>
+  <div class="center reveal" style="margin-top:28px">
+    <a class="btn btn-secondary btn-lg" href="/product-overview">Explore the full product
+      <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+</HomePanel>

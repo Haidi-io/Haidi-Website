@@ -1,0 +1,17 @@
+{
+  "name": "haidi-website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "migrate": "node scripts/migrate-html-to-astro.cjs"
+  },
+  "devDependencies": {
+    "astro": "^5.7.12"
+  },
+  "dependencies": {
+    "gsap": "^3.15.0"
+  }
+}

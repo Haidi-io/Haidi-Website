@@ -1,0 +1,21 @@
+---
+interface Props {
+  mock: string;
+  url: string;
+  loop?: boolean;
+  draw?: boolean;
+  class?: string;
+}
+
+const { mock, url, loop = false, draw = false, class: className } = Astro.props;
+---
+
+<div class:list={['glow-wrap', className]}>
+  <div class="frame">
+    <div class="frame-bar">
+      <div class="frame-dots"><i></i><i></i><i></i></div>
+      <div class="frame-url">{url}</div>
+    </div>
+    <div class="frame-body" data-mock={mock} data-loop={loop || undefined} data-draw={draw || undefined}></div>
+  </div>
+</div>

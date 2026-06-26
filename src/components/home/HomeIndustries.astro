@@ -1,0 +1,33 @@
+---
+import HomePanel from './HomePanel.astro';
+import SectionRule from './SectionRule.astro';
+---
+
+<HomePanel id="industries" screenLabel="Industries">
+  <SectionRule num="05" left="Industries" right="Where planning gets hard" />
+  <div class="section-head reveal">
+    <h2 class="display">Different industries.<br /><span class="accent">The same need for clarity.</span></h2>
+    <p>Demand planning is difficult in different ways depending on the environment.</p>
+  </div>
+</HomePanel>
+
+<HomePanel screenLabel="Industries">
+  <div class="ind-grid ind-grid--panel">
+    <div class="ind reveal" data-delay="1">
+      <div class="ind-vis"><svg viewBox="0 0 64 64" fill="none"><rect x="22" y="8" width="20" height="34" rx="10" stroke="currentColor" stroke-width="2"/><path d="M22 24h20" stroke="currentColor" stroke-width="2"/><path d="M32 42v8M24 54h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+      <div><span class="mono-tag">Pharma</span><h3>Pharma</h3><p>Tight regulation and long lead times make demand swings expensive.</p></div>
+    </div>
+    <div class="ind reveal" data-delay="2">
+      <div class="ind-vis"><svg viewBox="0 0 64 64" fill="none"><circle cx="22" cy="28" r="9" stroke="currentColor" stroke-width="2"/><circle cx="42" cy="40" r="6" stroke="currentColor" stroke-width="2"/><path d="M22 16v-4M22 44v4M10 28H6M34 28h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+      <div><span class="mono-tag">Manufacturing</span><h3>Manufacturing</h3><p>Capacity limits mean a forecast miss ripples into production.</p></div>
+    </div>
+    <div class="ind reveal" data-delay="1">
+      <div class="ind-vis"><svg viewBox="0 0 64 64" fill="none"><path d="M34 8L18 36h12l-2 20 18-30H32z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div>
+      <div><span class="mono-tag">Energy</span><h3>Energy</h3><p>Volatile demand and market signals make assumptions hard to hold.</p></div>
+    </div>
+    <div class="ind reveal" data-delay="2">
+      <div class="ind-vis"><svg viewBox="0 0 64 64" fill="none"><path d="M14 22h36l-3 28H17z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M24 22v-4a8 8 0 0116 0v4" stroke="currentColor" stroke-width="2"/></svg></div>
+      <div><span class="mono-tag">FMCG</span><h3>FMCG</h3><p>Fast cycles and promotions drive constant demand volatility.</p></div>
+    </div>
+  </div>
+</HomePanel>

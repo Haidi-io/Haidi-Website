@@ -1,0 +1,80 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../config/site';
+import type { NavKey } from '../config/site';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogUrl?: string;
+  nav?: NavKey;
+  screenLabel?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>;
+  heroVariants?: boolean;
+  scripts?: string[];
+}
+
+const {
+  title,
+  description = '',
+  canonical = '',
+  ogTitle = title,
+  ogDescription = description,
+  ogUrl = canonical,
+  nav = '',
+  screenLabel = '',
+  noindex = false,
+  jsonLd,
+  heroVariants = false,
+  scripts = ['haidi-site.js'],
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-font="sans" data-canvas="graphite">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta property="og:title" content={ogTitle} />
+    {ogDescription && <meta property="og:description" content={ogDescription} />}
+    <meta property="og:type" content="website" />
+    {ogUrl && <meta property="og:url" content={ogUrl} />}
+    <meta name="twitter:card" content="summary" />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
+    />
+    <script is:inline>window.__HAIDI_GSAP__ = true;</script>
+    <script is:inline src="/assets/haidi-theme.js"></script>
+    {heroVariants && <script is:inline src="/assets/hero-variants.js"></script>}
+    <link rel="stylesheet" href="/assets/haidi.css" />
+    <script is:inline define:vars={{ siteConfig: site }}>
+      window.HAIDI_SITE = siteConfig;
+    </script>
+  </head>
+  <body data-nav={nav} data-screen-label={screenLabel}>
+    <Header active={nav} />
+    <slot />
+    <Footer />
+    <script>
+      import { initHaidiGsap } from '../lib/haidi-gsap';
+      initHaidiGsap();
+    </script>
+    {scripts.map((src) => (
+      <script is:inline src={`/assets/${src}`}></script>
+    ))}
+  </body>
+</html>

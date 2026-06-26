@@ -1,15 +1,10 @@
-<!doctype html>
-<html lang="en" data-font="sans" data-canvas="graphite">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Haidi — Product Overview</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" />
-<link rel="stylesheet" href="assets/haidi.css" />
-<style>
-  /* ── HERO ─────────────────────────────────────────────── */
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Haidi — Product Overview" description="Explore Haidi's connected planning workspace — demand drivers, forecast lab, demand review, scenario testing, and Haidi Gen." canonical="https://haidi.io/product-overview" ogTitle="Haidi — Product Overview" ogDescription="A connected planning workspace for demand forecasting, review, and scenario testing." ogUrl="https://haidi.io/product-overview" nav="product" screenLabel="Product Overview" scripts={['haidi-mocks.js', 'haidi-site.js', 'haidi-tweaks.js']}>
+  <style is:global>
+/* ── HERO ─────────────────────────────────────────────── */
   .po-hero { padding: 70px 0 90px; position: relative; }
   .po-hero .wrap-wide { display: grid; grid-template-columns: 1fr 1.12fr; gap: 64px; align-items: center; }
   .po-hero h1 { font-size: clamp(38px, 5vw, 70px); line-height: 1.0; margin: 24px 0 24px; }
@@ -70,21 +65,17 @@
   .final p { font-size: 18px; color: var(--text-body); max-width: 520px; margin: 24px auto 0; text-wrap: pretty; }
   .final .hero-cta { display: flex; gap: 14px; justify-content: center; margin-top: 38px; flex-wrap: wrap; }
   .final-glow { position: absolute; inset: auto 0 -40% 0; height: 80%; background: radial-gradient(50% 60% at 50% 100%, var(--glow), transparent 70%); filter: blur(50px); z-index: 0; pointer-events: none; }
-</style>
-</head>
-<body data-nav="product" data-screen-label="Product Overview">
+  </style>
 
-  <div data-chrome="header"></div>
-
-  <!-- ============ HERO ============ -->
-  <section class="po-hero" data-screen-label="Product hero">
+  <div set:html={`<!-- ============ HERO ============ -->
+  <section class="po-hero" id="main" data-screen-label="Product hero">
     <div class="wrap-wide">
       <div class="po-hero-text">
         <span class="eyebrow">Product overview</span>
         <h1 class="display">One workspace for better <span class="accent">planning decisions.</span></h1>
         <p class="hero-sub">Haidi brings forecasting, review workflows, scenarios, inventory signals, and planning tools into one connected environment for supply chain teams.</p>
         <div class="hero-cta">
-          <a class="btn btn-primary btn-lg" href="contact.html">Prepare to launch</a>
+          <a class="btn btn-primary btn-lg" href="/contact">Prepare to launch</a>
           <a class="btn btn-secondary btn-lg" href="#scenario">See Haidi in action
             <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
@@ -117,7 +108,7 @@
           <li>Duplicate scenarios and adjust planning variables</li>
           <li>See a clear impact summary for each outcome</li>
         </ul>
-        <a class="link-arrow" href="contact.html">Explore Scenario Planning <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="link-arrow" href="/contact">Explore Scenario Planning <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
       <div class="glow-wrap reveal" data-delay="1">
         <div class="frame"><div class="frame-bar"><div class="frame-dots"><i></i><i></i><i></i></div><div class="frame-url">app.haidi.io / scenarios</div></div><div class="frame-body" data-mock="scenario" data-loop></div></div>
@@ -142,7 +133,7 @@
           <li>Assumptions, overrides, and planner comments</li>
           <li>Decision status and ownership</li>
         </ul>
-        <a class="link-arrow" href="contact.html">Explore Demand Review <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="link-arrow" href="/contact">Explore Demand Review <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
     </div>
   </section>
@@ -161,7 +152,7 @@
           <li>Product and location prioritisation</li>
           <li>Current outlook compared with the target plan</li>
         </ul>
-        <a class="link-arrow" href="contact.html">Explore Inventory Review <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="link-arrow" href="/contact">Explore Inventory Review <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
       <div class="glow-wrap reveal" data-delay="1">
         <div class="frame"><div class="frame-bar"><div class="frame-dots"><i></i><i></i><i></i></div><div class="frame-url">app.haidi.io / inventory-review</div></div><div class="frame-body" data-mock="inventory" data-loop></div></div>
@@ -186,7 +177,7 @@
           <li>Accuracy and confidence indicators</li>
           <li>A clear reason a forecast is preferred</li>
         </ul>
-        <a class="link-arrow" href="contact.html">Explore Forecast Lab <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="link-arrow" href="/contact">Explore Forecast Lab <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
     </div>
   </section>
@@ -205,7 +196,7 @@
           <li>Correlation between signals and demand</li>
           <li>Forecast movement linked to a selected driver</li>
         </ul>
-        <a class="link-arrow" href="contact.html">Explore Demand Drivers <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="link-arrow" href="/contact">Explore Demand Drivers <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
       <div class="glow-wrap reveal" data-delay="1">
         <div class="frame"><div class="frame-bar"><div class="frame-dots"><i></i><i></i><i></i></div><div class="frame-url">app.haidi.io / drivers</div></div><div class="frame-body" data-mock="drivers" data-loop></div></div>
@@ -229,7 +220,7 @@
           <li>Data quality checks and master data mapping</li>
           <li>API connections and integration status</li>
         </ul>
-        <a class="link-arrow" href="contact.html">Talk to our team <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="link-arrow" href="/contact">Talk to our team <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
     </div>
   </section>
@@ -271,7 +262,7 @@
           <span>Compare the baseline with this scenario</span>
           <span>Summarise the main planning risks</span>
         </div>
-        <a class="link-arrow" href="contact.html" style="margin-top:28px">Meet Haidi Gen <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="link-arrow" href="/contact" style="margin-top:28px">Meet Haidi Gen <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
     </div>
   </section>
@@ -321,54 +312,9 @@
       <h2 class="display" style="margin-top:24px">Prepare to launch Haidi.</h2>
       <p>Tell us about your planning process, current tools, data readiness, and biggest challenge. We will recommend the right next step — whether that is a tailored demo or a relevant case discussion.</p>
       <div class="hero-cta">
-        <a class="btn btn-primary btn-lg" href="contact.html">Prepare to launch</a>
-        <a class="btn btn-secondary btn-lg" href="contact.html">Talk to a planning expert</a>
+        <a class="btn btn-primary btn-lg" href="/contact">Prepare to launch</a>
+        <a class="btn btn-secondary btn-lg" href="/contact">Talk to a planning expert</a>
       </div>
     </div>
-  </section>
-
-  <div data-chrome="footer"></div>
-
-  <!-- ============ TWEAKS ============ -->
-  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-  <script type="text/babel" src="assets/tweaks-panel.jsx"></script>
-  <div id="tweaks-root"></div>
-  <script type="text/babel">
-    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-      "displayType": "sans",
-      "canvas": "graphite",
-      "accent": "#47B9BB"
-    }/*EDITMODE-END*/;
-    function applyTweaks(t) {
-      const d = document.documentElement;
-      d.setAttribute('data-font', t.displayType);
-      d.setAttribute('data-canvas', t.canvas);
-      d.style.setProperty('--teal', t.accent);
-      d.style.setProperty('--teal-bright', t.accent === '#47B9BB' ? '#5FD0D2' : t.accent);
-    }
-    function TweaksApp() {
-      const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
-      React.useEffect(() => { applyTweaks(t); }, [t]);
-      return (
-        <TweaksPanel>
-          <TweakSection label="Typography" />
-          <TweakRadio label="Display type" value={t.displayType}
-            options={['duo', 'serif', 'sans']} onChange={(v) => setTweak('displayType', v)} />
-          <TweakSection label="Canvas" />
-          <TweakRadio label="Darkness" value={t.canvas}
-            options={['black', 'graphite', 'navy']} onChange={(v) => setTweak('canvas', v)} />
-          <TweakColor label="Accent" value={t.accent}
-            options={['#47B9BB', '#5BC8B8', '#5FD0D2', '#3FA7A9']} onChange={(v) => setTweak('accent', v)} />
-        </TweaksPanel>
-      );
-    }
-    ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<TweaksApp />);
-  </script>
-
-  <script src="assets/haidi-chrome.js"></script>
-  <script src="assets/haidi-mocks.js"></script>
-  <script src="assets/haidi-site.js"></script>
-</body>
-</html>
+  </section>`} />
+</BaseLayout>

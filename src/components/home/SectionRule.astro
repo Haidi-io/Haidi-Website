@@ -1,0 +1,16 @@
+---
+interface Props {
+  num: string;
+  left: string;
+  right?: string;
+  class?: string;
+  style?: string;
+}
+
+const { num, left, right, class: className, style } = Astro.props;
+---
+
+<div class:list={['sec-rule', className]} style={style}>
+  <span><span class="sr-num">{num}</span> &nbsp; {left}</span>
+  {right && <span>{right}</span>}
+</div>

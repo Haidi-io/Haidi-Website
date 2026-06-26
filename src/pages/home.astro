@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/home.css';
+import HomeHero from '../components/home/HomeHero.astro';
+import HomeValue from '../components/home/HomeValue.astro';
+import HomeProductJourney from '../components/home/HomeProductJourney.astro';
+import HomeProductPreviews from '../components/home/HomeProductPreviews.astro';
+import HomeHowItWorks from '../components/home/HomeHowItWorks.astro';
+import HomeAbout from '../components/home/HomeAbout.astro';
+import HomeIndustries from '../components/home/HomeIndustries.astro';
+import HomeStories from '../components/home/HomeStories.astro';
+import HomeLaunch from '../components/home/HomeLaunch.astro';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Haidi',
+  applicationCategory: 'BusinessApplication',
+  description: 'Supply chain demand planning platform',
+  provider: {
+    '@type': 'Organization',
+    name: 'IBP Ready',
+    address: { '@type': 'PostalAddress', addressCountry: 'CH' },
+  },
+};
+---
+
+<BaseLayout
+  title="Haidi — Supply chain demand planning"
+  description="Haidi helps supply chain teams turn data, assumptions, and demand signals into clear forecasting and planning decisions — without needing an in-house data science team."
+  canonical="https://haidi.io/home"
+  ogTitle="Haidi — Supply chain demand planning"
+  ogDescription="Planning that gives your team a reason to trust the forecast. Built by supply chain practitioners."
+  ogUrl="https://haidi.io/home"
+  screenLabel="Home"
+  jsonLd={jsonLd}
+  heroVariants
+  scripts={['hero-variants.js', 'haidi-mocks.js', 'haidi-site.js', 'haidi-tweaks.js']}
+>
+  <div data-home-scroll>
+    <HomeHero />
+    <HomeValue />
+    <HomeProductJourney />
+    <HomeProductPreviews />
+    <HomeHowItWorks />
+    <HomeAbout />
+    <HomeIndustries />
+    <HomeStories />
+    <HomeLaunch />
+  </div>
+</BaseLayout>

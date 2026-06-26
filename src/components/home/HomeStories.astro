@@ -1,0 +1,61 @@
+---
+import HomePanel from './HomePanel.astro';
+import SectionRule from './SectionRule.astro';
+
+const storiesA = [
+  { tag: 'Pharma', title: 'Global pharmaceutical group', ind: 'Demand & supply planning', challenge: 'Forecasts were hard to explain across markets.', outcome: 'Structured review with visible drivers and assumptions.' },
+  { tag: 'FMCG · Food', title: 'European food producer', ind: 'Demand planning', challenge: 'Promotions and seasonality created volatility.', outcome: 'Driver-based forecasting for promotional effects.' },
+  { tag: 'FMCG · Hospitality', title: 'Regional food & hospitality brand', ind: 'Demand & inventory planning', challenge: 'Planning lived across spreadsheets.', outcome: 'Connected view linking demand signals to inventory.' },
+];
+
+const storiesB = [
+  { tag: 'Manufacturing', title: 'Frozen & chilled foods manufacturer', ind: 'Supply & demand planning', challenge: 'Capacity constraints made accuracy costly.', outcome: 'Scenario testing before committing a plan.' },
+  { tag: 'Manufacturing', title: 'Industrial manufacturer', ind: 'Manufacturing planning', challenge: 'Disconnected tools blocked alignment.', outcome: 'Shared environment with visible assumptions.' },
+];
+---
+
+<HomePanel id="stories" screenLabel="Stories">
+  <SectionRule num="06" left="Stories" right="Selected client work" />
+  <div class="section-head reveal">
+    <h2 class="display">Planning challenges,<br /><span class="accent">worked through in practice.</span></h2>
+    <p>Environments IBP Ready and Haidi support. Client names shared on request.</p>
+  </div>
+</HomePanel>
+
+<HomePanel screenLabel="Stories">
+  <div class="stories stories--panel">
+    {storiesA.map((s, i) => (
+      <div class="story reveal" data-delay={(i % 3) + 1}>
+        <span class="st-tag">{s.tag}</span>
+        <h3>{s.title}</h3>
+        <div class="st-ind">{s.ind}</div>
+        <div class="st-block"><div class="st-label">Challenge</div><div class="st-text">{s.challenge}</div></div>
+        <div class="st-block"><div class="st-label">What we helped improve</div><div class="st-text">{s.outcome}</div></div>
+      </div>
+    ))}
+  </div>
+</HomePanel>
+
+<HomePanel screenLabel="Stories">
+  <div class="stories stories--panel stories--panel-b">
+    {storiesB.map((s, i) => (
+      <div class="story reveal" data-delay={(i % 2) + 1}>
+        <span class="st-tag">{s.tag}</span>
+        <h3>{s.title}</h3>
+        <div class="st-ind">{s.ind}</div>
+        <div class="st-block"><div class="st-label">Challenge</div><div class="st-text">{s.challenge}</div></div>
+        <div class="st-block"><div class="st-label">What we helped improve</div><div class="st-text">{s.outcome}</div></div>
+      </div>
+    ))}
+    <div class="story story--cta reveal" data-delay="3">
+      <span class="st-tag">Your team</span>
+      <h3>Could be the next story</h3>
+      <div class="st-ind">Any planning environment</div>
+      <p class="story-cta__text">Tell us where planning gets difficult.</p>
+      <a class="link-arrow" href="/contact">Prepare to launch
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+  <p class="stories-note reveal">No invented metrics or quotes — outcomes shared with client approval.</p>
+</HomePanel>

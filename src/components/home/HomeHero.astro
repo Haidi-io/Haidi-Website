@@ -1,0 +1,99 @@
+---
+import ProductFrame from './ProductFrame.astro';
+---
+
+<section class="hero home-panel" id="main" data-hero-root data-scroll-panel data-screen-label="Home">
+  <div class="hero-canvas-host">
+    <canvas class="hero-canvas" aria-hidden="true"></canvas>
+  </div>
+
+  <div class="hero-content home-panel__inner">
+    <div class="hero-v hero-v--workspace">
+      <div class="wrap">
+        <div class="hero-text">
+          <span class="eyebrow eyebrow--wrap">Supply chain demand planning</span>
+          <h1 class="display">Planning that gives your team a reason to <span class="accent">trust the forecast.</span></h1>
+          <p class="hero-sub">Haidi helps supply chain teams turn data, assumptions, and demand signals into clear forecasting and planning decisions — without needing an in-house data science team.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary btn-lg" href="/contact">Prepare to launch</a>
+            <a class="btn btn-secondary btn-lg" href="/product-overview">Explore the product
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+          <p class="hero-note">Built by supply chain practitioners · Forecasting you can explain</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-v hero-v--split">
+      <div class="wrap-wide hero-split-grid">
+        <div class="hero-text hero-text--left">
+          <span class="eyebrow">Demand planning platform</span>
+          <h1 class="display">See the forecast. <span class="accent">Understand the drivers.</span></h1>
+          <p class="hero-sub">Haidi connects demand signals, assumptions, and review workflows — so your team can trust what the forecast is telling them.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary btn-lg" href="/contact">Prepare to launch</a>
+            <a class="btn btn-ghost btn-lg" href="/product-overview">Explore the product</a>
+          </div>
+          <p class="hero-note">Live demand review · Scenario-ready</p>
+        </div>
+        <ProductFrame mock="review" url="app.haidi.io / demand-review" class="hero-split-frame" />
+      </div>
+    </div>
+
+    <div class="hero-v hero-v--minimal">
+      <div class="wrap">
+        <div class="hero-text">
+          <span class="eyebrow">Haidi</span>
+          <h1 class="display">Demand planning your team can <span class="accent">explain.</span></h1>
+          <p class="hero-sub">Clear forecasts, structured review, and planning decisions — built by supply chain practitioners, not generic software.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary btn-lg" href="/contact">Prepare to launch</a>
+            <a class="btn btn-secondary btn-lg" href="/product-overview">Explore the product</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-v hero-v--editorial">
+      <div class="hero-editorial">
+        <span class="eyebrow">Supply chain demand planning</span>
+        <h1 class="display">Clear forecasts.<br>Structured review.<br><span class="accent">Decisions you can defend.</span></h1>
+        <p class="hero-sub">Haidi gives planning teams a workspace where assumptions, drivers, and scenarios stay visible — so the forecast is something you can stand behind in the room.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-lg" href="/contact">Prepare to launch</a>
+          <a class="btn btn-secondary btn-lg" href="/product-overview">See how it works</a>
+        </div>
+        <p class="hero-note">Built by IBP Ready · Switzerland</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">Scroll</div>
+</section>
+
+<script>
+  function bootHero() {
+    if (document.querySelector('script[data-haidi-hero]')) return;
+    const s = document.createElement('script');
+    s.src = '/assets/haidi-hero.js';
+    s.dataset.haidiHero = '';
+    document.body.appendChild(s);
+  }
+
+  const hero = document.querySelector('.hero');
+  if (hero && 'IntersectionObserver' in window) {
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          bootHero();
+          obs.disconnect();
+        }
+      },
+      { rootMargin: '120px' },
+    );
+    obs.observe(hero);
+  } else {
+    bootHero();
+  }
+</script>

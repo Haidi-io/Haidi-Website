@@ -12,6 +12,7 @@
   }
 
   function initReveal() {
+    if (window.__HAIDI_GSAP__) return;
     var els = document.querySelectorAll('.reveal');
     if (!('IntersectionObserver' in window) || !els.length) {
       els.forEach(function (e) { e.classList.add('in'); }); return;

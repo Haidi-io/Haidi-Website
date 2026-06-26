@@ -1,0 +1,103 @@
+---
+import { site } from '../config/site';
+import type { NavKey } from '../config/site';
+
+interface Props {
+  active?: NavKey;
+}
+
+const { active = '' } = Astro.props;
+const { paths, appUrl } = site;
+
+const nav = [
+  { href: paths.product, label: 'Product', key: 'product' as const },
+  { href: paths.about, label: 'About', key: 'about' as const },
+];
+---
+
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap-wide">
+    <nav class="nav">
+      <a class="logo" href={paths.home} aria-label="Haidi home">
+        <img src="/assets/haidi.png" alt="Haidi" width="120" height="27" loading="lazy" />
+      </a>
+      <div class="nav-links">
+        {
+          nav.map((item) => (
+            <a href={item.href} class:list={{ active: item.key === active }}>
+              {item.label}
+            </a>
+          ))
+        }
+      </div>
+      <div class="nav-actions">
+        <button
+          class="theme-toggle"
+          type="button"
+          aria-label="Switch to light theme"
+          title="Switch to light theme"
+        >
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5Z"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linejoin="round"></path>
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"></circle>
+            <path
+              d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"></path>
+          </svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href={appUrl} rel="noopener">Sign in</a>
+        <a class="btn btn-primary btn-sm" href={paths.contact}>Prepare to launch</a>
+        <button
+          class="nav-burger"
+          type="button"
+          aria-label="Menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M3 6h18M3 12h18M3 18h18"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></path>
+          </svg>
+        </button>
+      </div>
+    </nav>
+  </div>
+</header>
+<div class="mobile-menu" id="mobile-menu">
+  {
+    nav.map((item) => (
+      <a href={item.href}>{item.label}</a>
+    ))
+  }
+  <button class="theme-toggle" type="button" aria-label="Switch to light theme" title="Switch to light theme">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5Z"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linejoin="round"></path>
+    </svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"></circle>
+      <path
+        d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"></path>
+    </svg>
+  </button>
+  <a href={appUrl} rel="noopener">Sign in</a>
+  <a class="btn btn-primary" href={paths.contact} style="margin-top:12px">Prepare to launch</a>
+</div>
