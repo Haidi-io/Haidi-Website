@@ -1,0 +1,31 @@
+---
+import ProductPage from '../components/ProductPage.astro';
+
+const modules = [
+  {
+    eyebrow: 'Supply Planning',
+    heading: 'From the demand plan to <span class="accent">supply you can act on.</span>',
+    desc: 'Translate the demand plan into supply decisions — coverage, replenishment, and constraints — connected to the same assumptions, not a separate spreadsheet.',
+    list: [
+      'Coverage and replenishment signals',
+      'Lead times and constraints in view',
+      'Connected to the demand assumptions behind them',
+      'A clear, explainable supply outlook',
+    ],
+    mock: 'scenario',
+    url: 'app.haidi.io / supply-planning',
+  },
+];
+---
+
+<ProductPage
+  eyebrow="Supply Planning"
+  title="Haidi — Supply Planning"
+  description="Translate the demand plan into supply decisions — coverage, replenishment, and constraints — connected to the same planning assumptions."
+  canonical="https://haidi.io/supply-planning"
+  headline="Turn the plan into <span class='accent'>supply you can act on.</span>"
+  sub="Translate the demand plan into supply decisions — coverage, replenishment, and constraints — connected to the same assumptions, not a separate spreadsheet."
+  modules={modules}
+  finalHeading="One plan, from demand <span class='accent'>through to supply.</span>"
+  finalSub="See Haidi carry your demand plan into supply decisions you can explain — set up in under 2 hours."
+/>

@@ -1,0 +1,31 @@
+---
+import ProductPage from '../components/ProductPage.astro';
+
+const modules = [
+  {
+    eyebrow: 'Inventory Review',
+    heading: 'See what needs attention before <span class="accent">inventory becomes a problem.</span>',
+    desc: 'Connect inventory decisions back to demand and planning assumptions, and surface the risks worth acting on before they bite.',
+    list: [
+      'Projected stock levels and coverage',
+      'Shortage and exposure indicators',
+      'Product and location prioritisation',
+      'Current outlook compared with the target plan',
+    ],
+    mock: 'inventory',
+    url: 'app.haidi.io / inventory-review',
+  },
+];
+---
+
+<ProductPage
+  eyebrow="Inventory Planning"
+  title="Haidi — Inventory Planning"
+  description="Connect inventory decisions back to demand and planning assumptions, and surface the risks worth acting on before they bite."
+  canonical="https://haidi.io/inventory-planning"
+  headline="See inventory risk <span class='accent'>before it bites.</span>"
+  sub="Connect inventory decisions back to demand and planning assumptions, and surface the risks worth acting on before they become problems."
+  modules={modules}
+  finalHeading="Inventory decisions, <span class='accent'>connected to demand.</span>"
+  finalSub="See Haidi link your inventory signals to the demand assumptions behind them — set up in under 2 hours."
+/>

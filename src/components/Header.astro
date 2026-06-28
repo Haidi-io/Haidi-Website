@@ -14,6 +14,32 @@ const nav = [
   { href: paths.usecases, label: 'Use Cases', key: 'usecases' as const },
   { href: paths.about, label: 'About', key: 'about' as const },
 ];
+
+// Items shown in the "Product" mega-menu dropdown.
+const productMenu = [
+  {
+    href: '/demand-planning',
+    label: 'Demand Planning',
+    icon: '<path d="M4 19V5M4 19h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M7 15l3-4 3 2 4-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+  },
+  {
+    href: '/inventory-planning',
+    label: 'Inventory Planning',
+    icon: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>',
+  },
+  {
+    href: '/supply-planning',
+    label: 'Supply Planning',
+    beta: true,
+    icon: '<circle cx="5" cy="12" r="2.4" stroke="currentColor" stroke-width="1.6"/><circle cx="19" cy="6" r="2.4" stroke="currentColor" stroke-width="1.6"/><circle cx="19" cy="18" r="2.4" stroke="currentColor" stroke-width="1.6"/><path d="M7.2 11l9.5-4M7.2 13l9.5 4" stroke="currentColor" stroke-width="1.6"/>',
+  },
+  {
+    href: '/haidi-gen',
+    label: 'HaidiGen',
+    beta: true,
+    icon: '<path d="M12 3l1.7 4.6L18.3 9.3l-4.6 1.7L12 15.6l-1.7-4.6L5.7 9.3l4.6-1.7L12 3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M18.5 15l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>',
+  },
+];
 ---
 
 <a class="skip-link" href="#main">Skip to content</a>
@@ -24,13 +50,40 @@ const nav = [
         <img src="/assets/haidi.png" alt="Haidi" width="120" height="27" loading="eager" fetchpriority="high" />
       </a>
       <div class="nav-links">
-        {
-          nav.map((item) => (
-            <a href={item.href} class:list={{ active: item.key === active }}>
-              {item.label}
-            </a>
-          ))
-        }
+        <div class="nav-dd" data-nav-dd>
+          <button
+            class:list={['nav-dd-trigger', { active: active === 'product' }]}
+            type="button"
+            aria-expanded="false"
+            aria-haspopup="true"
+          >
+            Product
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </button>
+          <div class="nav-dd-panel">
+            <div class="nav-dd-inner">
+              <div class="nav-dd-intro">
+                <h3>Explore Haidi</h3>
+                <a class="btn btn-secondary btn-sm" href={paths.product}>See overview</a>
+              </div>
+              <span class="nav-dd-sep"></span>
+              <div class="nav-dd-col">
+                <span class="nav-dd-label">Products</span>
+                {
+                  productMenu.map((p) => (
+                    <a class="nav-dd-link" href={p.href}>
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" set:html={p.icon} />
+                      <span>{p.label}</span>
+                      {p.beta && <span class="nav-beta">Beta</span>}
+                    </a>
+                  ))
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+        <a href={paths.usecases} class:list={{ active: active === 'usecases' }}>Use Cases</a>
+        <a href={paths.about} class:list={{ active: active === 'about' }}>About</a>
       </div>
       <div class="nav-actions">
         <button
@@ -76,11 +129,20 @@ const nav = [
   </div>
 </header>
 <div class="mobile-menu" id="mobile-menu">
-  {
-    nav.map((item) => (
-      <a href={item.href}>{item.label}</a>
-    ))
-  }
+  <a href={paths.product}>Product</a>
+  <div class="mm-sub">
+    {
+      productMenu.map((p) => (
+        <a class="mm-sub-link" href={p.href}>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" set:html={p.icon} />
+          <span>{p.label}</span>
+          {p.beta && <span class="nav-beta">Beta</span>}
+        </a>
+      ))
+    }
+  </div>
+  <a href={paths.usecases}>Use Cases</a>
+  <a href={paths.about}>About</a>
   <button class="theme-toggle" type="button" aria-label="Switch to light theme" title="Switch to light theme">
     <svg class="icon-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
@@ -100,3 +162,31 @@ const nav = [
   </button>
   <a class="btn btn-primary" href={paths.contact} style="margin-top:12px">Prepare to launch</a>
 </div>
+
+<script is:inline>
+  (function () {
+    var dd = document.querySelector('[data-nav-dd]');
+    if (!dd) return;
+    var trigger = dd.querySelector('.nav-dd-trigger');
+    var panel = dd.querySelector('.nav-dd-panel');
+    var closeTimer;
+    function open() {
+      clearTimeout(closeTimer);
+      panel.classList.add('is-open');
+      trigger.setAttribute('aria-expanded', 'true');
+    }
+    function close() {
+      panel.classList.remove('is-open');
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+    dd.addEventListener('mouseenter', open);
+    dd.addEventListener('mouseleave', function () { closeTimer = setTimeout(close, 120); });
+    trigger.addEventListener('click', function (e) {
+      e.preventDefault();
+      panel.classList.contains('is-open') ? close() : open();
+    });
+    document.addEventListener('click', function (e) { if (!dd.contains(e.target)) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    panel.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', close); });
+  })();
+</script>

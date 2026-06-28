@@ -1,0 +1,148 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+export interface ProductModule {
+  eyebrow?: string;
+  heading: string; // may contain a <span class="accent"> … </span>
+  desc: string;
+  list?: string[];
+  chips?: string[];
+  mock?: string;
+  url?: string;
+  draw?: boolean; // chat-style mocks animate with data-draw instead of data-loop
+  flip?: boolean; // mock on the left, text on the right
+}
+
+interface Props {
+  eyebrow: string;
+  title: string; // browser/SEO title
+  description: string;
+  canonical: string;
+  headline: string; // hero h1, may contain <span class="accent">
+  sub: string;
+  modules: ProductModule[];
+  finalHeading: string; // may contain <span class="accent">
+  finalSub: string;
+}
+
+const { eyebrow, title, description, canonical, headline, sub, modules, finalHeading, finalSub } =
+  Astro.props;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  ogTitle={title}
+  ogDescription={description}
+  ogUrl={canonical}
+  nav="product"
+  screenLabel={eyebrow}
+  scripts={['haidi-site.js']}
+>
+  <style is:global>
+    .pp-hero { padding: 72px 0 56px; }
+    .pp-hero h1 { font-size: clamp(36px, 5vw, 64px); line-height: 1.02; margin: 22px 0 22px; max-width: 18ch; }
+    .pp-sub { font-size: clamp(17px, 1.7vw, 20px); color: var(--text-body); max-width: 620px; text-wrap: pretty; }
+    .pp-hero .hero-cta { display: flex; gap: 14px; margin-top: 34px; flex-wrap: wrap; }
+
+    .pp-module { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 56px; align-items: center; }
+    .pp-module.flip { grid-template-columns: 1.15fr 0.85fr; }
+    .pp-module.flip .pp-text { order: 2; }
+    .pp-text h2 { font-size: clamp(26px, 3.2vw, 40px); margin: 14px 0 18px; }
+    .pp-text > p { font-size: 16px; color: var(--text-body); text-wrap: pretty; margin: 0; }
+    .pp-list { list-style: none; padding: 0; margin: 24px 0 4px; display: flex; flex-direction: column; gap: 11px; }
+    .pp-list li { display: flex; gap: 12px; align-items: flex-start; font-size: 14.5px; color: var(--text-body); }
+    .pp-list li::before { content: ""; width: 6px; height: 6px; margin-top: 8px; flex: 0 0 auto; background: var(--teal); border-radius: 2px; }
+    .pp-chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0 4px; }
+    .pp-chips span { font-size: 13px; color: var(--text-body); border: 1px solid var(--line); border-radius: 999px; padding: 9px 15px; background: rgba(255,255,255,0.02); transition: border-color .25s, color .25s; }
+    .pp-chips span:hover { border-color: rgba(71,185,187,0.45); color: var(--teal); }
+    .pp-module .link-arrow { margin-top: 26px; }
+    @media (max-width: 940px) {
+      .pp-module, .pp-module.flip { grid-template-columns: 1fr; gap: 36px; }
+      .pp-module.flip .pp-text { order: 0; }
+    }
+
+    .pp-final { position: relative; border-top: 1px solid var(--line); padding: 110px 0; overflow: hidden; text-align: center; }
+    .pp-final .wrap { max-width: 700px; position: relative; z-index: 1; }
+    .pp-final h2 { font-size: clamp(32px, 4.6vw, 56px); }
+    .pp-final p { font-size: 17px; color: var(--text-body); max-width: 520px; margin: 22px auto 0; text-wrap: pretty; }
+    .pp-final .hero-cta { display: flex; gap: 14px; justify-content: center; margin-top: 34px; flex-wrap: wrap; }
+  </style>
+
+  <section class="pp-hero" id="main" data-screen-label={`${eyebrow} hero`}>
+    <div class="wrap-wide">
+      <span class="eyebrow">{eyebrow}</span>
+      <h1 class="display" set:html={headline} />
+      <p class="pp-sub">{sub}</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg" href="/contact">Prepare to launch</a>
+        <a class="btn btn-secondary btn-lg" href="/product-overview">Full product overview
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {
+    modules.map((m) => (
+      <section class="section-pad" style="padding-top:40px">
+        <div class:list={['wrap-wide pp-module', { flip: m.flip }]}>
+          <div class="pp-text reveal">
+            {m.eyebrow && <span class="eyebrow">{m.eyebrow}</span>}
+            <h2 class="display" set:html={m.heading} />
+            <p>{m.desc}</p>
+            {m.list && (
+              <ul class="pp-list">
+                {m.list.map((li) => (
+                  <li>{li}</li>
+                ))}
+              </ul>
+            )}
+            {m.chips && (
+              <div class="pp-chips">
+                {m.chips.map((c) => (
+                  <span>{c}</span>
+                ))}
+              </div>
+            )}
+            {m.url && (
+              <a class="link-arrow" href="/contact">
+                Prepare to launch
+                <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </a>
+            )}
+          </div>
+          {m.mock ? (
+            <div class="glow-wrap reveal" data-delay="1">
+              <div class="frame">
+                <div class="frame-bar"><div class="frame-dots"><i /><i /><i /></div><div class="frame-url">{m.url}</div></div>
+                {m.draw ? (
+                  <div class="frame-body" data-mock={m.mock} data-draw />
+                ) : (
+                  <div class="frame-body" data-mock={m.mock} data-loop />
+                )}
+              </div>
+            </div>
+          ) : (
+            <div />
+          )}
+        </div>
+      </section>
+    ))
+  }
+
+  <section class="pp-final" data-screen-label="Prepare to launch">
+    <div class="final-glow"></div>
+    <div class="wrap reveal">
+      <h2 class="display" set:html={finalHeading} />
+      <p>{finalSub}</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg" href="/contact">Prepare to launch</a>
+        <a class="btn btn-secondary btn-lg" href="/product-overview">Explore the product
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,5 +1,10 @@
 ---
+// OLD CONTACT PAGE — commented out for now. The "Prepare to launch" flow now
+// opens in a site-wide modal (src/components/ContactModal.astro) instead of a
+// dedicated page. Disabled via a redirect; the markup below is preserved and
+// never renders. To restore the page, remove the Astro.redirect line.
 import BaseLayout from '../layouts/BaseLayout.astro';
+return Astro.redirect('/home');
 ---
 
 <BaseLayout title="Haidi — Prepare to launch" description="Tell us about your planning process and we'll recommend the best next step — a tailored demo, case study, or focused discussion." canonical="https://haidi.io/contact" ogTitle="Haidi — Prepare to launch" ogDescription="Answer a few questions about your planning situation and the Haidi team will recommend the best next step." ogUrl="https://haidi.io/contact" screenLabel="Contact" scripts={['haidi-site.js', 'contact-form.js', 'haidi-tweaks.js']}>

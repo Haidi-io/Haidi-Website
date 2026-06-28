@@ -1,40 +1,25 @@
 ---
 import HomePanel from './HomePanel.astro';
-import ProductFrame from './ProductFrame.astro';
-
-const steps = [
-  { id: 'drivers', num: '01', title: 'Demand Drivers', desc: 'Signals flow in from markets, promotions, and commercial activity.', mock: 'drivers', url: 'app.haidi.io / drivers' },
-  { id: 'experiments', num: '02', title: 'Forecast Lab', desc: 'The forecast line branches into experiments your team can compare.', mock: 'experiments', url: 'app.haidi.io / forecast-lab' },
-  { id: 'review', num: '03', title: 'Demand Review', desc: 'Review exceptions, assumptions, and decisions in one workspace.', mock: 'review', url: 'app.haidi.io / demand-review' },
-  { id: 'scenario', num: '04', title: 'Scenario Testing', desc: 'Test alternatives before the plan becomes a commitment.', mock: 'scenario', url: 'app.haidi.io / scenarios' },
-];
 ---
 
 <div data-product-journey>
-  <HomePanel screenLabel="Product journey">
-    <span class="eyebrow">From signal to decision</span>
-    <h2 class="display journey-intro__title">The forecast line leads<br /><span class="accent">into the product.</span></h2>
-    <p class="journey-intro__sub">What you see in the hero — demand signals converging on a forecast — is the same journey inside Haidi.</p>
-  </HomePanel>
-
-  {steps.map((step) => (
-    <HomePanel journeyStep={step.id} screenLabel={`Journey · ${step.title}`}>
-      <div class="journey-panel">
-        <div class="journey-panel__copy">
-          <div class="product-journey__step is-active" data-journey-step={step.id}>
-            <span class="product-journey__step-num">{step.num}</span>
-            <div>
-              <h4>{step.title}</h4>
-              <p>{step.desc}</p>
-            </div>
-          </div>
-        </div>
-        <div class="journey-panel__mock">
-          <div class="product-journey__mock-panel is-active" data-journey-panel={step.id}>
-            <ProductFrame mock={step.mock} url={step.url} loop />
-          </div>
-        </div>
+  <HomePanel screenLabel="Why Haidi">
+    <div class="why3 reveal">
+      <div class="why3-col">
+        <span class="why3-num">01</span>
+        <h3>From signal to decision in one workspace</h3>
+        <p>Forecast demand, manage inventory risk, and test scenarios without switching tools or rebuilding spreadsheets. The full planning cycle, connected.</p>
       </div>
-    </HomePanel>
-  ))}
+      <div class="why3-col">
+        <span class="why3-num">02</span>
+        <h3>No inflated projects. No slide decks.</h3>
+        <p>Built from the trenches by experienced supply chain practitioners. You like it, you continue. You hate it, you walk away. No 2-year lock-in, no contracts held together by the fear of losing what you've already paid for.</p>
+      </div>
+      <div class="why3-col">
+        <span class="why3-num">03</span>
+        <h3>Explainable forecasts. Running before end of day.</h3>
+        <p>Every forecast shows why it was chosen. Every inventory signal links back to the demand assumption behind it. Set up in under 2 hours — no specialists required.</p>
+      </div>
+    </div>
+  </HomePanel>
 </div>

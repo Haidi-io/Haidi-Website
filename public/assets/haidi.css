@@ -136,6 +136,19 @@ h1, h2, h3, h4 { color: var(--text); margin: 0; line-height: 1.04; letter-spacin
 p { margin: 0; }
 ::selection { background: var(--teal); color: #06181a; }
 
+/* ── scrollbar (slim, theme-aware) ── */
+html { scrollbar-width: thin; scrollbar-color: var(--line-2) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--line-2);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--teal); background-clip: padding-box; }
+::-webkit-scrollbar-corner { background: transparent; }
+
 /* ── display typography ── */
 .display { font-weight: 500; letter-spacing: -0.035em; }
 .accent, .line2 { color: var(--teal); }
@@ -221,7 +234,8 @@ section { position: relative; z-index: 1; }
 /* ── hero / main CTAs — polished premium treatment ───────────── */
 .hero-cta { gap: 14px; }
 
-.hero-cta .btn {
+.hero-cta .btn,
+.nav-actions .btn-primary {
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -231,31 +245,38 @@ section { position: relative; z-index: 1; }
 .hero-cta .btn svg { transition: transform .3s var(--ease); }
 .hero-cta .btn:hover svg { transform: translateX(4px); }
 
-/* Primary — layered teal gradient, glossy top edge, sweeping sheen on hover */
-.hero-cta .btn-primary {
+/* Primary — layered teal gradient, glossy top edge, sweeping sheen on hover.
+   Shared by the hero CTAs and the header "Prepare to launch" button. */
+.hero-cta .btn-primary,
+.nav-actions .btn-primary {
   background: linear-gradient(135deg, var(--teal-bright) 0%, var(--teal) 52%, var(--teal-deep) 100%);
   box-shadow: 0 12px 34px -14px rgba(71,185,187,0.6),
               inset 0 1px 0 rgba(255,255,255,0.28);
 }
-.hero-cta .btn-primary::before {
+.hero-cta .btn-primary::before,
+.nav-actions .btn-primary::before {
   content: ""; position: absolute; inset: 0; z-index: -1;
   border-radius: inherit; pointer-events: none;
   background: linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0) 55%);
 }
-.hero-cta .btn-primary::after {
+.hero-cta .btn-primary::after,
+.nav-actions .btn-primary::after {
   content: ""; position: absolute; top: 0; left: -130%; z-index: -1;
   width: 60%; height: 100%; pointer-events: none;
   background: linear-gradient(75deg, transparent, rgba(255,255,255,0.55), transparent);
   transform: skewX(-18deg);
   transition: left .65s var(--ease);
 }
-.hero-cta .btn-primary:hover {
+.hero-cta .btn-primary:hover,
+.nav-actions .btn-primary:hover {
   transform: translateY(-3px);
   box-shadow: 0 20px 46px -14px rgba(71,185,187,0.7),
               inset 0 1px 0 rgba(255,255,255,0.4);
 }
-.hero-cta .btn-primary:hover::after { left: 130%; }
-.hero-cta .btn-primary:active { transform: translateY(-1px) scale(.99); }
+.hero-cta .btn-primary:hover::after,
+.nav-actions .btn-primary:hover::after { left: 130%; }
+.hero-cta .btn-primary:active,
+.nav-actions .btn-primary:active { transform: translateY(-1px) scale(.99); }
 
 /* Secondary — glassy outline that fills with a faint teal wash on hover */
 .hero-cta .btn-secondary {
@@ -283,8 +304,11 @@ section { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) {
   .hero-cta .btn,
   .hero-cta .btn:hover,
-  .hero-cta .btn:active { transform: none; }
-  .hero-cta .btn-primary::after { display: none; }
+  .hero-cta .btn:active,
+  .nav-actions .btn-primary:hover,
+  .nav-actions .btn-primary:active { transform: none; }
+  .hero-cta .btn-primary::after,
+  .nav-actions .btn-primary::after { display: none; }
   .hero-cta .btn:hover svg { transform: none; }
 }
 
@@ -330,6 +354,52 @@ html[data-theme="light"] .theme-toggle .icon-sun { display: block; }
   .nav-links { display: none; }
   .nav-actions .btn-ghost { display: none; }
   .nav-burger { display: inline-flex; }
+}
+
+/* ── Product mega-menu dropdown ───────────────────────────── */
+.nav-dd { position: relative; }
+.nav-dd-trigger {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: inherit; font-size: 13.5px; font-weight: 500; letter-spacing: 0.01em;
+  color: var(--text-body); background: transparent; border: 0; cursor: pointer;
+  padding: 8px 14px; border-radius: 999px; white-space: nowrap;
+  transition: color .2s, background .2s;
+}
+.nav-dd-trigger:hover, .nav-dd-trigger.active,
+.nav-dd-trigger[aria-expanded="true"] { color: var(--text); background: var(--surface-hover); }
+.nav-dd-trigger svg { width: 13px; height: 13px; transition: transform .25s var(--ease); }
+.nav-dd-trigger[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+.nav-dd-panel {
+  position: absolute; top: calc(100% + 12px); left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  width: min(640px, calc(100vw - 32px));
+  background: var(--bg-elevated); border: 1px solid var(--line-2); border-radius: 16px;
+  box-shadow: 0 40px 90px -40px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.02);
+  padding: 26px 28px;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .2s ease, transform .28s var(--ease), visibility .2s;
+  z-index: 250;
+}
+.nav-dd-panel::before { content: ""; position: absolute; left: 0; right: 0; top: -14px; height: 14px; }
+.nav-dd-panel.is-open { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+
+.nav-dd-inner { display: grid; grid-template-columns: 1fr 1px 1.05fr; gap: 26px; align-items: stretch; }
+.nav-dd-intro { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+.nav-dd-intro h3 { font-size: 19px; font-weight: 500; line-height: 1.22; margin: 0 0 18px; max-width: 13ch; }
+.nav-dd-sep { background: var(--line); width: 1px; }
+.nav-dd-col { display: flex; flex-direction: column; gap: 2px; }
+.nav-dd-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 8px 10px; }
+.nav-dd-link { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 9px; color: var(--text-body); font-size: 14.5px; transition: background .2s, color .2s; }
+.nav-dd-link:hover { background: var(--surface-hover); color: var(--text); }
+.nav-dd-link svg { width: 18px; height: 18px; color: var(--teal); flex: 0 0 auto; }
+.nav-beta {
+  margin-left: auto; flex: 0 0 auto;
+  font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--teal); background: var(--teal-12);
+  border: 1px solid rgba(71,185,187,0.28); border-radius: 999px;
+  padding: 2px 7px; line-height: 1.4;
 }
 
 /* ── product frame ───────────────────────────────────────── */
@@ -424,6 +494,13 @@ html[data-theme="light"] .theme-toggle .icon-sun { display: block; }
 .mobile-menu a { font-size: 17px; color: var(--text); padding: 14px 0; border-bottom: 1px solid var(--line); }
 .mobile-menu .theme-toggle { margin: 4px 0 12px; align-self: flex-start; }
 .mobile-menu a.btn { border: none; justify-content: center; }
+.mobile-menu .mm-sub { display: flex; flex-direction: column; padding: 2px 0 6px 4px; }
+.mobile-menu .mm-sub-link {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 15px; font-weight: 400; color: var(--text-body);
+  padding: 11px 0; border-bottom: 0;
+}
+.mobile-menu .mm-sub-link svg { width: 18px; height: 18px; color: var(--teal); flex: 0 0 auto; }
 .mobile-menu { display: none; }
 .mobile-menu.open {
   display: flex; flex-direction: column; gap: 4px;

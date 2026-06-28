@@ -2,6 +2,7 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Preloader from '../components/Preloader.astro';
+import ContactModal from '../components/ContactModal.astro';
 import { site } from '../config/site';
 import type { NavKey } from '../config/site';
 
@@ -63,36 +64,48 @@ const {
     <script is:inline>
       (function () {
         var KEY = 'haidi-theme';
-        function resolve() {
-          try {
-            var saved = localStorage.getItem(KEY);
-            if (saved === 'light' || saved === 'dark') return saved;
-          } catch (e) {}
+        // An explicitly chosen theme (via the toggle) is the only thing that
+        // overrides the OS preference. No saved value => follow the system.
+        function stored() {
+          try { var s = localStorage.getItem(KEY); if (s === 'light' || s === 'dark') return s; } catch (e) {}
+          return null;
+        }
+        function system() {
           return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
         }
         function label(theme) {
           return 'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' theme';
         }
-        function apply(theme) {
+        function apply(theme, persist) {
           document.documentElement.setAttribute('data-theme', theme);
-          try { localStorage.setItem(KEY, theme); } catch (e) {}
+          if (persist) { try { localStorage.setItem(KEY, theme); } catch (e) {} }
           document.querySelectorAll('.theme-toggle').forEach(function (btn) {
             btn.setAttribute('aria-label', label(theme));
             btn.setAttribute('title', label(theme));
           });
         }
-        apply(resolve());
+        // Initial paint: OS preference unless the visitor previously chose one.
+        apply(stored() || system(), false);
+
+        // Follow live OS theme changes while the visitor hasn't picked a theme.
+        try {
+          var mq = window.matchMedia('(prefers-color-scheme: dark)');
+          var onSystem = function () { if (!stored()) apply(system(), false); };
+          if (mq.addEventListener) mq.addEventListener('change', onSystem);
+          else if (mq.addListener) mq.addListener(onSystem);
+        } catch (e) {}
+
         function initToggle() {
           document.querySelectorAll('.theme-toggle').forEach(function (btn) {
             if (btn.__themeBound) return;
             btn.__themeBound = true;
             btn.addEventListener('click', function () {
               var cur = document.documentElement.getAttribute('data-theme') || 'dark';
-              apply(cur === 'dark' ? 'light' : 'dark');
+              apply(cur === 'dark' ? 'light' : 'dark', true); // explicit choice — persist
             });
           });
         }
-        window.haidiSetTheme = apply;
+        window.haidiSetTheme = function (theme) { apply(theme, true); };
         window.haidiInitThemeToggle = initToggle;
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initToggle);
         else initToggle();
@@ -109,6 +122,7 @@ const {
     <Header active={nav} />
     <slot />
     <Footer />
+    <ContactModal />
     <script>
       // The custom cursor (gsap core only) runs on every page.
       import { initHaidiCursor } from '../lib/haidi-cursor';

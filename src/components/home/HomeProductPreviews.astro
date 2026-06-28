@@ -14,14 +14,11 @@ const previews = [
 <HomePanel id="product" screenLabel="Product previews">
   <SectionRule num="02" left="Inside the product" right="A connected planning workspace" />
   <div class="section-head reveal">
-    <h2 class="display">Windows into the<br /><span class="accent">planning environment.</span></h2>
+    <h2 class="display">Windows into the <span class="accent">planning environment.</span></h2>
     <p>Each area connects to the next — from demand signals to the scenarios your team reviews.</p>
   </div>
-</HomePanel>
-
-<HomePanel screenLabel="Product previews">
   <div class="previews previews--panel">
-    {previews.slice(0, 2).map((p) => (
+    {previews.map((p) => (
       <a class="preview-link preview reveal" data-delay={p.delay} data-journey-id={p.id} href={p.href}>
         <div class="pv-head"><h3>{p.title}</h3><span class="mono-tag">{p.tag}</span></div>
         <ProductFrame mock={p.mock} url={p.url} loop />
@@ -29,19 +26,7 @@ const previews = [
       </a>
     ))}
   </div>
-</HomePanel>
-
-<HomePanel screenLabel="Product previews">
-  <div class="previews previews--panel">
-    {previews.slice(2).map((p) => (
-      <a class="preview-link preview reveal" data-delay={p.delay} data-journey-id={p.id} href={p.href}>
-        <div class="pv-head"><h3>{p.title}</h3><span class="mono-tag">{p.tag}</span></div>
-        <ProductFrame mock={p.mock} url={p.url} loop />
-        <p>{p.desc}</p>
-      </a>
-    ))}
-  </div>
-  <div class="center reveal" style="margin-top:28px">
+  <div class="center reveal" style="margin-top:24px">
     <a class="btn btn-secondary btn-lg" href="/product-overview">Explore the full product
       <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>

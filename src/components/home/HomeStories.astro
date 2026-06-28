@@ -2,13 +2,10 @@
 import HomePanel from './HomePanel.astro';
 import SectionRule from './SectionRule.astro';
 
-const storiesA = [
+const stories = [
   { tag: 'Pharma', title: 'Global pharmaceutical group', ind: 'Demand & supply planning', challenge: 'Forecasts were hard to explain across markets.', outcome: 'Structured review with visible drivers and assumptions.' },
   { tag: 'FMCG · Food', title: 'European food producer', ind: 'Demand planning', challenge: 'Promotions and seasonality created volatility.', outcome: 'Driver-based forecasting for promotional effects.' },
   { tag: 'FMCG · Hospitality', title: 'Regional food & hospitality brand', ind: 'Demand & inventory planning', challenge: 'Planning lived across spreadsheets.', outcome: 'Connected view linking demand signals to inventory.' },
-];
-
-const storiesB = [
   { tag: 'Manufacturing', title: 'Frozen & chilled foods manufacturer', ind: 'Supply & demand planning', challenge: 'Capacity constraints made accuracy costly.', outcome: 'Scenario testing before committing a plan.' },
   { tag: 'Manufacturing', title: 'Industrial manufacturer', ind: 'Manufacturing planning', challenge: 'Disconnected tools blocked alignment.', outcome: 'Shared environment with visible assumptions.' },
 ];
@@ -20,42 +17,110 @@ const storiesB = [
     <h2 class="display">Planning challenges,<br /><span class="accent">worked through in practice.</span></h2>
     <p>Environments IBP Ready and Haidi support. Client names shared on request.</p>
   </div>
-</HomePanel>
 
-<HomePanel screenLabel="Stories">
-  <div class="stories stories--panel">
-    {storiesA.map((s, i) => (
-      <div class="story reveal" data-delay={(i % 3) + 1}>
-        <span class="st-tag">{s.tag}</span>
-        <h3>{s.title}</h3>
-        <div class="st-ind">{s.ind}</div>
-        <div class="st-block"><div class="st-label">Challenge</div><div class="st-text">{s.challenge}</div></div>
-        <div class="st-block"><div class="st-label">What we helped improve</div><div class="st-text">{s.outcome}</div></div>
+  <div class="stories-carousel reveal" data-delay="1" data-stories-carousel>
+    <button class="sc-arrow" type="button" data-sc-prev aria-label="Previous stories">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="sc-viewport" data-sc-viewport>
+      <div class="sc-track" data-sc-track>
+        {stories.map((s) => (
+          <article class="story sc-card">
+            <span class="st-tag">{s.tag}</span>
+            <h3>{s.title}</h3>
+            <div class="st-ind">{s.ind}</div>
+            <div class="st-block"><div class="st-label">Challenge</div><div class="st-text">{s.challenge}</div></div>
+            <div class="st-block"><div class="st-label">What we helped improve</div><div class="st-text">{s.outcome}</div></div>
+          </article>
+        ))}
+        <article class="story sc-card story--cta">
+          <span class="st-tag">Your team</span>
+          <h3>Could be the next story</h3>
+          <div class="st-ind">Any planning environment</div>
+          <p class="story-cta__text">Tell us where planning gets difficult.</p>
+          <a class="link-arrow" href="/contact">Prepare to launch
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </article>
       </div>
-    ))}
-  </div>
-</HomePanel>
-
-<HomePanel screenLabel="Stories">
-  <div class="stories stories--panel stories--panel-b">
-    {storiesB.map((s, i) => (
-      <div class="story reveal" data-delay={(i % 2) + 1}>
-        <span class="st-tag">{s.tag}</span>
-        <h3>{s.title}</h3>
-        <div class="st-ind">{s.ind}</div>
-        <div class="st-block"><div class="st-label">Challenge</div><div class="st-text">{s.challenge}</div></div>
-        <div class="st-block"><div class="st-label">What we helped improve</div><div class="st-text">{s.outcome}</div></div>
-      </div>
-    ))}
-    <div class="story story--cta reveal" data-delay="3">
-      <span class="st-tag">Your team</span>
-      <h3>Could be the next story</h3>
-      <div class="st-ind">Any planning environment</div>
-      <p class="story-cta__text">Tell us where planning gets difficult.</p>
-      <a class="link-arrow" href="/contact">Prepare to launch
-        <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
     </div>
+    <button class="sc-arrow" type="button" data-sc-next aria-label="Next stories">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
   </div>
+  <div class="sc-dots" data-sc-dots></div>
   <p class="stories-note reveal">No invented metrics or quotes — outcomes shared with client approval.</p>
 </HomePanel>
+
+<script>
+  function initStoriesCarousel() {
+    const root = document.querySelector('[data-stories-carousel]');
+    if (!root) return;
+    const viewport = root.querySelector('[data-sc-viewport]') as HTMLElement | null;
+    const track = root.querySelector('[data-sc-track]') as HTMLElement | null;
+    const prev = root.querySelector('[data-sc-prev]') as HTMLButtonElement | null;
+    const next = root.querySelector('[data-sc-next]') as HTMLButtonElement | null;
+    const dotsHost = document.querySelector('[data-sc-dots]') as HTMLElement | null;
+    if (!viewport || !track || !prev || !next) return;
+
+    const cards = Array.from(track.children) as HTMLElement[];
+    let dots: HTMLButtonElement[] = [];
+
+    function step() {
+      if (cards.length < 2) return cards[0]?.offsetWidth ?? 0;
+      return cards[1].offsetLeft - cards[0].offsetLeft; // card width + gap
+    }
+    function maxScroll() {
+      return Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    }
+    function stops() {
+      // Number of distinct left-aligned start positions (one dot each).
+      const s = step() || 1;
+      const perView = Math.max(1, Math.round(viewport.clientWidth / s));
+      return Math.max(1, cards.length - perView + 1);
+    }
+    function activeIndex() {
+      const s = step() || 1;
+      return Math.min(stops() - 1, Math.round(viewport.scrollLeft / s));
+    }
+
+    function buildDots() {
+      if (!dotsHost) return;
+      const count = stops();
+      if (dots.length === count) return;
+      dotsHost.innerHTML = '';
+      dots = [];
+      for (let i = 0; i < count; i++) {
+        const d = document.createElement('button');
+        d.type = 'button';
+        d.className = 'sc-dot';
+        d.setAttribute('aria-label', 'Go to stories group ' + (i + 1));
+        d.addEventListener('click', () =>
+          viewport.scrollTo({ left: Math.min(i * step(), maxScroll()), behavior: 'smooth' }),
+        );
+        dotsHost.appendChild(d);
+        dots.push(d);
+      }
+    }
+
+    function update() {
+      buildDots();
+      const i = activeIndex();
+      dots.forEach((d, k) => d.classList.toggle('is-active', k === i));
+      prev.disabled = viewport.scrollLeft <= 2;
+      next.disabled = viewport.scrollLeft >= maxScroll() - 2;
+    }
+
+    prev.addEventListener('click', () => viewport.scrollBy({ left: -step(), behavior: 'smooth' }));
+    next.addEventListener('click', () => viewport.scrollBy({ left: step(), behavior: 'smooth' }));
+    viewport.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initStoriesCarousel);
+  } else {
+    initStoriesCarousel();
+  }
+</script>

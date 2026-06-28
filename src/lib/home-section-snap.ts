@@ -12,6 +12,11 @@ let ready = false;
 let panelIndex = 0;
 let animating = false;
 let scrollTween: gsap.core.Tween | null = null;
+// One snap per gesture: locked while a gesture is in flight (including its
+// momentum tail), re-armed only when input actually stops. This stops a late
+// inertia / rubber-band bounce from firing a snap in the opposite direction.
+let locked = false;
+let unlockTimer = 0;
 
 function readScrollY() {
   return window.scrollY || document.documentElement.scrollTop || 0;
@@ -64,7 +69,10 @@ export function rebuildHomeSnapPoints() {
     if (maxScroll > snapPoints[snapPoints.length - 1] + 1) snapPoints.push(maxScroll);
   }
 
-  panelIndex = currentPanelIndex();
+  // Don't resync the index mid-snap — a refresh (e.g. resize) firing during the
+  // tween would otherwise reset panelIndex to the panel being left and desync the
+  // next scroll. When at rest, derive it from the actual scroll position.
+  if (!animating) panelIndex = currentPanelIndex();
 }
 
 export function currentPanelIndex() {
@@ -96,8 +104,8 @@ function goToPanel(index: number, onLand?: () => void) {
   const proxy = { y: readScrollY() };
   scrollTween = gsap.to(proxy, {
     y: snapPoints[clamped],
-    duration: 0.7,
-    ease: 'power2.inOut',
+    duration: 0.42,
+    ease: 'power3.out',
     onUpdate: () => setScrollY(proxy.y),
     onComplete: () => {
       animating = false;
@@ -120,9 +128,27 @@ export function scrollToPanelIndex(index: number, onLand?: () => void) {
   goToPanel(index, onLand);
 }
 
+function unlock() {
+  locked = false;
+  clearTimeout(unlockTimer);
+}
+
 function bindObserver(onLand?: () => void) {
   observer?.kill();
   if (snapPoints.length < 2) return;
+
+  // One snap per gesture. Navigate relative to the ACTUAL nearest panel (not a
+  // stored index that can drift), then lock until the input stops — so the
+  // momentum tail (including an opposite-direction rubber-band bounce) can't
+  // trigger a second, wrong-way snap.
+  function step(dir: number) {
+    if (animating || locked) return;
+    locked = true;
+    clearTimeout(unlockTimer);
+    // Safety re-arm in case onStop never fires (e.g. very gentle input).
+    unlockTimer = window.setTimeout(unlock, 900);
+    goToPanel(currentPanelIndex() + dir, onLand);
+  }
 
   observer = Observer.create({
     target: window,
@@ -130,12 +156,10 @@ function bindObserver(onLand?: () => void) {
     tolerance: 10,
     wheelSpeed: 1,
     preventDefault: true,
-    onUp: () => {
-      if (!animating) goToPanel(panelIndex - 1, onLand);
-    },
-    onDown: () => {
-      if (!animating) goToPanel(panelIndex + 1, onLand);
-    },
+    onUp: () => step(-1),
+    onDown: () => step(1),
+    onStop: unlock,
+    onStopDelay: 0.15,
   });
 }
 
@@ -153,6 +177,10 @@ export function initHomeSectionSnap(onLand?: () => void) {
     rebuildHomeSnapPoints();
     bindObserver(onLand);
     ready = true;
+    // Reveal whatever panel we land on at load — goToPanel only reveals on
+    // scroll, so without this the first panel's .reveal content stays hidden
+    // (invisible on pages whose first panel isn't the self-animating hero).
+    revealVisibleSections();
   }
 
   if (!ready) {

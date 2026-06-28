@@ -1,0 +1,99 @@
+---
+import HomePanel from './HomePanel.astro';
+import ProductFrame from './ProductFrame.astro';
+
+// Compact line icons (stroke = currentColor) for the feature chips.
+const ic = {
+  scenario:
+    '<path d="M6 20V10M12 20V5M18 20v-7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+  drivers:
+    '<path d="M4 19h16M7 19v-6M12 19V8M17 19v-9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+  review:
+    '<rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6M9 17h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+  lab:
+    '<path d="M5 19l5-7V4M14 4v8l5 7H5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 4h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+  gen:
+    '<path d="M12 3l1.8 4.7L18.5 9.5 13.8 11.3 12 16l-1.8-4.7L5.5 9.5l4.7-1.8L12 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M18 16l.7 1.8L20.5 18.5 18.7 19.2 18 21l-.7-1.8L15.5 18.5l1.8-.7L18 16z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>',
+  coverage:
+    '<path d="M4 7h11M4 12h7M4 17h13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+  safety:
+    '<path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>',
+  alert:
+    '<path d="M12 4l9 16H3L12 4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 17.5v.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+  link:
+    '<rect x="3" y="5" width="7" height="14" rx="1.6" stroke="currentColor" stroke-width="1.6"/><path d="M13 12h7M17 9l3 3-3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+};
+
+const arrow =
+  '<path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+
+const pillars = [
+  {
+    tag: 'Pillar 01',
+    title: 'Demand Planning',
+    body: "From raw signal to a forecast your team can defend. High, mid, and low scenarios on the table at once, key drivers visible and explainable to management — so you walk into the demand review with evidence, not opinions.",
+    feats: [
+      { ic: ic.scenario, t: 'Scenario testing', s: 'High, mid, low — side by side' },
+      { ic: ic.drivers, t: 'Demand drivers', s: 'Ranked by impact' },
+      { ic: ic.review, t: 'Demand review', s: 'Exceptions, overrides, decisions' },
+      { ic: ic.lab, t: 'Forecast lab', s: 'Experiment and compare models' },
+      { ic: ic.gen, t: 'Haidi Gen', s: 'AI planning assistant' },
+    ],
+    mock: 'experiments',
+    url: 'app.haidi.io / forecast-lab',
+    cta: 'Explore demand planning',
+    href: '/demand-planning',
+  },
+  {
+    tag: 'Pillar 02',
+    title: 'Inventory Review',
+    body: "Turn your demand plan directly into an inventory position. Haidi reflects forecast variability into stock coverage and surfaces exposure before it becomes a shortage or a write-off — every inventory decision tied back to the demand assumption behind it.",
+    feats: [
+      { ic: ic.coverage, t: 'Stock coverage', s: 'Weeks of cover by SKU' },
+      { ic: ic.safety, t: 'Safety stock', s: 'Statistical, demand-driven' },
+      { ic: ic.alert, t: 'Exposure alerts', s: 'Shortages and write-off risk' },
+      { ic: ic.link, t: 'Demand-to-inventory', s: 'Signal drives the position' },
+    ],
+    mock: 'inventory',
+    url: 'app.haidi.io / inventory-review',
+    cta: 'Explore inventory planning',
+    href: '/inventory-planning',
+  },
+];
+---
+
+{
+  pillars.map((p) => (
+    <HomePanel screenLabel={`${p.tag} — ${p.title}`}>
+      <div class="pillar">
+        <div class="pillar-head reveal">
+          <div class="pillar-headline">
+            <span class="eyebrow">{p.tag}</span>
+            <h2 class="display">{p.title}</h2>
+          </div>
+          <p>{p.body}</p>
+        </div>
+        <div class="pillar-feats reveal" data-delay="1">
+          {p.feats.map((f) => (
+            <div class="pillar-feat">
+              <span class="pillar-feat-ic">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" set:html={f.ic} />
+              </span>
+              <div class="pillar-feat-txt">
+                <strong>{f.t}</strong>
+                <span>{f.s}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="pillar-frame reveal" data-delay="2">
+          <ProductFrame mock={p.mock} url={p.url} loop />
+          <a class="btn btn-secondary pillar-cta" href={p.href}>
+            {p.cta}
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" set:html={arrow} />
+          </a>
+        </div>
+      </div>
+    </HomePanel>
+  ))
+}

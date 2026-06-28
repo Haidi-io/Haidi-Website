@@ -1,0 +1,218 @@
+---
+/*
+  Site-wide "Prepare to launch" modal.
+
+  Hosts the multi-step qualification form (the same one that used to live on the
+  /contact page) inside a dialog, so any "Prepare to launch" / contact CTA opens
+  it in place instead of navigating away. A global click interceptor catches any
+  <a> whose pathname is "/contact", so individual buttons don't need editing.
+
+  The form is driven by the self-contained /assets/contact-form.js, which binds
+  to [data-cform] on load — the markup is server-rendered (hidden) so the script
+  initializes it normally; opening the modal just reveals it.
+*/
+---
+
+<div class="cm-overlay" id="contact-modal" role="dialog" aria-modal="true" aria-label="Prepare to launch">
+  <div class="cm-dialog">
+    <button type="button" class="cm-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+
+    <div class="cm-header">
+      <span class="eyebrow">Prepare to launch</span>
+      <h2 class="display">Tell us about your <span class="accent">planning process.</span></h2>
+    </div>
+
+    <!-- FORM (driven by contact-form.js via [data-cform]) -->
+    <div class="cf" data-cform>
+      <div data-card>
+        <div class="cf-body">
+          <div class="cf-step on" data-step>
+            <div class="cf-grid2">
+              <div data-row><label class="cf-label">Name</label><input class="cf-input" data-field="name" data-required="text" placeholder="Your full name" /><span class="cf-msg" data-msg></span></div>
+              <div data-row><label class="cf-label">Work email</label><input class="cf-input" type="email" data-field="email" data-required="email" placeholder="you@company.com" /><span class="cf-msg" data-msg></span></div>
+            </div>
+            <div data-row><label class="cf-label">Company</label><input class="cf-input" data-field="company" data-required="text" placeholder="Company name" /><span class="cf-msg" data-msg></span></div>
+            <div data-row><label class="cf-label">How can we help? <span class="cf-opt">optional</span></label><textarea class="cf-area" data-field="message" placeholder="A line or two about your planning process and what's getting in the way today."></textarea></div>
+            <div class="cf-foot"><span class="cf-spacer"></span><button type="button" class="btn btn-primary" data-submit>Prepare my next step</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DONE -->
+      <div class="cf-done" data-done>
+        <div class="cf-check"><svg viewBox="0 0 24 24" fill="none" width="28" height="28"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h2>Thank you<span data-greet></span> — we have what we need.</h2>
+        <p>Our team will review your planning context and come back with the most useful next step, whether that is a tailored demo, a focused discussion, or a relevant case example.</p>
+        <p style="color:var(--text-muted);font-size:13px;margin-top:14px">You can close this window — there is nothing else to do right now.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style is:global>
+  /* ── modal shell ─────────────────────────────────────────── */
+  html.cm-open, html.cm-open body { overflow: hidden; }
+  .cm-overlay {
+    position: fixed; inset: 0; z-index: 100000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px 20px;
+    background: color-mix(in srgb, #04060a 74%, transparent);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity .3s ease, visibility .3s ease;
+    overflow-y: auto;
+  }
+  .cm-overlay.is-open { opacity: 1; visibility: visible; pointer-events: auto; }
+  .cm-dialog {
+    position: relative; width: 100%; max-width: 620px; margin: auto;
+    max-height: calc(100dvh - 48px); display: flex; flex-direction: column; overflow: hidden;
+    background: var(--bg-1); border: 1px solid var(--line-2); border-radius: 18px;
+    box-shadow: 0 50px 120px -40px rgba(0,0,0,0.85);
+    transform: translateY(18px) scale(.985);
+    transition: transform .35s var(--ease);
+  }
+  .cm-overlay.is-open .cm-dialog { transform: none; }
+  .cm-close {
+    position: absolute; top: 16px; right: 16px; z-index: 3;
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1px solid var(--line-2); background: var(--surface-subtle); color: var(--text-body);
+    display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: color .2s, border-color .2s, background .2s;
+  }
+  .cm-close:hover { color: var(--text); border-color: var(--teal); background: var(--surface-hover); }
+  .cm-header { padding: 32px 34px 0; flex: 0 0 auto; }
+  .cm-header .eyebrow { display: inline-block; margin-bottom: 12px; }
+  .cm-header h2 { font-size: clamp(24px, 3vw, 32px); line-height: 1.05; margin: 0 0 12px; }
+  .cm-header p { font-size: 15px; color: var(--text-body); margin: 0; max-width: 48ch; text-wrap: pretty; }
+
+  /* The form sits flush inside the dialog — drop its standalone card chrome. */
+  .cm-dialog .cf { border: 0; box-shadow: none; border-radius: 0; background: transparent; flex: 1 1 auto; overflow-y: auto; min-height: 0; }
+  .cf-opt { color: var(--text-faint); font-weight: 400; font-size: 12px; }
+  .cm-dialog .cf-top { padding: 22px 34px 0; }
+  .cm-dialog .cf-body { padding: 12px 34px 32px; }
+  .cm-dialog .cf-done { padding: 48px 34px; }
+
+  /* ── form (shared with the former /contact page) ─────────── */
+  .cf-progress { height: 3px; border-radius: 3px; background: rgba(255,255,255,0.08); overflow: hidden; }
+  .cf-progress-fill { height: 100%; width: 0; background: var(--teal); border-radius: 3px; transition: width .5s var(--ease); }
+  .cf-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
+  .cf-meta .cf-step-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); }
+  .cf-dots { display: flex; gap: 7px; }
+  .cf-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.14); transition: background .3s, transform .3s; }
+  .cf-dot.active { background: var(--teal); transform: scale(1.3); }
+  .cf-dot.done { background: var(--teal-deep); }
+
+  .cf-step { display: none; }
+  .cf-step.on { display: block; animation: cfin .4s var(--ease); }
+  @keyframes cfin { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .cf-step.on { animation: none; } }
+  .cf-step-title { font-size: 22px; font-weight: 500; color: var(--text); letter-spacing: -0.02em; margin: 16px 0 4px; }
+  .cf-step-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 22px; }
+
+  .cf [data-row] { margin-bottom: 20px; }
+  .cf-label { display: block; font-size: 13px; color: var(--text-body); margin-bottom: 9px; font-weight: 500; }
+  .cf-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 540px) { .cf-grid2 { grid-template-columns: 1fr; } }
+  .cf-input, .cf-area {
+    width: 100%; font-family: inherit; font-size: 15px; color: var(--text);
+    background: rgba(255,255,255,0.03); border: 1px solid var(--line-2); border-radius: 9px;
+    padding: 12px 14px; transition: border-color .2s, background .2s;
+  }
+  .cf-input::placeholder, .cf-area::placeholder { color: var(--text-faint); }
+  .cf-input:focus, .cf-area:focus { outline: none; border-color: var(--teal); background: rgba(71,185,187,0.06); }
+  .cf-area { resize: vertical; min-height: 96px; line-height: 1.5; }
+  .cf-chips { display: flex; flex-wrap: wrap; gap: 9px; }
+  .cf-chip {
+    font-family: inherit; font-size: 13.5px; color: var(--text-body); cursor: pointer;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--line-2); border-radius: 999px;
+    padding: 9px 16px; transition: border-color .2s, color .2s, background .2s, transform .15s;
+  }
+  .cf-chip:hover { border-color: var(--teal); color: var(--text); }
+  .cf-chip.on { background: var(--teal-16); border-color: var(--teal); color: var(--teal); }
+  .cf-msg { display: block; font-size: 12px; color: var(--coral); margin-top: 8px; min-height: 0; }
+  .cf [data-row].cf-err .cf-input, .cf [data-row].cf-err .cf-area { border-color: var(--coral); }
+
+  .cf-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 28px; }
+  .cf-foot .cf-spacer { margin-left: auto; }
+
+  .cf-summary { border: 1px solid var(--line); border-radius: 11px; overflow: hidden; margin: 6px 0 4px; }
+  .cf-sum-row { display: grid; grid-template-columns: 0.7fr 1.3fr; gap: 14px; padding: 12px 16px; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+  .cf-sum-row:last-child { border-bottom: 0; }
+  .cf-sum-k { color: var(--text-muted); }
+  .cf-sum-v { color: var(--text); }
+
+  .cf-done { display: none; text-align: center; }
+  .cf-done.on { display: block; animation: cfin .5s var(--ease); }
+  .cf-done .cf-check { width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; background: var(--teal-16); border: 1px solid rgba(71,185,187,0.4); color: var(--teal); }
+  .cf-done h2 { font-size: 26px; font-weight: 500; margin-bottom: 14px; }
+  .cf-done p { font-size: 15px; color: var(--text-body); max-width: 420px; margin: 0 auto 8px; text-wrap: pretty; }
+
+  @media (max-width: 560px) {
+    .cm-header { padding: 30px 22px 0; }
+    .cm-dialog .cf-top, .cm-dialog .cf-body, .cm-dialog .cf-done { padding-left: 22px; padding-right: 22px; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var overlay = document.getElementById('contact-modal');
+    if (!overlay) return;
+    var root = document.documentElement;
+    var closeBtn = overlay.querySelector('.cm-close');
+    var lastFocus = null;
+
+    function open(e) {
+      if (e) e.preventDefault();
+      lastFocus = document.activeElement;
+      overlay.classList.add('is-open');
+      root.classList.add('cm-open');
+      overlay.scrollTop = 0;
+      setTimeout(function () {
+        var f = overlay.querySelector('.cf-step.on input, .cf-step.on textarea') || closeBtn;
+        if (f) { try { f.focus({ preventScroll: true }); } catch (err) {} }
+      }, 80);
+    }
+    function close() {
+      overlay.classList.remove('is-open');
+      root.classList.remove('cm-open');
+      if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (err) {} }
+    }
+    window.haidiOpenContact = open;
+    window.haidiCloseContact = close;
+
+    // Any link to /contact opens the modal in place.
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href]');
+      if (!a) return;
+      if (a.pathname === '/contact') open(e);
+    });
+
+    closeBtn.addEventListener('click', close);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('is-open')) close();
+    });
+
+    // contact-form.js scrolls window on step change; nudge the modal to the top
+    // instead so a new step starts in view.
+    overlay.addEventListener('click', function (e) {
+      var nav = e.target.closest && e.target.closest('[data-next], [data-back], [data-submit]');
+      if (nav) setTimeout(function () { overlay.scrollTo({ top: 0, behavior: 'smooth' }); }, 30);
+    });
+
+    // Basic focus trap.
+    overlay.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab') return;
+      var f = overlay.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
+      f = Array.prototype.filter.call(f, function (el) { return el.offsetParent !== null; });
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+  })();
+</script>
+
+<script is:inline src="/assets/contact-form.js"></script>
