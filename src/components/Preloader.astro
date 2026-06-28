@@ -2,11 +2,16 @@
 /*
   Site-wide preloader.
 
-  Rendered as the first node in <body> from BaseLayout, so it covers the page on
-  every route (this is a multi-page Astro app — each navigation is a full load).
-  An empty full-screen cover is server-rendered with inline critical CSS so it
-  paints immediately (before the haidi.css bundle), then the inline controller
-  fills in the selected design and ties progress to the real page load.
+  Rendered as the first node in <body> from BaseLayout. An empty full-screen
+  cover is server-rendered with inline critical CSS so it can paint immediately
+  (before the haidi.css bundle), then the inline controller fills in the selected
+  design and ties progress to the real page load.
+
+  Shown only when needed — once per browser session (a genuine cold entry to the
+  site). On internal navigations within the visit (this is a multi-page Astro app
+  where each navigation is a full load) the cover is dropped synchronously before
+  paint, so it never flashes again. The flag lives in sessionStorage so a new tab
+  or a returning visit shows it once more.
 
   Four designs ship here (orbit / wordmark / counter / curtain). The active one
   is read from localStorage('haidi-preloader') and can be switched live from the
@@ -629,16 +634,36 @@
       },
     };
 
-    // ── auto-run on every route except the preview gallery ───────
+    // ── auto-run: only when the preloader is actually needed ─────
     var cover = document.getElementById('haidi-preloader');
     if (!cover) return;
+
+    // Remove the server-rendered cover immediately. Because this inline script
+    // is adjacent to the cover and parser-blocking, it runs before the browser
+    // paints — so dropping it here never flashes.
+    function dropCover() {
+      if (cover.parentNode) cover.parentNode.removeChild(cover);
+      root.classList.remove('hd-loading');
+    }
 
     var path = location.pathname.replace(/\/+$/, '') || '/';
     if (path === '/preloader-preview') {
       // The gallery controls its own overlays — drop the auto cover.
-      if (cover.parentNode) cover.parentNode.removeChild(cover);
+      dropCover();
       return;
     }
+
+    // The intro preloader is "needed" only on a genuine cold entry to the site,
+    // not on every internal navigation. Show it once per browser session; on
+    // later page loads within the visit, skip it so it never flashes again.
+    var SEEN_KEY = 'haidi-preloaded';
+    var seen = false;
+    try { seen = sessionStorage.getItem(SEEN_KEY) === '1'; } catch (e) {}
+    if (seen) {
+      dropCover();
+      return;
+    }
+    try { sessionStorage.setItem(SEEN_KEY, '1'); } catch (e) {}
 
     var id = currentId();
     var design = DESIGNS[id];

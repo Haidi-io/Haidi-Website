@@ -137,19 +137,25 @@ function bindObserver(onLand?: () => void) {
   observer?.kill();
   if (snapPoints.length < 2) return;
 
-  // One snap per gesture. Navigate relative to the ACTUAL nearest panel (not a
-  // stored index that can drift), then lock until the input stops — so the
-  // momentum tail (including an opposite-direction rubber-band bounce) can't
-  // trigger a second, wrong-way snap.
+  // One snap per gesture. `dir` is +1 to advance, -1 to go back.
   function step(dir: number) {
     if (animating || locked) return;
+    // Refresh positions and read the current panel from the LIVE layout. A stale
+    // read (panels can shift after fonts/mocks/resize/dynamic-vh) is what made a
+    // scroll occasionally snap the wrong way.
+    rebuildHomeSnapPoints();
+    const from = currentPanelIndex();
+    const to = Math.max(0, Math.min(snapPoints.length - 1, from + dir));
+    if (to === from) return; // at an edge — no-op, and don't lock so input stays live
     locked = true;
     clearTimeout(unlockTimer);
     // Safety re-arm in case onStop never fires (e.g. very gentle input).
     unlockTimer = window.setTimeout(unlock, 900);
-    goToPanel(currentPanelIndex() + dir, onLand);
+    goToPanel(to, onLand);
   }
 
+  //   onUp   = scrolling up   → go back to the previous panel
+  //   onDown = scrolling down → advance to the next panel
   observer = Observer.create({
     target: window,
     type: 'wheel,touch',
