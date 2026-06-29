@@ -15,12 +15,12 @@ const cards = [
   },
   {
     title: 'Smart data import',
-    sub: 'Mapped and validated on the way in',
+    sub: 'Mapped, validated, ready',
     svg: `<circle cx="80" cy="11" r="3" fill="currentColor"/>
       <path class="tf l" d="M46 22H114L86 56v12l-12 6V56L46 22Z" stroke="currentColor" stroke-width="1.3"/>
       <text class="m" x="80" y="35" text-anchor="middle">raw data</text>
       <path class="l" d="M62 43h36M66 49h28" stroke-width="1.2"/>
-      <rect class="t" x="56" y="80" width="48" height="14" rx="5" stroke="currentColor" stroke-width="1"/><text x="80" y="89.5" text-anchor="middle" fill="currentColor">clean data</text>`,
+      <rect class="t" x="45" y="79" width="70" height="15" rx="6" stroke="currentColor" stroke-width="1"/><text x="80" y="89.5" text-anchor="middle" fill="currentColor" font-size="8">clean data</text>`,
   },
   {
     title: 'Formula builder',
@@ -29,9 +29,9 @@ const cards = [
       <text class="code" x="24" y="33" fill="currentColor" font-size="9.5">IF ([inv] &lt; [ss])</text>
       <text class="code m" x="24" y="48" font-size="9.5">THEN 1 ELSE 0</text>
       <text class="code m" x="24" y="64" font-size="8">ROLLING_AVG([x],3)</text>
-      <rect class="t" x="24" y="69" width="50" height="11" rx="5"/>
-      <path d="M30 74.5l2.6 2.6 4.4-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-      <text x="54" y="77.5" text-anchor="middle" fill="currentColor" font-size="7">validated</text>`,
+      <rect class="t" x="20" y="69" width="70" height="11" rx="5"/>
+      <path d="M26 74.5l2.6 2.6 4.4-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="38" y="77.5" text-anchor="start" fill="currentColor" font-size="6.5">validated</text>`,
   },
   {
     title: 'Time intelligence',
@@ -62,23 +62,106 @@ const cards = [
   <div class="cfg-head reveal">
     <div class="cfg-intro">
       <h2 class="display">Your hierarchies, your measures, <span class="accent">your logic.</span></h2>
-      <p>Configure your own dimensions, connect your data in clean, and get outputs back in whatever format your downstream systems need. No data science team. No reshaping your business to fit the software.</p>
+      <p>Configure your own dimensions, connect and clean data on the way in, and feed results straight into the systems that run downstream.</p>
     </div>
     <span class="cfg-badge">
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="currentColor" opacity="0.16"/><path d="M8 12.2l2.8 2.8L16 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      If you know <b>Excel</b>, you can run Haidi.
+      Obsessively designed around the user — there's <b>almost nothing to learn.</b>
     </span>
   </div>
 
-  <div class="cfg-cards reveal" data-delay="1">
-    {
-      cards.map((c) => (
-        <div class="cfg-card">
-          <div class="cfg-viz"><svg viewBox="0 0 160 96" class="cfg-svg" fill="none" aria-hidden="true" set:html={c.svg} /></div>
-          <h4>{c.title}</h4>
-          <p>{c.sub}</p>
-        </div>
-      ))
-    }
+  <div class="cfg-carousel reveal" data-delay="1" data-cfg-carousel>
+    <button class="sc-arrow" type="button" data-cfg-prev aria-label="Previous capabilities">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="sc-viewport" data-cfg-viewport>
+      <div class="sc-track" data-cfg-track>
+        {
+          cards.map((c) => (
+            <div class="cfg-card sc-card">
+              <div class="cfg-viz"><svg viewBox="0 0 160 96" class="cfg-svg" fill="none" aria-hidden="true" set:html={c.svg} /></div>
+              <h4>{c.title}</h4>
+              <p>{c.sub}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+    <button class="sc-arrow" type="button" data-cfg-next aria-label="Next capabilities">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
   </div>
+  <div class="sc-dots" data-cfg-dots></div>
 </HomePanel>
+
+<script>
+  function initConfigureCarousel() {
+    const root = document.querySelector('[data-cfg-carousel]');
+    if (!root) return;
+    const viewport = root.querySelector('[data-cfg-viewport]') as HTMLElement | null;
+    const track = root.querySelector('[data-cfg-track]') as HTMLElement | null;
+    const prev = root.querySelector('[data-cfg-prev]') as HTMLButtonElement | null;
+    const next = root.querySelector('[data-cfg-next]') as HTMLButtonElement | null;
+    const dotsHost = document.querySelector('[data-cfg-dots]') as HTMLElement | null;
+    if (!viewport || !track || !prev || !next) return;
+
+    const cards = Array.from(track.children) as HTMLElement[];
+    let dots: HTMLButtonElement[] = [];
+
+    function step() {
+      if (cards.length < 2) return cards[0]?.offsetWidth ?? 0;
+      return cards[1].offsetLeft - cards[0].offsetLeft; // card width + gap
+    }
+    function maxScroll() {
+      return Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    }
+    function stops() {
+      const s = step() || 1;
+      const perView = Math.max(1, Math.round(viewport.clientWidth / s));
+      return Math.max(1, cards.length - perView + 1);
+    }
+    function activeIndex() {
+      const s = step() || 1;
+      return Math.min(stops() - 1, Math.round(viewport.scrollLeft / s));
+    }
+
+    function buildDots() {
+      if (!dotsHost) return;
+      const count = stops();
+      if (dots.length === count) return;
+      dotsHost.innerHTML = '';
+      dots = [];
+      for (let i = 0; i < count; i++) {
+        const d = document.createElement('button');
+        d.type = 'button';
+        d.className = 'sc-dot';
+        d.setAttribute('aria-label', 'Go to capability group ' + (i + 1));
+        d.addEventListener('click', () =>
+          viewport.scrollTo({ left: Math.min(i * step(), maxScroll()), behavior: 'smooth' }),
+        );
+        dotsHost.appendChild(d);
+        dots.push(d);
+      }
+    }
+
+    function update() {
+      buildDots();
+      const i = activeIndex();
+      dots.forEach((d, k) => d.classList.toggle('is-active', k === i));
+      prev.disabled = viewport.scrollLeft <= 2;
+      next.disabled = viewport.scrollLeft >= maxScroll() - 2;
+    }
+
+    prev.addEventListener('click', () => viewport.scrollBy({ left: -step(), behavior: 'smooth' }));
+    next.addEventListener('click', () => viewport.scrollBy({ left: step(), behavior: 'smooth' }));
+    viewport.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initConfigureCarousel);
+  } else {
+    initConfigureCarousel();
+  }
+</script>

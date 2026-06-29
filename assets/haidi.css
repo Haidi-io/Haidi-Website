@@ -235,32 +235,38 @@ section { position: relative; z-index: 1; }
 .hero-cta { gap: 14px; }
 
 .hero-cta .btn,
-.nav-actions .btn-primary {
+.nav-actions .btn-primary,
+.cta-banner .btn-primary {
   position: relative;
   overflow: hidden;
   isolation: isolate;
   transition: transform .3s var(--ease), box-shadow .3s var(--ease),
               background .25s, border-color .25s, color .25s;
 }
-.hero-cta .btn svg { transition: transform .3s var(--ease); }
-.hero-cta .btn:hover svg { transform: translateX(4px); }
+.hero-cta .btn svg,
+.cta-banner .btn-primary svg { transition: transform .3s var(--ease); }
+.hero-cta .btn:hover svg,
+.cta-banner .btn-primary:hover svg { transform: translateX(4px); }
 
 /* Primary — layered teal gradient, glossy top edge, sweeping sheen on hover.
-   Shared by the hero CTAs and the header "Prepare to launch" button. */
+   Shared by the hero CTAs, the header "Prepare to launch" button, and the home CTA banner. */
 .hero-cta .btn-primary,
-.nav-actions .btn-primary {
+.nav-actions .btn-primary,
+.cta-banner .btn-primary {
   background: linear-gradient(135deg, var(--teal-bright) 0%, var(--teal) 52%, var(--teal-deep) 100%);
   box-shadow: 0 12px 34px -14px rgba(71,185,187,0.6),
               inset 0 1px 0 rgba(255,255,255,0.28);
 }
 .hero-cta .btn-primary::before,
-.nav-actions .btn-primary::before {
+.nav-actions .btn-primary::before,
+.cta-banner .btn-primary::before {
   content: ""; position: absolute; inset: 0; z-index: -1;
   border-radius: inherit; pointer-events: none;
   background: linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0) 55%);
 }
 .hero-cta .btn-primary::after,
-.nav-actions .btn-primary::after {
+.nav-actions .btn-primary::after,
+.cta-banner .btn-primary::after {
   content: ""; position: absolute; top: 0; left: -130%; z-index: -1;
   width: 60%; height: 100%; pointer-events: none;
   background: linear-gradient(75deg, transparent, rgba(255,255,255,0.55), transparent);
@@ -268,15 +274,18 @@ section { position: relative; z-index: 1; }
   transition: left .65s var(--ease);
 }
 .hero-cta .btn-primary:hover,
-.nav-actions .btn-primary:hover {
+.nav-actions .btn-primary:hover,
+.cta-banner .btn-primary:hover {
   transform: translateY(-3px);
   box-shadow: 0 20px 46px -14px rgba(71,185,187,0.7),
               inset 0 1px 0 rgba(255,255,255,0.4);
 }
 .hero-cta .btn-primary:hover::after,
-.nav-actions .btn-primary:hover::after { left: 130%; }
+.nav-actions .btn-primary:hover::after,
+.cta-banner .btn-primary:hover::after { left: 130%; }
 .hero-cta .btn-primary:active,
-.nav-actions .btn-primary:active { transform: translateY(-1px) scale(.99); }
+.nav-actions .btn-primary:active,
+.cta-banner .btn-primary:active { transform: translateY(-1px) scale(.99); }
 
 /* Secondary — glassy outline that fills with a faint teal wash on hover */
 .hero-cta .btn-secondary {

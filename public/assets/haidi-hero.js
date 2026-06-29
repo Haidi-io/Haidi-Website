@@ -92,6 +92,12 @@
 
   function frameCanvas(time) {
     ctx.clearRect(0, 0, W, H);
+    // Center the composition: the forecast now runs to the right edge, so shift
+    // the whole drawing left until the empty margin before the first source
+    // equals the margin after the forecast — balanced gaps on both sides.
+    var leftPad = W * (small ? 0.12 : 0.10), shift = (leftPad - 6) / 2;
+    ctx.save();
+    ctx.translate(-shift, 0);
     var hb = hub(), sx = splitX();
     ctx.lineWidth = 1;
     state.sources.forEach(function (s) {
@@ -123,16 +129,17 @@
     ctx.beginPath(); ctx.arc(hb.x, hb.y, 5, 0, 6.2832);
     ctx.fillStyle = 'rgba(' + TEAL + ',0.95)'; ctx.shadowColor = 'rgba(' + TEAL + ',0.7)'; ctx.shadowBlur = 16; ctx.fill(); ctx.shadowBlur = 0;
 
-    var span = W * 0.96 - hb.x, steps = 60;
+    var RIGHT = W - 6; // draw the forecast all the way to the canvas edge (full-bleed)
+    var span = RIGHT - hb.x, steps = 60;
     ctx.beginPath();
     for (var i = 0; i <= steps; i++) {
       var x = hb.x + span * i / steps, p = (x - hb.x) / span;
-      var y = forecastY(p, time), w = x < sx ? 0 : (x - sx) / (W * 0.96 - sx) * H * 0.10;
+      var y = forecastY(p, time), w = x < sx ? 0 : (x - sx) / (RIGHT - sx) * H * 0.10;
       i === 0 ? ctx.moveTo(x, y - w) : ctx.lineTo(x, y - w);
     }
     for (var j = steps; j >= 0; j--) {
       var x2 = hb.x + span * j / steps, p2 = (x2 - hb.x) / span;
-      var y2 = forecastY(p2, time), w2 = x2 < sx ? 0 : (x2 - sx) / (W * 0.96 - sx) * H * 0.10;
+      var y2 = forecastY(p2, time), w2 = x2 < sx ? 0 : (x2 - sx) / (RIGHT - sx) * H * 0.10;
       ctx.lineTo(x2, y2 + w2);
     }
     ctx.closePath(); ctx.fillStyle = 'rgba(' + TEAL + ',0.10)'; ctx.fill();
@@ -157,7 +164,7 @@
     }
     ctx.strokeStyle = 'rgba(' + TEAL + ',0.55)'; ctx.stroke(); ctx.setLineDash([]);
 
-    var splY = forecastY((sx - hb.x) / span, time), endX = W * 0.97;
+    var splY = forecastY((sx - hb.x) / span, time), endX = RIGHT;
     (small ? [-0.12, 0.10] : [-0.16, 0.04, 0.16]).forEach(function (sl, idx) {
       var ey = Math.max(H * 0.16, Math.min(H * 0.84, splY + (endX - sx) * sl));
       ctx.setLineDash([4, 6]); ctx.beginPath();
@@ -175,6 +182,7 @@
       ctx.fillStyle = 'rgba(' + INK + ',0.4)'; ctx.textAlign = 'center';
       ctx.fillText('NOW', sx, splY - 14);
     }
+    ctx.restore();
   }
 
   /* ── streams (signal flow) ───────────────────────────────── */

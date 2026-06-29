@@ -3,7 +3,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/home.css';
 import HomeHero from '../components/home/HomeHero.astro';
 import HomeValue from '../components/home/HomeValue.astro';
-import HomeProductJourney from '../components/home/HomeProductJourney.astro';
 import HomeProductPreviews from '../components/home/HomeProductPreviews.astro';
 import HomePillars from '../components/home/HomePillars.astro';
 import HomeConfigure from '../components/home/HomeConfigure.astro';
@@ -37,10 +36,9 @@ const jsonLd = {
   heroVariants
   scripts={['haidi-site.js', 'haidi-tweaks.js']}
 >
-  <div data-home-scroll>
+  <div class="home-flow">
     <HomeHero />
     <HomeValue />
-    <HomeProductJourney />
     <HomeProductPreviews />
     <HomePillars />
     <HomeConfigure />

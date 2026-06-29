@@ -150,20 +150,20 @@ function initScrollReveals() {
     if (staggerParent && staggerParent !== el) return;
 
     el.classList.remove('in');
-    const delay = parseFloat(el.dataset.delay || '0') * 0.09;
+    const delay = parseFloat(el.dataset.delay || '0') * 0.05;
 
     gsap.fromTo(
       el,
-      { opacity: 0, y: 40 },
+      { opacity: 0, y: 32 },
       {
         opacity: 1,
         y: 0,
-        duration: 0.95,
+        duration: 0.5,
         delay,
         ease: 'power2.out',
         scrollTrigger: {
           trigger: el,
-          start: 'top 88%',
+          start: 'top 90%',
           once: true,
         },
       },
@@ -204,8 +204,8 @@ function initStaggerGroups() {
           gsap.to(items, {
             opacity: 1,
             y: 0,
-            duration: 0.8,
-            stagger: 0.11,
+            duration: 0.5,
+            stagger: 0.07,
             ease: 'power2.out',
           });
         },
@@ -272,7 +272,7 @@ function initAccentLines() {
       {
         scaleX: 1,
         opacity: 1,
-        duration: 1.1,
+        duration: 0.6,
         ease: 'power2.out',
         scrollTrigger: {
           trigger: rule,
@@ -285,7 +285,7 @@ function initAccentLines() {
 }
 
 function initLaunchGlow() {
-  document.querySelectorAll('.launch-glow, .final-glow').forEach((glow) => {
+  document.querySelectorAll('.cta-banner__glow, .final-glow').forEach((glow) => {
     gsap.fromTo(
       glow,
       { opacity: 0.4, scale: 0.92 },

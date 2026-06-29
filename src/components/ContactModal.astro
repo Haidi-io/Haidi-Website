@@ -35,7 +35,10 @@
             </div>
             <div data-row><label class="cf-label">Company</label><input class="cf-input" data-field="company" data-required="text" placeholder="Company name" /><span class="cf-msg" data-msg></span></div>
             <div data-row><label class="cf-label">How can we help? <span class="cf-opt">optional</span></label><textarea class="cf-area" data-field="message" placeholder="A line or two about your planning process and what's getting in the way today."></textarea></div>
+            <!-- Spam honeypot: hidden from humans; bots that fill it are silently dropped server-side. -->
+            <div class="cf-hp" aria-hidden="true"><label>Leave this field empty<input type="text" tabindex="-1" autocomplete="off" data-field="_gotcha" /></label></div>
             <div class="cf-foot"><span class="cf-spacer"></span><button type="button" class="btn btn-primary" data-submit>Prepare my next step</button></div>
+            <p class="cf-form-msg" data-form-msg role="alert" hidden></p>
           </div>
         </div>
       </div>
@@ -44,7 +47,7 @@
       <div class="cf-done" data-done>
         <div class="cf-check"><svg viewBox="0 0 24 24" fill="none" width="28" height="28"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h2>Thank you<span data-greet></span> — we have what we need.</h2>
-        <p>Our team will review your planning context and come back with the most useful next step, whether that is a tailored demo, a focused discussion, or a relevant case example.</p>
+        <p>Our team will review your planning context and come back with the most useful next step, whether that is a tailored demo, a focused discussion, or a relevant case study.</p>
         <p style="color:var(--text-muted);font-size:13px;margin-top:14px">You can close this window — there is nothing else to do right now.</p>
       </div>
     </div>
@@ -85,11 +88,17 @@
   .cm-header { padding: 32px 34px 0; flex: 0 0 auto; }
   .cm-header .eyebrow { display: inline-block; margin-bottom: 12px; }
   .cm-header h2 { font-size: clamp(24px, 3vw, 32px); line-height: 1.05; margin: 0 0 12px; }
+  /* On the success state the thank-you message becomes the heading. */
+  .cm-dialog.cm-done .cm-header { display: none; }
   .cm-header p { font-size: 15px; color: var(--text-body); margin: 0; max-width: 48ch; text-wrap: pretty; }
 
   /* The form sits flush inside the dialog — drop its standalone card chrome. */
   .cm-dialog .cf { border: 0; box-shadow: none; border-radius: 0; background: transparent; flex: 1 1 auto; overflow-y: auto; min-height: 0; }
   .cf-opt { color: var(--text-faint); font-weight: 400; font-size: 12px; }
+  .cf-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .cf-form-msg { margin: 16px 0 0; font-size: 13.5px; color: var(--coral); text-align: right; text-wrap: pretty; }
+  .cf-form-msg a { color: var(--coral); text-decoration: underline; }
+  .cf-form-msg[hidden] { display: none; }
   .cm-dialog .cf-top { padding: 22px 34px 0; }
   .cm-dialog .cf-body { padding: 12px 34px 32px; }
   .cm-dialog .cf-done { padding: 48px 34px; }
@@ -181,6 +190,17 @@
     }
     window.haidiOpenContact = open;
     window.haidiCloseContact = close;
+
+    // When the form reaches its success state, replace the modal heading with the
+    // thank-you message: contact-form.js adds `.on` to [data-done], so mirror that
+    // onto the dialog and hide the header via CSS.
+    var dialog = overlay.querySelector('.cm-dialog');
+    var doneEl = overlay.querySelector('[data-done]');
+    if (dialog && doneEl && 'MutationObserver' in window) {
+      new MutationObserver(function () {
+        dialog.classList.toggle('cm-done', doneEl.classList.contains('on'));
+      }).observe(doneEl, { attributes: true, attributeFilter: ['class'] });
+    }
 
     // Any link to /contact opens the modal in place.
     document.addEventListener('click', function (e) {

@@ -1,0 +1,9 @@
+{
+  "name": "haidi-api",
+  "version": "1.0.0",
+  "description": "Azure Static Web Apps API for the Haidi contact form (SharePoint Excel + email via Microsoft Graph).",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  }
+}

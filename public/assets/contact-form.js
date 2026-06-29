@@ -167,23 +167,46 @@
         return;
       }
       save();
+      var api = (window.HAIDI_SITE && window.HAIDI_SITE.contactApi) || '';
+      var payload = Object.assign({}, data, {
+        name: data.name, email: data.email, company: data.company,
+        _page: location.pathname
+      });
+
+      var formMsg = form.querySelector('[data-form-msg]');
+      function clearMsg() { if (formMsg) { formMsg.hidden = true; formMsg.textContent = ''; } }
+      function showError() {
+        if (!formMsg) return;
+        formMsg.innerHTML =
+          "Something went wrong sending this. Please email " +
+          '<a href="mailto:hello@haidi.io">hello@haidi.io</a>' +
+          " and we'll pick it up.";
+        formMsg.hidden = false;
+        if (formMsg.scrollIntoView) formMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      function reset() {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Prepare my next step';
+      }
+      clearMsg();
+
+      // No endpoint configured yet → just acknowledge (nothing to send to).
+      if (!api) { showDone(); reset(); return; }
+
       submitBtn.disabled = true;
       submitBtn.textContent = 'Sending…';
-      var api = (window.HAIDI_SITE && window.HAIDI_SITE.contactApi) || '/api/contact';
-      var payload = Object.assign({}, data, { name: data.name, email: data.email, company: data.company });
+      // Same-origin Azure Static Web Apps API (/api/contact) → JSON POST.
       fetch(api, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-      }).then(function (r) {
-        if (r.ok || r.status === 503) showDone();
-        else throw new Error('submit failed');
-      }).catch(function () {
-        showDone();
-      }).finally(function () {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Prepare my next step';
-      });
+      })
+        .then(function (r) {
+          if (r && r.ok) showDone();
+          else throw new Error('submit failed: ' + (r && r.status));
+        })
+        .catch(showError)
+        .finally(reset);
     });
 
     restore();

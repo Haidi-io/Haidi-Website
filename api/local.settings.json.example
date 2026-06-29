@@ -1,0 +1,15 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AAD_TENANT_ID": "",
+    "AAD_CLIENT_ID": "",
+    "AAD_CLIENT_SECRET": "",
+    "GRAPH_SITE_ID": "",
+    "GRAPH_ITEM_ID": "",
+    "GRAPH_DRIVE_ID": "",
+    "EXCEL_TABLE": "Submissions",
+    "MAIL_SENDER": "",
+    "NOTIFY_EMAIL": "hello@haidi.io"
+  }
+}

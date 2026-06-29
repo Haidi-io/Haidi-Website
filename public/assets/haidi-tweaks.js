@@ -67,9 +67,12 @@
     cursor: cursorDefault,
     heroContent: heroContentDefault,
     heroAnimation: heroAnimDefault,
-    taglineWidth: 22
+    taglineWidth: 22,
+    ctaBg: 'teal',
+    ctaArt: 'constellation'
   };
   var hasHero = !!document.querySelector('[data-hero-root]');
+  var hasCta = !!document.querySelector('.cta-banner');
 
   Promise.resolve()
     .then(function () {
@@ -112,6 +115,8 @@
         "  d.style.setProperty('--teal', t.accent);" +
         "  d.style.setProperty('--teal-bright', t.accent === '#47B9BB' ? '#5FD0D2' : t.accent);" +
         "  d.style.setProperty('--tagline-width', t.taglineWidth + 'ch');" +
+        "  d.setAttribute('data-cta-bg', t.ctaBg);" +
+        "  d.setAttribute('data-cta-art', t.ctaArt);" +
         '  if (window.haidiApplyHero) window.haidiApplyHero({ content: t.heroContent, animation: t.heroAnimation });' +
         '  if (window.haidiApplyCursor) window.haidiApplyCursor(t.cursor);' +
         '}' +
@@ -151,6 +156,25 @@
         '    React.createElement(TweakSection, { label: "Canvas" }),' +
         '    React.createElement(TweakRadio, { label: "Darkness", value: t.canvas, options: ["black","graphite","navy"], onChange: function (v) { setTweak("canvas", v); } }),' +
         '    React.createElement(TweakColor, { label: "Accent", value: t.accent, options: ["#47B9BB","#5BC8B8","#5FD0D2","#3FA7A9"], onChange: function (v) { setTweak("accent", v); } })' +
+        (hasCta
+          ? '    ,React.createElement(TweakSection, { label: "CTA banner" })' +
+            '    ,React.createElement(TweakSelect, { label: "Background", value: t.ctaBg, options: [' +
+            '      { value: "teal", label: "Teal (default)" },' +
+            '      { value: "midnight", label: "Midnight" },' +
+            '      { value: "aurora", label: "Aurora" },' +
+            '      { value: "mesh", label: "Mesh" },' +
+            '      { value: "emerald", label: "Emerald" },' +
+            '      { value: "slate", label: "Slate" }' +
+            '    ], onChange: function (v) { setTweak("ctaBg", v); } })' +
+            '    ,React.createElement(TweakSelect, { label: "Art", value: t.ctaArt, options: [' +
+            '      { value: "none", label: "None" },' +
+            '      { value: "constellation", label: "Supply network" },' +
+            '      { value: "forecast", label: "Forecast curves" },' +
+            '      { value: "contours", label: "Contours" },' +
+            '      { value: "grid", label: "Data grid" },' +
+            '      { value: "orbits", label: "Orbits" }' +
+            '    ], onChange: function (v) { setTweak("ctaArt", v); } })'
+          : '') +
         '  );' +
         '}' +
         "ReactDOM.createRoot(document.getElementById('tweaks-root')).render(React.createElement(TweaksApp));";

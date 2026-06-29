@@ -3,19 +3,115 @@ import HomePanel from './HomePanel.astro';
 ---
 
 <HomePanel id="launch" screenLabel="Launch CTA" class="launch">
-  <div class="launch-glow"></div>
-  <div class="launch__content reveal">
-    <span class="eyebrow eyebrow--wrap" style="justify-content:center">Prepare to launch</span>
-    <h2 class="display" style="margin-top:20px">Let's find your <span class="accent">starting point</span></h2>
-    <p>Leave your details and a quick note about your planning process — we'll come back with the most useful next step.</p>
-    <div class="launch-chips">
-      <span>Tailored demo</span><span>Focused discussion</span><span>Relevant case study</span>
+  <div class="cta-banner reveal">
+    <div class="cta-banner__glow" aria-hidden="true"></div>
+
+    <!-- Animated art layers. Only the one matching [data-cta-art] is shown
+         (default = constellation); switched live from the dev Tweaks panel. -->
+    <div class="cta-banner__art" aria-hidden="true">
+      <!-- Supply network: drifting nodes + connections -->
+      <svg class="cta-art cta-art--constellation" viewBox="0 0 1200 340" preserveAspectRatio="xMidYMid slice" fill="none">
+        <g class="cta-net">
+          <g class="cta-net-links" stroke="currentColor" stroke-width="1">
+            <line x1="620" y1="80" x2="720" y2="150"/><line x1="720" y1="150" x2="680" y2="250"/>
+            <line x1="720" y1="150" x2="800" y2="90"/><line x1="800" y1="90" x2="860" y2="200"/>
+            <line x1="860" y1="200" x2="940" y2="130"/><line x1="940" y1="130" x2="1080" y2="90"/>
+            <line x1="940" y1="130" x2="1000" y2="250"/><line x1="1000" y1="250" x2="1120" y2="190"/>
+            <line x1="1080" y1="90" x2="1120" y2="190"/><line x1="860" y1="200" x2="780" y2="300"/>
+            <line x1="560" y1="180" x2="680" y2="250"/><line x1="900" y1="300" x2="1000" y2="250"/>
+          </g>
+          <g class="cta-net-nodes" fill="currentColor">
+            <circle class="cta-node" cx="620" cy="80" r="3"/><circle class="cta-node" cx="720" cy="150" r="4"/>
+            <circle class="cta-node" cx="680" cy="250" r="3"/><circle class="cta-node" cx="800" cy="90" r="3.5"/>
+            <circle class="cta-node" cx="860" cy="200" r="4"/><circle class="cta-node" cx="940" cy="130" r="3"/>
+            <circle class="cta-node" cx="1000" cy="250" r="3.5"/><circle class="cta-node" cx="1080" cy="90" r="3"/>
+            <circle class="cta-node" cx="1120" cy="190" r="4"/><circle class="cta-node" cx="780" cy="300" r="3"/>
+            <circle class="cta-node" cx="560" cy="180" r="3.5"/><circle class="cta-node" cx="900" cy="300" r="3"/>
+          </g>
+        </g>
+      </svg>
+
+      <!-- Forecast: smooth curves with a glowing point tracing the leading line -->
+      <svg class="cta-art cta-art--forecast" viewBox="0 0 1200 340" preserveAspectRatio="none" fill="none">
+        <g class="cta-grid-lines" stroke="currentColor" stroke-width="1">
+          <line x1="0" y1="90" x2="1200" y2="90"/><line x1="0" y1="170" x2="1200" y2="170"/><line x1="0" y1="250" x2="1200" y2="250"/>
+        </g>
+        <path class="cta-line cta-line--ghost" d="M0 280 C 220 268, 340 210, 520 224 S 820 150, 1010 120 S 1160 96, 1200 88" stroke="currentColor" stroke-width="2"/>
+        <path class="cta-line cta-line--ghost2" d="M0 230 C 200 250, 360 240, 540 200 S 860 220, 1040 170 S 1170 150, 1200 150" stroke="currentColor" stroke-width="1.5"/>
+        <path id="ctaCurve" class="cta-line cta-line--main" d="M0 260 C 220 240, 320 180, 500 196 S 800 120, 1000 92 S 1150 70, 1200 60" stroke="currentColor" stroke-width="2.4"/>
+        <circle class="cta-trace-halo" r="9" fill="currentColor">
+          <animateMotion dur="9s" repeatCount="indefinite" rotate="auto"><mpath href="#ctaCurve"/></animateMotion>
+        </circle>
+        <circle class="cta-trace-dot" r="4" fill="#eafffd">
+          <animateMotion dur="9s" repeatCount="indefinite" rotate="auto"><mpath href="#ctaCurve"/></animateMotion>
+        </circle>
+      </svg>
+
+      <!-- Topographic contours -->
+      <div class="cta-art cta-art--contours"></div>
+
+      <!-- Data grid: drifting dot matrix -->
+      <div class="cta-art cta-art--grid"></div>
+
+      <!-- Orbital system: concentric rings with orbiting points -->
+      <svg class="cta-art cta-art--orbits" viewBox="0 0 1200 340" preserveAspectRatio="xMidYMid slice" fill="none">
+        <g transform="translate(1010 170)" stroke="currentColor">
+          <circle class="cta-ring" r="58" opacity="0.30"/>
+          <circle class="cta-ring" r="112" opacity="0.20"/>
+          <circle class="cta-ring" r="168" opacity="0.13"/>
+          <g class="cta-orbit cta-orbit--1" fill="currentColor"><circle cx="58" cy="0" r="4.5"/><animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="12s" repeatCount="indefinite"/></g>
+          <g class="cta-orbit cta-orbit--2" fill="currentColor"><circle cx="112" cy="0" r="3.5"/><animateTransform attributeName="transform" type="rotate" from="0 0 0" to="-360 0 0" dur="22s" repeatCount="indefinite"/></g>
+          <g class="cta-orbit cta-orbit--3" fill="currentColor"><circle cx="168" cy="0" r="4" /><animateTransform attributeName="transform" type="rotate" from="40 0 0" to="400 0 0" dur="34s" repeatCount="indefinite"/></g>
+        </g>
+      </svg>
     </div>
-    <div class="hero-cta">
-      <a class="btn btn-primary btn-lg" href="/contact">Prepare to launch</a>
-      <a class="btn btn-secondary btn-lg" href="/product-overview">Explore the product
-        <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
+
+    <div class="cta-banner__inner">
+      <div class="cta-banner__text">
+        <span class="eyebrow eyebrow--on-teal">Prepare to launch</span>
+        <h2>Planning without the guesswork</h2>
+        <p>Leave your email and a quick note about your process — we'll come back with the most useful next step.</p>
+      </div>
+
+      <div class="cta-banner__action">
+        <a class="btn btn-primary btn-lg cta-banner__btn" href="/contact">
+          Prepare to launch
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
     </div>
   </div>
 </HomePanel>
+
+<script is:inline>
+  (function () {
+    var banner = document.querySelector('.cta-banner');
+    if (!banner) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (window.matchMedia && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    var tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
+
+    function tick() {
+      // Ease the current value toward the target for smooth, weighty motion.
+      cx += (tx - cx) * 0.08;
+      cy += (ty - cy) * 0.08;
+      banner.style.setProperty('--cta-px', cx.toFixed(4));
+      banner.style.setProperty('--cta-py', cy.toFixed(4));
+      if (Math.abs(tx - cx) > 0.0006 || Math.abs(ty - cy) > 0.0006) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        raf = null;
+      }
+    }
+    function kick() { if (!raf) raf = requestAnimationFrame(tick); }
+
+    banner.addEventListener('pointermove', function (e) {
+      var r = banner.getBoundingClientRect();
+      tx = (e.clientX - r.left) / r.width - 0.5;
+      ty = (e.clientY - r.top) / r.height - 0.5;
+      kick();
+    });
+    banner.addEventListener('pointerleave', function () { tx = 0; ty = 0; kick(); });
+  })();
+</script>
