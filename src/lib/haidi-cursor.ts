@@ -433,7 +433,7 @@ function createCrosshair() {
   };
 }
 
-/** Comet trail — single rAF loop, batched canvas strokes, pauses when idle */
+/** Comet trail – single rAF loop, batched canvas strokes, pauses when idle */
 function createTrace() {
   const root = createRoot();
   const canvas = document.createElement('canvas');
@@ -606,7 +606,7 @@ function createBracket() {
   return { destroy: () => { ptr.destroy(); root.remove(); } };
 }
 
-/** Minimal precise dot — the most restrained option */
+/** Minimal precise dot – the most restrained option */
 function createDot() {
   const root = createRoot();
   const core = document.createElement('i');
@@ -631,7 +631,7 @@ function createDot() {
   return { destroy: () => { ptr.destroy(); root.remove(); } };
 }
 
-/** Magnetic ring — wraps the hovered interactive element, rests as a small ring */
+/** Magnetic ring – wraps the hovered interactive element, rests as a small ring */
 function createSnap() {
   const root = createRoot();
   const ring = document.createElement('i');

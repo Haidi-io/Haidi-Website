@@ -1,4 +1,4 @@
-// Haidi — three.js (WebGL) hero backgrounds.
+// Haidi – three.js (WebGL) hero backgrounds.
 //
 // Lazily imported by BaseLayout ONLY when a 3D hero mode is active, so the
 // three.js chunk never loads for the default 2D 'canvas' mode. Mirrors the
@@ -475,7 +475,7 @@ function wireEvents(): void {
   window.addEventListener('mousemove', onPointerMove, { passive: true });
 }
 
-// Full teardown — not used on mode switches (those only dispose the scene).
+// Full teardown – not used on mode switches (those only dispose the scene).
 export function destroyHaidiHero3D(): void {
   teardownScene();
   io?.disconnect();

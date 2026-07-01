@@ -1,4 +1,4 @@
-/* Haidi — shared header + footer injected into [data-chrome] slots.
+/* Haidi – shared header + footer injected into [data-chrome] slots.
    Set <body data-nav="product|about"> to mark active link. */
 (function () {
   var cfg = window.HAIDI_SITE || {};

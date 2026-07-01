@@ -7,7 +7,7 @@ import SectionRule from './SectionRule.astro';
   <SectionRule num="02" left="Inside the product" right="One workspace, two pillars" />
   <div class="section-head reveal">
     <h2 class="display">One workspace. <span class="accent">Two planning pillars.</span></h2>
-    <p>Haidi connects demand and inventory planning in one practical workflow — start with the signals behind demand, test the plan, align on assumptions, and see the inventory position that follows.</p>
+    <p>Haidi connects demand and inventory planning in one continuous workflow – start with the signals behind demand, test the plan, align on assumptions, and see the inventory position that follows.</p>
   </div>
 
   <div class="ip-pillars reveal" data-ip-pillars data-active="demand">
@@ -74,7 +74,7 @@ import SectionRule from './SectionRule.astro';
 
       <div class="ip-flow-down">
         <span class="ip-line"></span>
-        <span>The agreed demand plan becomes the input to inventory review</span>
+        <span>The agreed demand plan becomes the input to inventory planning</span>
         <span class="ip-line r"></span>
       </div>
     </div>
@@ -86,7 +86,7 @@ import SectionRule from './SectionRule.astro';
           <div>
             <span class="ip-tag">Inventory Planning</span>
             <h3>From agreed demand to inventory position</h3>
-            <p>The plan coming out of Demand Review and Scenario Testing drives stock projection, exposure, and targets — so inventory decisions stay grounded in the same numbers the business just agreed on.</p>
+            <p>The plan coming out of Demand Review and Scenario Testing drives stock projection, exposure, and targets – so inventory decisions stay grounded in the same numbers the business just agreed on.</p>
           </div>
           <div class="ip-inv-tabs" data-ip-inv-tabs>
             <button class="ip-inv-tab active" type="button" data-inv="projection">Projection</button>
@@ -134,9 +134,9 @@ import SectionRule from './SectionRule.astro';
     // ---------- Shared demand data ----------
     const dpData = [
       {
-        tag: 'Step 01 — Demand Drivers',
+        tag: 'Step 01 – Demand Drivers',
         title: 'See the signals behind demand',
-        text: 'Bring together the market, sales, and historical signals that actually move demand, before a single forecast number gets generated.',
+        text: 'Bring together the market, sales, and historical signals that actually move demand, before a single forecast is generated.',
         render: () => `
           <div class="ip-mock-bar" style="width:40%"></div>
           <div class="ip-mock-bar" style="width:65%"></div>
@@ -145,7 +145,7 @@ import SectionRule from './SectionRule.astro';
           </div>`,
       },
       {
-        tag: 'Step 02 — Forecast Lab',
+        tag: 'Step 02 – Forecast Lab',
         title: 'Test and compare planning approaches',
         text: 'Run multiple forecasting methods side by side and see which one fits the pattern in your data, instead of trusting one black box.',
         render: () => `
@@ -153,11 +153,11 @@ import SectionRule from './SectionRule.astro';
             <polyline points="0,80 40,60 80,65 120,40 160,45 200,20 240,28" stroke="var(--text-faint)" stroke-width="1.5"/>
             <polyline points="0,75 40,70 80,50 120,55 160,30 200,35 240,15" stroke="var(--teal)" stroke-width="2"/>
           </svg>
-          <div class="ip-mock-row"><span class="ip-l">Method A — exponential smoothing</span><span class="ip-v">92.1%</span></div>
-          <div class="ip-mock-row"><span class="ip-l">Method B — seasonal model</span><span class="ip-v">96.4%</span></div>`,
+          <div class="ip-mock-row"><span class="ip-l">Method A – exponential smoothing</span><span class="ip-v">92.1%</span></div>
+          <div class="ip-mock-row"><span class="ip-l">Method B – seasonal model</span><span class="ip-v">96.4%</span></div>`,
       },
       {
-        tag: 'Step 03 — Demand Review',
+        tag: 'Step 03 – Demand Review',
         title: 'Bring forecasts and business input together',
         text: 'Planners and the business adjust the statistical forecast in one shared view, so the final number reflects both data and judgment.',
         render: () => `
@@ -167,9 +167,9 @@ import SectionRule from './SectionRule.astro';
           <div class="ip-mock-row"><span class="ip-l">Agreed plan</span><span class="ip-v">15,350</span></div>`,
       },
       {
-        tag: 'Step 04 — Scenario Testing',
+        tag: 'Step 04 – Scenario Testing',
         title: 'Test the impact before making the call',
-        text: 'Stress test the agreed plan against upside, downside, and disruption scenarios, and see the consequences before committing.',
+        text: 'Stress-test the agreed plan against upside, downside, and disruption scenarios, and see the consequences before committing.',
         render: () => `
           <div class="ip-mock-bar" style="width:50%"></div>
           <div class="ip-mock-grid">

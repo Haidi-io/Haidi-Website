@@ -23,7 +23,7 @@ export function initHaidiGsap() {
   initLaunchGlow();
 
   // The home scroll-snap / journey bridge (pulls in the Observer plugin) is only
-  // needed on the home page — load it as a separate chunk on demand.
+  // needed on the home page – load it as a separate chunk on demand.
   if (document.querySelector('[data-home-scroll]')) {
     import('./home-product-bridge').then(({ initHomeProductBridge }) => initHomeProductBridge());
   }

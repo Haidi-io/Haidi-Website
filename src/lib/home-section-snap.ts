@@ -50,7 +50,7 @@ export function rebuildHomeSnapPoints() {
   snapPoints = panelEls.map((el) => anchorY(el));
 
   // The hero panel is shortened by the sticky header's height and sits directly
-  // below it, so its natural resting position is the very top of the page (0) —
+  // below it, so its natural resting position is the very top of the page (0) –
   // not its offset top. Without this, scrolling back up stops ~70px short and
   // tucks the hero's top under the header.
   if (snapPoints.length) snapPoints[0] = 0;
@@ -69,7 +69,7 @@ export function rebuildHomeSnapPoints() {
     if (maxScroll > snapPoints[snapPoints.length - 1] + 1) snapPoints.push(maxScroll);
   }
 
-  // Don't resync the index mid-snap — a refresh (e.g. resize) firing during the
+  // Don't resync the index mid-snap – a refresh (e.g. resize) firing during the
   // tween would otherwise reset panelIndex to the panel being left and desync the
   // next scroll. When at rest, derive it from the actual scroll position.
   if (!animating) panelIndex = currentPanelIndex();
@@ -146,7 +146,7 @@ function bindObserver(onLand?: () => void) {
     rebuildHomeSnapPoints();
     const from = currentPanelIndex();
     const to = Math.max(0, Math.min(snapPoints.length - 1, from + dir));
-    if (to === from) return; // at an edge — no-op, and don't lock so input stays live
+    if (to === from) return; // at an edge – no-op, and don't lock so input stays live
     locked = true;
     clearTimeout(unlockTimer);
     // Safety re-arm in case onStop never fires (e.g. very gentle input).
@@ -183,7 +183,7 @@ export function initHomeSectionSnap(onLand?: () => void) {
     rebuildHomeSnapPoints();
     bindObserver(onLand);
     ready = true;
-    // Reveal whatever panel we land on at load — goToPanel only reveals on
+    // Reveal whatever panel we land on at load – goToPanel only reveals on
     // scroll, so without this the first panel's .reveal content stays hidden
     // (invisible on pages whose first panel isn't the self-animating hero).
     revealVisibleSections();

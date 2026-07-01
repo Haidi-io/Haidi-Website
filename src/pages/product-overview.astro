@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="Haidi — Product Overview" description="Explore Haidi's connected planning workspace — demand drivers, forecast lab, demand review, scenario testing, and Haidi Gen." canonical="https://haidi.io/product-overview" ogTitle="Haidi — Product Overview" ogDescription="A connected planning workspace for demand forecasting, review, and scenario testing." ogUrl="https://haidi.io/product-overview" nav="product" screenLabel="Product Overview" scripts={['haidi-site.js', 'haidi-tweaks.js']}>
+<BaseLayout title="Haidi – Product Overview" description="Explore Haidi's connected planning workspace – demand drivers, forecast lab, demand review, scenario testing, and Haidi Gen." canonical="https://haidi.io/product-overview" ogTitle="Haidi – Product Overview" ogDescription="A connected planning workspace for demand forecasting, review, and scenario testing." ogUrl="https://haidi.io/product-overview" nav="product" screenLabel="Product Overview" scripts={['haidi-site.js', 'haidi-tweaks.js']}>
   <style is:global>
 /* ── HERO ─────────────────────────────────────────────── */
   .po-hero { padding: 70px 0 90px; position: relative; }
@@ -12,7 +12,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .po-hero .hero-cta { display: flex; gap: 14px; margin-top: 36px; flex-wrap: wrap; }
   @media (max-width: 980px) { .po-hero .wrap-wide { grid-template-columns: 1fr; gap: 44px; } }
 
-  /* Rotating screen stack — cards behind the front one peek out (deck style).
+  /* Rotating screen stack – cards behind the front one peek out (deck style).
      JS sets each card's transform/opacity/z-index by its depth in the stack. */
   .po-hero-stack { display: grid; }
   .po-hero-stack > .frame {
@@ -115,7 +115,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           var d = (k - active + n) % n;
           var f = frames[k];
           // Offset up-left into open space (the frame is right-aligned, so a
-          // down-right offset would clip off-screen) — behind cards peek out.
+          // down-right offset would clip off-screen) – behind cards peek out.
           f.style.transform = 'translate(' + (d * -30) + 'px,' + (d * -12) + 'px) scale(' + (1 - d * 0.04) + ')';
           f.style.opacity = d === 0 ? '1' : String(Math.max(0.16, 0.62 - (d - 1) * 0.2));
           f.style.zIndex = String(50 - d);
@@ -139,7 +139,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <!-- ============ INTRO ============ -->
   <div class="intro">
     <div class="wrap reveal">
-      <p class="lead">Planning should not be split across spreadsheets, disconnected systems, and endless review meetings. <span class="accent">Haidi brings the important parts of planning together</span> — from demand signals and forecasting experiments to reviews, scenarios, and inventory decisions.</p>
+      <p class="lead">Planning should not be split across spreadsheets, disconnected systems, and endless review meetings. <span class="accent">Haidi brings the important parts of planning together</span> – from demand signals and forecasting experiments to reviews, scenarios, and inventory decisions.</p>
     </div>
   </div>
 
@@ -149,7 +149,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <div class="section-head center reveal">
         <span class="eyebrow eyebrow--wrap" style="justify-content:center">One connected workflow</span>
         <h2 class="display" style="margin-top:22px">Not separate modules.<br /><span class="accent">One planning journey.</span></h2>
-        <p style="margin-left:auto;margin-right:auto">Every step feeds the next — data and drivers all the way through to better decisions.</p>
+        <p style="margin-left:auto;margin-right:auto">Every step feeds the next – data and drivers all the way through to better decisions.</p>
       </div>
       <div class="cw-flow">
         <div class="cw-node">
@@ -187,7 +187,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <div class="section-head reveal">
         <span class="eyebrow">The base system</span>
         <h2 class="display">A planning foundation that <span class="accent">adapts to your data.</span></h2>
-        <p>Haidi's base system is built to be extremely flexible. Model your master data and measures the way your business actually plans — not the way a rigid ERP dictates. Hierarchies, attributes, and calculated measures stay in your control as the business changes.</p>
+        <p>Haidi's base system is built to be extremely flexible. Model your master data and measures the way your business actually plans – not the way a rigid ERP dictates. Hierarchies, attributes, and calculated measures stay in your control as the business changes.</p>
       </div>
       <div class="tools-grid">
         <div class="reveal" data-delay="1" data-frag="master-data" data-draw></div>
@@ -226,12 +226,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <div class="module-text reveal">
         <span class="eyebrow">Demand Planning</span>
         <h2 class="display">Experiment-driven demand planning, <span class="accent">for planners and data scientists.</span></h2>
-        <p>One module that works for demand planners and data scientists alike. Run forecasting experiments in the Forecast Lab, bring in demand drivers to understand what is actually moving demand — demand sensing and demand steering — pressure-test the choices with scenario testing, and challenge the forecast together in a structured demand review.</p>
+        <p>One module that works for demand planners and data scientists alike. Run forecasting experiments in the Forecast Lab, bring in demand drivers to understand what is actually moving demand – demand sensing and demand steering – pressure-test the choices with scenario testing, and challenge the forecast together in a structured demand review.</p>
         <ul class="module-list">
-          <li>Forecast Lab — run and compare forecasting experiments</li>
-          <li>Demand Drivers — see what is actually moving the forecast</li>
-          <li>Scenario Testing — test decisions before they become commitments</li>
-          <li>Demand Review — challenge the forecast together, then decide</li>
+          <li>Forecast Lab – run and compare forecasting experiments</li>
+          <li>Demand Drivers – see what is actually moving the forecast</li>
+          <li>Scenario Testing – test decisions before they become commitments</li>
+          <li>Demand Review – challenge the forecast together, then decide</li>
         </ul>
         <a class="link-arrow" href="/demand-planning">Explore Demand Planning <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
@@ -273,7 +273,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <div class="module-text reveal" data-delay="1">
         <span class="eyebrow">Haidi Gen</span>
         <h2 class="display">Ask questions. Understand the plan. Move forward.</h2>
-        <p>A planning assistant connected across your foundation, demand, and inventory views — so answers reference the actual plan, not generic responses. It helps planners and data scientists work through decisions faster; it does not replace them.</p>
+        <p>A planning assistant connected across your foundation, demand, and inventory views – so answers reference the actual plan, not generic responses. It helps planners and data scientists work through decisions faster; it does not replace them.</p>
         <div class="gen-q">
           <span>What changed in this forecast?</span>
           <span>Which products need review?</span>

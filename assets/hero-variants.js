@@ -1,4 +1,4 @@
-/* Hero variants — content layout + background animation. ?heroContent= · ?heroAnim= */
+/* Hero variants – content layout + background animation. ?heroContent= · ?heroAnim= */
 (function () {
   var CONTENT = ['workspace', 'minimal', 'tagline'];
   var ANIMATION = ['canvas', 'streams', 'waves', 'network', 'flow', 'supply', 'globe', 'terrain', 'field3d', 'network3d', 'none'];

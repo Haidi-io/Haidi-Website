@@ -36,13 +36,13 @@ const variants = [
     id: 'fourier',
     name: 'Fourier epicycles',
     blurb:
-      'A chain of rotating circles whose pen traces a closed curve — faint epicycles plus a glowing teal trace that completes with progress. Unmistakably mathematical.',
+      'A chain of rotating circles whose pen traces a closed curve – faint epicycles plus a glowing teal trace that completes with progress. Unmistakably mathematical.',
   },
   {
     id: 'harmonograph',
     name: 'Harmonograph',
     blurb:
-      'A damped Lissajous pendulum curve drawn live — a delicate looping ribbon in teal with a soft glow that tightens inward as it resolves.',
+      'A damped Lissajous pendulum curve drawn live – a delicate looping ribbon in teal with a soft glow that tightens inward as it resolves.',
   },
   {
     id: 'waves',
@@ -54,7 +54,7 @@ const variants = [
 ---
 
 <BaseLayout
-  title="Preloader gallery — Haidi"
+  title="Preloader gallery – Haidi"
   description="Internal gallery of preloader designs."
   noindex
   scripts={['haidi-site.js']}
@@ -136,7 +136,7 @@ const variants = [
       }
     </div>
 
-    <p class="plg-hintbar">Selecting “Use” saves your choice — reload any real route to see it live.</p>
+    <p class="plg-hintbar">Selecting “Use” saves your choice – reload any real route to see it live.</p>
   </article>
 
   <div class="plg-toast" id="plg-toast" role="status" aria-live="polite"></div>
@@ -181,7 +181,7 @@ const variants = [
           var id = t.getAttribute('data-use');
           if (api.use(id)) {
             markCurrent();
-            toast('“' + nameOf(id) + '” is now the site preloader — reload any page to see it live.');
+            toast('“' + nameOf(id) + '” is now the site preloader – reload any page to see it live.');
           }
         }
       });

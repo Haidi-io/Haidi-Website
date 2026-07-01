@@ -1,4 +1,4 @@
-/* Haidi — light/dark theme (runs in <head> to avoid flash). */
+/* Haidi – light/dark theme (runs in <head> to avoid flash). */
 (function () {
   var KEY = 'haidi-theme';
 

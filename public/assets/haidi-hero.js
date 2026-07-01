@@ -1,4 +1,4 @@
-/* Haidi — hero canvas animations (brand palette, reduced-motion safe). */
+/* Haidi – hero canvas animations (brand palette, reduced-motion safe). */
 (function () {
   var canvas = document.querySelector('.hero-canvas');
   if (!canvas || !canvas.getContext) return;
@@ -94,7 +94,7 @@
     ctx.clearRect(0, 0, W, H);
     // Center the composition: the forecast now runs to the right edge, so shift
     // the whole drawing left until the empty margin before the first source
-    // equals the margin after the forecast — balanced gaps on both sides.
+    // equals the margin after the forecast – balanced gaps on both sides.
     var leftPad = W * (small ? 0.12 : 0.10), shift = (leftPad - 6) / 2;
     ctx.save();
     ctx.translate(-shift, 0);

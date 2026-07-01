@@ -101,7 +101,7 @@ const {
             btn.__themeBound = true;
             btn.addEventListener('click', function () {
               var cur = document.documentElement.getAttribute('data-theme') || 'dark';
-              apply(cur === 'dark' ? 'light' : 'dark', true); // explicit choice — persist
+              apply(cur === 'dark' ? 'light' : 'dark', true); // explicit choice – persist
             });
           });
         }
@@ -129,12 +129,12 @@ const {
       initHaidiCursor();
 
       // The scroll-animation engine (gsap + ScrollTrigger) is loaded only when a
-      // page actually has animated elements — legal pages skip it entirely.
+      // page actually has animated elements – legal pages skip it entirely.
       if (document.querySelector('.reveal, [data-hero-root], [data-scroll-panel]')) {
         import('../lib/haidi-gsap').then(({ initHaidiGsap }) => initHaidiGsap());
       }
 
-      // Hero 3D (three.js) — loaded only when a WebGL hero mode is active, so
+      // Hero 3D (three.js) – loaded only when a WebGL hero mode is active, so
       // default visitors on the 2D 'canvas' mode never download three.js.
       const HERO_3D = ['globe', 'terrain', 'field3d', 'network3d'];
       function maybeLoadHero3D() {
@@ -156,7 +156,7 @@ const {
     {scripts.map((src) => (
       <script is:inline src={`/assets/${src}`}></script>
     ))}
-    {/* Mock UI (~18KB) is below the fold — keep it out of the initial render path and
+    {/* Mock UI (~18KB) is below the fold – keep it out of the initial render path and
         hydrate it when a mock container nears the viewport, with an idle fallback so it
         always loads even inside the home page's custom scroll-snap section. */}
     <script is:inline>

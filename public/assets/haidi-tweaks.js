@@ -1,4 +1,4 @@
-/* Design-time Tweaks panel — loads on all hosts. */
+/* Design-time Tweaks panel – loads on all hosts. */
 (function () {
   var root = document.createElement('div');
   root.id = 'tweaks-root';
@@ -55,7 +55,7 @@
   var heroContentDefault = (window.haidiResolveHeroContent && window.haidiResolveHeroContent()) || 'tagline';
   var heroAnimDefault = (window.haidiResolveHeroAnimation && window.haidiResolveHeroAnimation()) || 'canvas';
   // The cursor module loads as a deferred module, so haidiResolveCursor may not be
-  // exposed yet when this runs — fall back to the persisted value so the panel's
+  // exposed yet when this runs – fall back to the persisted value so the panel's
   // dropdown reflects the cursor actually in effect rather than always showing 'trace'.
   var cursorDefault = (window.haidiResolveCursor && window.haidiResolveCursor()) ||
     (function () { try { return sessionStorage.getItem('haidi-cursor'); } catch (e) { return null; } })() ||

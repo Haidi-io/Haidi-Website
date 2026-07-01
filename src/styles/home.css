@@ -1,4 +1,4 @@
-/* Home page — full-viewport scroll panels */
+/* Home page – full-viewport scroll panels */
 
 [data-home-scroll] {
   --home-panel-h: 100dvh;
@@ -38,7 +38,7 @@
 }
 
 /* ── Home page: full-screen hero, then normal continuous scroll ──────────
-   The home wrapper (.home-flow) is NOT a snap container — only the hero snaps.
+   The home wrapper (.home-flow) is NOT a snap container – only the hero snaps.
    Every other section flows at its natural height, like the product-overview
    page. (The use-cases page keeps its [data-home-scroll] panel snapping.) */
 .home-flow .home-panel {
@@ -277,7 +277,7 @@ html[data-hero-content="minimal"] .hero-scroll { display: none; }
 .collab-time .ct-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); margin-top: 8px; }
 
 .flow--panel { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: clamp(46px, 6vh, 78px); position: relative; }
-/* Timeline track — runs node-centre to node-centre (steps are centred, so the
+/* Timeline track – runs node-centre to node-centre (steps are centred, so the
    five nodes sit at 10/30/50/70/90% of the width). */
 .flow--panel::before {
   content: ""; position: absolute; top: 23px; left: 10%; right: 10%; height: 2px;
@@ -621,7 +621,7 @@ html[data-hero-content="minimal"] .hero-scroll { display: none; }
 }
 
 /* ── CTA banner art layers (dev tweaks: data-cta-art) ──────── */
-/* Inset is negative so the layer overhangs the card — parallax translation
+/* Inset is negative so the layer overhangs the card – parallax translation
    then never exposes a bare edge (the card's overflow:hidden clips it). */
 .cta-banner__art {
   position: absolute; inset: -48px; z-index: 0; overflow: hidden; pointer-events: none;
@@ -640,7 +640,7 @@ html[data-hero-content="minimal"] .hero-scroll { display: none; }
 [data-cta-art="orbits"] .cta-art--orbits { display: block; }
 [data-cta-art="none"] .cta-art { display: none; }
 
-/* Constellation — supply network */
+/* Constellation – supply network */
 .cta-art--constellation { color: #c8f3f4; }
 .cta-net { animation: ctaDrift 30s ease-in-out infinite alternate; }
 .cta-net-links { opacity: 0.28; }
@@ -651,7 +651,7 @@ html[data-hero-content="minimal"] .hero-scroll { display: none; }
 @keyframes ctaDrift { from { transform: translate(0, 0); } to { transform: translate(-22px, -14px); } }
 @keyframes ctaPulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
 
-/* Forecast — curves + tracing point */
+/* Forecast – curves + tracing point */
 .cta-art--forecast { color: #bfeff0; opacity: 0.9; }
 .cta-art--forecast .cta-grid-lines { opacity: 0.12; }
 .cta-line { fill: none; stroke-linecap: round; }
@@ -661,7 +661,7 @@ html[data-hero-content="minimal"] .hero-scroll { display: none; }
 .cta-trace-halo { opacity: 0.25; }
 .cta-trace-dot { filter: drop-shadow(0 0 8px rgba(160,255,250,0.9)); }
 
-/* Contours — topographic rings, gentle breathing */
+/* Contours – topographic rings, gentle breathing */
 .cta-art--contours {
   background: repeating-radial-gradient(circle at 80% 32%,
     rgba(95,208,210,0.16) 0 1.5px, transparent 1.5px 28px);
@@ -675,7 +675,7 @@ html[data-hero-content="minimal"] .hero-scroll { display: none; }
   50% { transform: scale(1.09); opacity: 0.9; }
 }
 
-/* Data grid — drifting dot matrix */
+/* Data grid – drifting dot matrix */
 .cta-art--grid {
   background-image: radial-gradient(rgba(220,255,255,0.18) 1px, transparent 1.7px);
   background-size: 26px 26px;
@@ -685,7 +685,7 @@ html[data-hero-content="minimal"] .hero-scroll { display: none; }
 }
 @keyframes ctaGridDrift { from { background-position: 0 0; } to { background-position: 26px 26px; } }
 
-/* Orbits — concentric rings with orbiting points */
+/* Orbits – concentric rings with orbiting points */
 .cta-art--orbits { color: #cdf3f4; opacity: 0.75; }
 .cta-art--orbits .cta-ring { fill: none; stroke-width: 1; }
 .cta-orbit circle { filter: drop-shadow(0 0 6px rgba(95,208,210,0.7)); }
@@ -698,7 +698,7 @@ html[data-hero-content="minimal"] .hero-scroll { display: none; }
   position: relative; z-index: 1;
   display: flex; align-items: center; justify-content: space-between;
   gap: clamp(28px, 5vw, 64px); flex-wrap: wrap;
-  /* Content sits on a nearer plane — drifts slightly opposite the art for depth. */
+  /* Content sits on a nearer plane – drifts slightly opposite the art for depth. */
   transform: translate3d(calc(var(--cta-px) * -8px), calc(var(--cta-py) * -6px), 0);
 }
 .cta-banner__text { flex: 1 1 360px; min-width: 0; }

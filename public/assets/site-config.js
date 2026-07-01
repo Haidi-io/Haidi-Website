@@ -1,4 +1,4 @@
-/* Haidi site — shared URLs and delivery settings. */
+/* Haidi site – shared URLs and delivery settings. */
 (function () {
   var local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
   var ext = local ? '.html' : '';

@@ -1,4 +1,4 @@
-/* Haidi — multi-step qualification form.
+/* Haidi – multi-step qualification form.
    Self-contained. Steps marked [data-step]; chip groups [data-field];
    text/select inputs [data-field]. Persists to localStorage, validates,
    builds a summary, and shows a success screen on submit. */

@@ -1,4 +1,4 @@
-/* Haidi — schematic product mockups (neutral, stylized planning UI, not fake screenshots).
+/* Haidi – schematic product mockups (neutral, stylized planning UI, not fake screenshots).
    Usage: el.innerHTML = haidiMock('review'); or auto-hydrate [data-mock]. */
 (function () {
   var T = '#47B9BB', C = '#F08989', M = 'var(--text-body)', F = 'var(--text)', U = 'var(--text-muted)';

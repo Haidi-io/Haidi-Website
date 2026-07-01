@@ -1,4 +1,4 @@
-/* Haidi site — shared interactions (no external deps).
+/* Haidi site – shared interactions (no external deps).
    Header shade · IO reveals · mobile menu · scroll-sync · chart draw-in · counters.
    Reduced-motion safe: animations are skipped, content shows immediately. */
 (function () {

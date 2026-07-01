@@ -7,7 +7,7 @@
   (before the haidi.css bundle), then the inline controller fills in the selected
   design and ties progress to the real page load.
 
-  Shown only when needed — once per browser session (a genuine cold entry to the
+  Shown only when needed – once per browser session (a genuine cold entry to the
   site). On internal navigations within the visit (this is a multi-page Astro app
   where each navigation is a full load) the cover is dropped synchronously before
   paint, so it never flashes again. The flag lives in sessionStorage so a new tab
@@ -501,8 +501,8 @@
     } catch (e) {}
 
     // Drive one overlay element through progress + fade-out.
-    //   opts.hold     — pin partway, wait for el.__finish() (preview only)
-    //   opts.simulate — climb all the way to 100 on a timer (preview only);
+    //   opts.hold     – pin partway, wait for el.__finish() (preview only)
+    //   opts.simulate – climb all the way to 100 on a timer (preview only);
     //                   otherwise the final jump is tied to the real 'load'.
     function run(el, design, opts) {
       opts = opts || {};
@@ -559,7 +559,7 @@
           el.addEventListener('transitionend', function (e) {
             if (e.target === el && e.propertyName === 'opacity') remove();
           });
-          // Fallback / curtain (opacity doesn't transition) — remove on a timer.
+          // Fallback / curtain (opacity doesn't transition) – remove on a timer.
           setTimeout(remove, (design.exitMs || 700) + 200);
         }, reduce ? 80 : 280);
       }
@@ -587,7 +587,7 @@
           setTimeout(finish, reduce ? 80 : 220);
         });
       }
-      setTimeout(finish, 6000); // hard cap — never trap on a hung asset
+      setTimeout(finish, 6000); // hard cap – never trap on a hung asset
     }
 
     function build(id, opts) {
@@ -606,7 +606,7 @@
       return { el: el, design: design };
     }
 
-    // Public API — the /preloader-preview gallery drives this.
+    // Public API – the /preloader-preview gallery drives this.
     window.haidiPreloader = {
       designs: DESIGNS,
       currentId: currentId,
@@ -640,7 +640,7 @@
 
     // Remove the server-rendered cover immediately. Because this inline script
     // is adjacent to the cover and parser-blocking, it runs before the browser
-    // paints — so dropping it here never flashes.
+    // paints – so dropping it here never flashes.
     function dropCover() {
       if (cover.parentNode) cover.parentNode.removeChild(cover);
       root.classList.remove('hd-loading');
@@ -648,7 +648,7 @@
 
     var path = location.pathname.replace(/\/+$/, '') || '/';
     if (path === '/preloader-preview') {
-      // The gallery controls its own overlays — drop the auto cover.
+      // The gallery controls its own overlays – drop the auto cover.
       dropCover();
       return;
     }
