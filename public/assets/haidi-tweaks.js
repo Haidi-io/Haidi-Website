@@ -69,10 +69,12 @@
     heroAnimation: heroAnimDefault,
     taglineWidth: 22,
     ctaBg: 'teal',
-    ctaArt: 'constellation'
+    ctaArt: 'constellation',
+    insideVariant: 'carousel'
   };
   var hasHero = !!document.querySelector('[data-hero-root]');
   var hasCta = !!document.querySelector('.cta-banner');
+  var hasInside = !!document.querySelector('.inside-product');
 
   Promise.resolve()
     .then(function () {
@@ -117,6 +119,7 @@
         "  d.style.setProperty('--tagline-width', t.taglineWidth + 'ch');" +
         "  d.setAttribute('data-cta-bg', t.ctaBg);" +
         "  d.setAttribute('data-cta-art', t.ctaArt);" +
+        "  d.setAttribute('data-inside-variant', t.insideVariant);" +
         '  if (window.haidiApplyHero) window.haidiApplyHero({ content: t.heroContent, animation: t.heroAnimation });' +
         '  if (window.haidiApplyCursor) window.haidiApplyCursor(t.cursor);' +
         '}' +
@@ -174,6 +177,13 @@
             '      { value: "grid", label: "Data grid" },' +
             '      { value: "orbits", label: "Orbits" }' +
             '    ], onChange: function (v) { setTweak("ctaArt", v); } })'
+          : '') +
+        (hasInside
+          ? '    ,React.createElement(TweakSection, { label: "Inside the product" })' +
+            '    ,React.createElement(TweakSelect, { label: "Demand layout", value: t.insideVariant, options: [' +
+            '      { value: "carousel", label: "Carousel" },' +
+            '      { value: "tabs", label: "Tabs" }' +
+            '    ], onChange: function (v) { setTweak("insideVariant", v); } })'
           : '') +
         '  );' +
         '}' +

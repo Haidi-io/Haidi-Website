@@ -1,0 +1,347 @@
+---
+import HomePanel from './HomePanel.astro';
+import SectionRule from './SectionRule.astro';
+---
+
+<HomePanel id="inside" class="inside-product" screenLabel="Inside the product">
+  <SectionRule num="02" left="Inside the product" right="One workspace, two pillars" />
+  <div class="section-head reveal">
+    <h2 class="display">One workspace. <span class="accent">Two planning pillars.</span></h2>
+    <p>Haidi connects demand and inventory planning in one practical workflow — start with the signals behind demand, test the plan, align on assumptions, and see the inventory position that follows.</p>
+  </div>
+
+  <div class="ip-pillars reveal" data-ip-pillars data-active="demand">
+    <div class="ip-pillar-bg"></div>
+    <button class="ip-pillar-btn active" type="button" data-pillar="demand"><span class="ip-num">01</span>Demand Planning</button>
+    <button class="ip-pillar-btn" type="button" data-pillar="inventory"><span class="ip-num">02</span>Inventory Planning</button>
+  </div>
+
+  <div class="ip-stage reveal" data-delay="1">
+
+    <!-- ============ DEMAND PLANNING ============ -->
+    <div class="ip-panel active" data-panel="demand">
+
+      <!-- TABS VARIANT -->
+      <div class="ip-tabs">
+        <div class="ip-steps" data-ip-steps>
+          <button class="ip-step-tab active" type="button" data-step="0">
+            <span class="ip-step-num">01</span>
+            <div class="ip-step-title">Demand Drivers</div>
+            <div class="ip-step-sub">See the signals behind demand.</div>
+          </button>
+          <button class="ip-step-tab" type="button" data-step="1">
+            <span class="ip-step-num">02</span>
+            <div class="ip-step-title">Forecast Lab</div>
+            <div class="ip-step-sub">Test and compare planning approaches.</div>
+          </button>
+          <button class="ip-step-tab" type="button" data-step="2">
+            <span class="ip-step-num">03</span>
+            <div class="ip-step-title">Demand Review</div>
+            <div class="ip-step-sub">Bring forecasts and business input together.</div>
+          </button>
+          <button class="ip-step-tab" type="button" data-step="3">
+            <span class="ip-step-num">04</span>
+            <div class="ip-step-title">Scenario Testing</div>
+            <div class="ip-step-sub">Test the impact before making the call.</div>
+          </button>
+        </div>
+        <div class="ip-stage-line"><div class="ip-progress" data-ip-progress style="width:25%"></div></div>
+        <div class="ip-screen" data-ip-screen></div>
+      </div>
+
+      <!-- CAROUSEL VARIANT -->
+      <div class="ip-carousel">
+        <div class="ip-carousel-head">
+          <div class="ip-carousel-progress" data-ip-cprogress>
+            <div class="ip-seg done" data-i="0"></div>
+            <div class="ip-seg" data-i="1"></div>
+            <div class="ip-seg" data-i="2"></div>
+            <div class="ip-seg" data-i="3"></div>
+            <span class="ip-clabel">Step <b data-ip-stepnow>01</b> / 04</span>
+          </div>
+          <div class="ip-carousel-arrows">
+            <button class="ip-arrow" type="button" data-ip-prev aria-label="Previous step">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="ip-arrow" type="button" data-ip-next aria-label="Next step">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="ip-viewport"><div class="ip-track" data-ip-track></div></div>
+        <div class="ip-dots" data-ip-dots></div>
+      </div>
+
+      <div class="ip-flow-down">
+        <span class="ip-line"></span>
+        <span>The agreed demand plan becomes the input to inventory review</span>
+        <span class="ip-line r"></span>
+      </div>
+    </div>
+
+    <!-- ============ INVENTORY REVIEW ============ -->
+    <div class="ip-panel" data-panel="inventory">
+      <div class="ip-inv-wrap">
+        <div class="ip-inv-top">
+          <div>
+            <span class="ip-tag">Inventory Planning</span>
+            <h3>From agreed demand to inventory position</h3>
+            <p>The plan coming out of Demand Review and Scenario Testing drives stock projection, exposure, and targets — so inventory decisions stay grounded in the same numbers the business just agreed on.</p>
+          </div>
+          <div class="ip-inv-tabs" data-ip-inv-tabs>
+            <button class="ip-inv-tab active" type="button" data-inv="projection">Projection</button>
+            <button class="ip-inv-tab" type="button" data-inv="exposure">Exposure</button>
+            <button class="ip-inv-tab" type="button" data-inv="targets">Targets</button>
+          </div>
+        </div>
+        <div class="ip-inv-body" data-ip-inv-body></div>
+        <div class="ip-footnote">
+          <span class="ip-mark">＞</span>
+          <span>Stock coverage, shortage risk, and excess risk are calculated continuously as the demand plan changes upstream.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</HomePanel>
+
+<script>
+  function initInsideProduct() {
+    const root = document.querySelector('.inside-product');
+    if (!root) return;
+    const q = (sel) => root.querySelector(sel);
+    const qa = (sel) => Array.from(root.querySelectorAll(sel));
+
+    // ---------- Pillar switching ----------
+    const pillars = q('[data-ip-pillars]');
+    const pillarBtns = qa('.ip-pillar-btn');
+    const panelDemand = q('[data-panel="demand"]');
+    const panelInventory = q('[data-panel="inventory"]');
+
+    pillarBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const which = btn.dataset.pillar;
+        pillars.dataset.active = which;
+        pillarBtns.forEach((b) => b.classList.toggle('active', b === btn));
+        panelDemand.classList.toggle('active', which === 'demand');
+        panelInventory.classList.toggle('active', which === 'inventory');
+        if (which === 'demand') carousel.update();
+      });
+    });
+    const demandActive = () => panelDemand.classList.contains('active');
+    const visible = (el) => el && el.offsetParent !== null;
+
+    // ---------- Shared demand data ----------
+    const dpData = [
+      {
+        tag: 'Step 01 — Demand Drivers',
+        title: 'See the signals behind demand',
+        text: 'Bring together the market, sales, and historical signals that actually move demand, before a single forecast number gets generated.',
+        render: () => `
+          <div class="ip-mock-bar" style="width:40%"></div>
+          <div class="ip-mock-bar" style="width:65%"></div>
+          <div class="ip-mock-grid">
+            ${[40, 65, 30, 80, 55, 70].map((h) => `<div class="ip-bar" style="height:${h}%"></div>`).join('')}
+          </div>`,
+      },
+      {
+        tag: 'Step 02 — Forecast Lab',
+        title: 'Test and compare planning approaches',
+        text: 'Run multiple forecasting methods side by side and see which one fits the pattern in your data, instead of trusting one black box.',
+        render: () => `
+          <svg class="ip-mock-line-svg" viewBox="0 0 260 100" fill="none">
+            <polyline points="0,80 40,60 80,65 120,40 160,45 200,20 240,28" stroke="var(--text-faint)" stroke-width="1.5"/>
+            <polyline points="0,75 40,70 80,50 120,55 160,30 200,35 240,15" stroke="var(--teal)" stroke-width="2"/>
+          </svg>
+          <div class="ip-mock-row"><span class="ip-l">Method A — exponential smoothing</span><span class="ip-v">92.1%</span></div>
+          <div class="ip-mock-row"><span class="ip-l">Method B — seasonal model</span><span class="ip-v">96.4%</span></div>`,
+      },
+      {
+        tag: 'Step 03 — Demand Review',
+        title: 'Bring forecasts and business input together',
+        text: 'Planners and the business adjust the statistical forecast in one shared view, so the final number reflects both data and judgment.',
+        render: () => `
+          <div class="ip-mock-row"><span class="ip-l"><span class="ip-pulse-dot"></span> &nbsp;Statistical forecast</span><span class="ip-v">14,200</span></div>
+          <div class="ip-mock-row"><span class="ip-l">Sales input</span><span class="ip-v">+ 850</span></div>
+          <div class="ip-mock-row"><span class="ip-l">Marketing input</span><span class="ip-v">+ 300</span></div>
+          <div class="ip-mock-row"><span class="ip-l">Agreed plan</span><span class="ip-v">15,350</span></div>`,
+      },
+      {
+        tag: 'Step 04 — Scenario Testing',
+        title: 'Test the impact before making the call',
+        text: 'Stress test the agreed plan against upside, downside, and disruption scenarios, and see the consequences before committing.',
+        render: () => `
+          <div class="ip-mock-bar" style="width:50%"></div>
+          <div class="ip-mock-grid">
+            ${[55, 75, 40, 85, 30, 60].map((h, i) => `<div class="ip-bar" style="height:${h}%; opacity:${i === 3 ? 1 : 0.45}"></div>`).join('')}
+          </div>
+          <div class="ip-mock-row"><span class="ip-l">Scenario: supplier delay</span><span class="ip-v">−12%</span></div>`,
+      },
+    ];
+
+    // ---------- TABS variant ----------
+    const stepsEl = q('[data-ip-steps]');
+    const stepTabs = qa('.ip-step-tab');
+    const screenEl = q('[data-ip-screen]');
+    const progressEl = q('[data-ip-progress]');
+    let tabsAuto = true;
+    let tabsIdx = 0;
+
+    function renderStep(i) {
+      const d = dpData[i];
+      screenEl.style.opacity = '0';
+      setTimeout(() => {
+        screenEl.innerHTML = `
+          <div class="ip-screen-copy">
+            <span class="ip-tag">${d.tag}</span>
+            <h3>${d.title}</h3>
+            <p>${d.text}</p>
+          </div>
+          <div class="ip-mock">${d.render()}</div>`;
+        screenEl.style.transition = 'opacity .35s ease';
+        screenEl.style.opacity = '1';
+      }, 120);
+      stepTabs.forEach((t) => t.classList.toggle('active', Number(t.dataset.step) === i));
+      progressEl.style.width = ((i + 1) / 4) * 100 + '%';
+      tabsIdx = i;
+    }
+    stepTabs.forEach((tab) => {
+      tab.addEventListener('click', () => { tabsAuto = false; renderStep(Number(tab.dataset.step)); });
+    });
+    renderStep(0);
+    setInterval(() => {
+      if (!tabsAuto || !demandActive() || !visible(q('.ip-tabs'))) return;
+      renderStep((tabsIdx + 1) % dpData.length);
+    }, 4200);
+
+    // ---------- CAROUSEL variant ----------
+    const track = q('[data-ip-track]');
+    const dotsWrap = q('[data-ip-dots]');
+    const progressSegs = qa('[data-ip-cprogress] .ip-seg');
+    const stepNowEl = q('[data-ip-stepnow]');
+    const prevBtn = q('[data-ip-prev]');
+    const nextBtn = q('[data-ip-next]');
+
+    track.innerHTML = dpData
+      .map((d, i) => `
+        <div class="ip-card" data-i="${i}">
+          <div class="ip-card-copy">
+            <span class="ip-tag">${d.tag}</span>
+            <h3>${d.title}</h3>
+            <p>${d.text}</p>
+          </div>
+          <div class="ip-mock">${d.render()}</div>
+        </div>`)
+      .join('');
+    dotsWrap.innerHTML = dpData
+      .map((_, i) => `<button type="button" data-i="${i}" class="${i === 0 ? 'active' : ''}" aria-label="Go to step ${i + 1}"></button>`)
+      .join('');
+
+    const cards = qa('.ip-card');
+    const dots = qa('[data-ip-dots] button');
+    let current = 0;
+    let carAuto = true;
+
+    const carousel = {
+      update() {
+        const card = cards[0];
+        if (!card) return;
+        const gap = 20;
+        const cardWidth = card.getBoundingClientRect().width;
+        if (cardWidth > 0) {
+          track.style.transform = `translateX(-${current * (cardWidth + gap)}px)`;
+        }
+        cards.forEach((c, i) => {
+          c.classList.toggle('is-current', i === current);
+          c.classList.toggle('is-next', i === current + 1);
+        });
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === current));
+        progressSegs.forEach((seg) => seg.classList.toggle('done', Number(seg.dataset.i) <= current));
+        stepNowEl.textContent = String(current + 1).padStart(2, '0');
+        prevBtn.disabled = current === 0;
+        nextBtn.disabled = current === dpData.length - 1;
+      },
+      goTo(i) {
+        current = Math.max(0, Math.min(dpData.length - 1, i));
+        this.update();
+      },
+    };
+
+    prevBtn.addEventListener('click', () => { carAuto = false; carousel.goTo(current - 1); });
+    nextBtn.addEventListener('click', () => { carAuto = false; carousel.goTo(current + 1); });
+    dots.forEach((dot) => dot.addEventListener('click', () => { carAuto = false; carousel.goTo(Number(dot.dataset.i)); }));
+    window.addEventListener('resize', () => carousel.update());
+    carousel.update();
+
+    setInterval(() => {
+      if (!carAuto || !demandActive() || !visible(q('.ip-carousel'))) return;
+      carousel.goTo(current === dpData.length - 1 ? 0 : current + 1);
+    }, 4200);
+
+    // Recompute carousel layout when it becomes the active variant (was hidden → width 0).
+    new MutationObserver(() => {
+      if (document.documentElement.getAttribute('data-inside-variant') !== 'tabs') {
+        requestAnimationFrame(() => carousel.update());
+      }
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-inside-variant'] });
+
+    // First time the section scrolls into view, re-measure (covers reveal/layout shifts).
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => { if (e.isIntersecting) { carousel.update(); io.disconnect(); } });
+      });
+      io.observe(root);
+    }
+
+    // ---------- Inventory Planning tabs ----------
+    const invData = {
+      projection: {
+        items: [['Current stock', '18,400 units'], ['Projected in 4 weeks', '11,200 units'], ['Driven by', 'Agreed demand plan'], ['Trend', 'Declining']],
+        render: () => `
+          <svg class="ip-mock-line-svg" viewBox="0 0 260 100" fill="none">
+            <polyline points="0,20 60,30 120,50 180,65 240,80" stroke="var(--teal)" stroke-width="2"/>
+            <line x1="0" y1="95" x2="260" y2="95" stroke="var(--text-faint)" stroke-width="1"/>
+          </svg>`,
+      },
+      exposure: {
+        items: [['Shortage risk', '3 SKUs'], ['Excess risk', '7 SKUs'], ['Stock coverage', '5.2 weeks'], ['Status', 'Within tolerance']],
+        render: () => `
+          <div class="ip-mock-grid">
+            ${[30, 55, 80, 40, 65, 25].map((h, i) => `<div class="ip-bar" style="height:${h}%; opacity:${i === 2 ? 1 : 0.4}"></div>`).join('')}
+          </div>`,
+      },
+      targets: {
+        items: [['Target stock level', '14,800 units'], ['Safety stock', '2,100 units'], ['Service level target', '97%'], ['Linked to', 'Demand Review output']],
+        render: () => `
+          <div class="ip-mock-row"><span class="ip-l">Target</span><span class="ip-v">14,800</span></div>
+          <div class="ip-mock-row"><span class="ip-l">Safety stock</span><span class="ip-v">2,100</span></div>
+          <div class="ip-mock-row"><span class="ip-l">Service level</span><span class="ip-v">97%</span></div>`,
+      },
+    };
+    const invTabs = qa('.ip-inv-tab');
+    const invBody = q('[data-ip-inv-body]');
+
+    function renderInv(key) {
+      const d = invData[key];
+      invBody.style.opacity = '0';
+      setTimeout(() => {
+        invBody.innerHTML = `
+          <div class="ip-inv-copy">
+            <ul>${d.items.map(([k, v]) => `<li><b>${k}</b><span>${v}</span></li>`).join('')}</ul>
+          </div>
+          <div class="ip-mock">${d.render()}</div>`;
+        invBody.style.transition = 'opacity .35s ease';
+        invBody.style.opacity = '1';
+      }, 100);
+      invTabs.forEach((t) => t.classList.toggle('active', t.dataset.inv === key));
+    }
+    invTabs.forEach((tab) => tab.addEventListener('click', () => renderInv(tab.dataset.inv)));
+    renderInv('projection');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initInsideProduct);
+  } else {
+    initInsideProduct();
+  }
+</script>
